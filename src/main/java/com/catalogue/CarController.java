@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class CarController {
@@ -19,11 +20,12 @@ public class CarController {
     }
 
     @PostMapping("/cars")
-    public @ResponseBody String createCar(@RequestParam String make,
+    /*public @ResponseBody String createCar(@RequestParam String make,
                                           @RequestParam String model,
                                           @RequestParam String year,
-                                          @RequestParam Float price){
-        Car temp = new Car(make, model, year, price);
+                                          @RequestParam Float price){*/
+    public @ResponseBody String createCar(@RequestBody Map<String, String> body){
+        Car temp = new Car(body.get("make"), body.get("model"), body.get("year"), body.get("price"));
         repository.save(temp);
         return "Saved";
     }

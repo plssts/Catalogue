@@ -12,22 +12,22 @@ import javax.persistence.GenerationType;
 public class Car {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private String id;
+    private Integer id;
 
     private String make;
     private String model;
     private String year;
-    private Float price;
+    private String price;
 
     public Car(){
 
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -55,15 +55,15 @@ public class Car {
         this.year = year;
     }
 
-    public Float getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(Float price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 
-    public Car(String make, String model, String year, Float price){
+    public Car(String make, String model, String year, String price){
         this.make = make;
         this.model = model;
         this.year = year;
