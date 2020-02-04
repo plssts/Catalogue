@@ -1,7 +1,5 @@
 package com.catalogue.model;
 
-//import lombok.Data;
-//import org.springframework.data.annotation.Id;
 import javax.persistence.Id;
 
 import javax.persistence.Entity;
@@ -11,7 +9,7 @@ import javax.persistence.GenerationType;
 @Entity
 public class Car {
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer id;
 
     private String make;
@@ -23,43 +21,43 @@ public class Car {
 
     }
 
-    public Integer getId() {
+    public Integer getId(){
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Integer id){
         this.id = id;
     }
 
-    public String getMake() {
+    public String getMake(){
         return make;
     }
 
-    public void setMake(String make) {
+    public void setMake(String make){
         this.make = make;
     }
 
-    public String getModel() {
+    public String getModel(){
         return model;
     }
 
-    public void setModel(String model) {
+    public void setModel(String model){
         this.model = model;
     }
 
-    public String getYear() {
+    public String getYear(){
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(String year){
         this.year = year;
     }
 
-    public String getPrice() {
+    public String getPrice(){
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(String price){
         this.price = price;
     }
 
@@ -71,7 +69,7 @@ public class Car {
     }
 
     @Override
-    public String toString() {
+    public String toString(){
         return "Car: " + make + " | " + model + " | " + year + " | " + price + "\n";
     }
 }
