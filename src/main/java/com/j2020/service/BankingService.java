@@ -1,7 +1,6 @@
 package com.j2020.service;
 
 import com.j2020.Bank;
-import com.j2020.RevolutService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;

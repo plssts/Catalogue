@@ -1,4 +1,4 @@
-package com.j2020;
+package com.j2020.service;
 
 //import jdk.nashorn.internal.parser.Token;
 import com.j2020.service.AccountService;
