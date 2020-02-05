@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com</groupId>
-	<artifactId>catalogue</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>Catalogue</name>
-	<description>Car dealership catalogue</description>
+	<artifactId>j2020</artifactId>
+	<version>1.0</version>
+	<name>j2020</name>
+	<description>j2020</description>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -36,14 +36,24 @@
 			</exclusions>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-rest</artifactId>
-		</dependency>
-
+		<!-- springframework.web -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<!-- Jackson JSON conversion -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+		</dependency>
+
+		<!-- @Data auto getters and setters -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.16.22</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 

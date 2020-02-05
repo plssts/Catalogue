@@ -1,5 +1,10 @@
-package com.catalogue;
+package com.j2020;
 
+//import jdk.nashorn.internal.parser.Token;
+import com.j2020.service.AccountService;
+import com.j2020.service.RevolutRenewalService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -11,21 +16,18 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class RevolutService implements AccountService {
-    private String OAuthJWT = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJp" +
-            "c3MiOiJyZXZvbHV0LWp3dC1zYW5kYm94LmdsaXRjaC5tZSIsInN1YiI6InZ" +
-            "1SXZPWnVDLXFRcUppT0VOVjFOcmI4STI2b3FRdHN6V0RMcVNkWUxTS2MiLC" +
-            "JhdWQiOiJodHRwczovL3Jldm9sdXQuY29tIn0.zTjgOs0bXnaeke8hTDSwl" +
-            "xoXh-c1i2aZux9N0D2CCTMKptIC0SB4xExpN-wK6dJnORMvJvGLcHeaceya" +
-            "f62Kwa9SQ3tBRtruVzdyBiGOUhBo_dcGfX50L2OGn-BLSf3LmX-4zWpQ1_L" +
-            "vO8wHp9wawEpg59PXMdJXF7TDKVDkCx0";
+    @Autowired
+    private RevolutRenewalService tokenRenewal;
+
+    @Value("${revolutTokenRenewal.OAuthJWT}")
+    private String OAuthJWT;
 
     @Override
-    public String retrieveAccountData() {
+    public String retrieveAccountData(){
         String url = "https://sandbox-b2b.revolut.com/api/1.0/accounts";
 
-        // So far manually renewed and hardcoded
-        // TODO make it automatic and move to other service
-        String OAuthToken = "oa_sand_klp0O8n3lEf_JTIHk51ClL8qsPJ-GesphYs2mLVHSOM";
+        // TODO only request a new token if the current one is broken
+        String OAuthToken = tokenRenewal.getNewToken(OAuthJWT);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + OAuthToken);
@@ -35,7 +37,7 @@ public class RevolutService implements AccountService {
         try {
             response = template.exchange(url, HttpMethod.GET, new HttpEntity(headers), String.class);
         } catch(HttpClientErrorException ex){
-            return "OAuthToken has to be renewed (manually)";
+            return "An error has occurred.";
         }
 
         return response.getBody();
