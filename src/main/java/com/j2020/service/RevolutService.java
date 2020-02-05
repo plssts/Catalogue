@@ -1,8 +1,8 @@
 package com.j2020.service;
 
-//import jdk.nashorn.internal.parser.Token;
-import com.j2020.service.AccountService;
-import com.j2020.service.RevolutRenewalService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.j2020.model.RevolutAccountData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -34,12 +34,15 @@ public class RevolutService implements AccountService {
 
         RestTemplate template = new RestTemplateBuilder().build();
         ResponseEntity<String> response;
+        RevolutAccountData[] accounts;
+        ObjectMapper beautifier = new ObjectMapper();
         try {
             response = template.exchange(url, HttpMethod.GET, new HttpEntity(headers), String.class);
-        } catch(HttpClientErrorException ex){
+            accounts = beautifier.readValue(response.getBody(), RevolutAccountData[].class);
+            return beautifier.writerWithDefaultPrettyPrinter().writeValueAsString(accounts);
+        } catch(JsonProcessingException | HttpClientErrorException ex){
+            ex.printStackTrace();
             return "An error has occurred.";
         }
-
-        return response.getBody();
     }
 }

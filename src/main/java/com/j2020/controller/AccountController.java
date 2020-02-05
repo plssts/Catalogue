@@ -11,12 +11,12 @@ public class AccountController {
     private BankingService service;
 
     @GetMapping("/revolut")
-    public @ResponseBody String readRevoAccount(){
+    public String readRevoAccount(){
         return service.retrieveAccountService(Bank.REVOLUT).retrieveAccountData();
     }
 
     @GetMapping("/deutsche")
-    public @ResponseBody String readDeutAccount(){
+    public String readDeutAccount(){
         return service.retrieveAccountService(Bank.DEUTSCHE).retrieveAccountData();
     }
 }
