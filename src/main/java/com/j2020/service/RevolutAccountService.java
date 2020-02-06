@@ -3,6 +3,7 @@ package com.j2020.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.model.RevolutAccountData;
+import com.j2020.model.TokenFetchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -20,6 +21,9 @@ public class RevolutAccountService implements AccountService {
     @Autowired
     private RevolutRenewalService tokenRenewal;
 
+    @Autowired
+    private AccountRequestRetrievalService accountRetrieval;
+
     @Value("${revolutTokenRenewal.OAuthJWT}")
     private String OAuthJWT;
 
@@ -28,56 +32,22 @@ public class RevolutAccountService implements AccountService {
 
     @Override
     public String retrieveAccountData(){
-        // TODO only request a new token if the current one is broken
-        String OAuthToken = tokenRenewal.getNewToken(OAuthJWT);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + OAuthToken);
-
-        RestTemplate template = new RestTemplateBuilder().build();
-        ResponseEntity<String> response;
-        RevolutAccountData[] accounts;
-        ObjectMapper beautifier = new ObjectMapper();
         try {
-            response = template.exchange(accountUrl,
-                    HttpMethod.GET,
-                    new HttpEntity(headers),
-                    String.class);
-
-            accounts = beautifier.readValue(response.getBody(), RevolutAccountData[].class);
-            return beautifier.writerWithDefaultPrettyPrinter().writeValueAsString(accounts);
-        } catch(JsonProcessingException | HttpClientErrorException ex){
-            ex.printStackTrace();
-            return "An error has occurred.";
+            String OAuthToken = tokenRenewal.getNewToken(OAuthJWT);
+            return accountRetrieval.processRequest(OAuthToken, accountUrl);
+        } catch (TokenFetchException e) {
+            return "Token negotiation failed. Application clearance might have expired";
         }
     }
 
     @Override
     public String retrieveSpecificAccount(String account) {
-        // TODO fix token regen the same way as above
-        String OAuthToken = tokenRenewal.getNewToken(OAuthJWT);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + OAuthToken);
-
-        RestTemplate template = new RestTemplateBuilder().build();
-        ResponseEntity<String> response;
-        RevolutAccountData singleAccount;
-        ObjectMapper beautifier = new ObjectMapper();
-
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(accountUrl).pathSegment(account);
-
         try {
-            response = template.exchange(uriBuilder.toUriString(),
-                    HttpMethod.GET,
-                    new HttpEntity(headers),
-                    String.class);
-
-            singleAccount = beautifier.readValue(response.getBody(), RevolutAccountData.class);
-            return beautifier.writerWithDefaultPrettyPrinter().writeValueAsString(singleAccount);
-        } catch(JsonProcessingException | HttpClientErrorException ex){
-            ex.printStackTrace();
-            return "An error has occurred.";
+            String OAuthToken = tokenRenewal.getNewToken(OAuthJWT);
+            UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(accountUrl).pathSegment(account);
+            return accountRetrieval.processRequest(OAuthToken, uriBuilder.toUriString());
+        } catch (TokenFetchException e) {
+            return "Token negotiation failed. Application clearance might have expired";
         }
     }
 }

@@ -2,6 +2,7 @@ package com.j2020.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.j2020.model.AccessTokenRevolutRenewalResponse;
+import com.j2020.model.TokenFetchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class RevolutRenewalService implements TokenRenewalService {
     @Value("${revolutTokenRenewal.clAssertType}")
     private String clAssertType;
 
-    public String getNewToken(String OAuthJWT){
+    public String getNewToken(String OAuthJWT) throws TokenFetchException {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "refresh_token");
         params.add("refresh_token", revoRefreshToken);

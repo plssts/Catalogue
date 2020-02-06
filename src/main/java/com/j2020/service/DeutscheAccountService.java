@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.j2020.model.DeutscheAccountData;
+import com.j2020.model.TokenFetchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -18,6 +19,9 @@ public class DeutscheAccountService implements AccountService {
     @Autowired
     private DeutscheRenewalService tokenRenewal;
 
+    @Autowired
+    private AccountRequestRetrievalService accountRetrieval;
+
     @Value("${deutscheTokenRenewal.OAuthToken}")
     private String OAuthToken;
 
@@ -26,62 +30,23 @@ public class DeutscheAccountService implements AccountService {
 
     @Override
     public String retrieveAccountData(){
-        // TODO only request a new token if the current one is broken
-        String accessToken = tokenRenewal.getNewToken(OAuthToken);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessToken);
-        //headers.setContentType(MediaType.APPLICATION_JSON);
-
-        RestTemplate template = new RestTemplateBuilder().build();
-        ResponseEntity<String> response;
-        DeutscheAccountData[] accounts;
-        ObjectMapper beautifier = new ObjectMapper();
-        //beautifier.enable(SerializationFeature.INDENT_OUTPUT);
-
         try {
-            response = template.exchange(accountUrl,
-                    HttpMethod.GET,
-                    new HttpEntity(headers),
-                    String.class);
-
-            accounts = beautifier.readValue(response.getBody(), DeutscheAccountData[].class);
-            return beautifier.writerWithDefaultPrettyPrinter().writeValueAsString(accounts);
-        } catch(JsonProcessingException | HttpClientErrorException ex){
-            ex.printStackTrace();
-            return "An error has occurred.";
+            String accessToken = tokenRenewal.getNewToken(OAuthToken);
+            return accountRetrieval.processRequest(accessToken, accountUrl);
+        } catch (TokenFetchException e) {
+            return "Token negotiation failed. Application clearance might have expired";
         }
     }
 
     public String retrieveSpecificAccount(String iban){
-        // TODO fix token regen the same way as above
-        String accessToken = tokenRenewal.getNewToken(OAuthToken);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessToken);
-        //headers.setContentType(MediaType.APPLICATION_JSON);
-
-        RestTemplate template = new RestTemplateBuilder().build();
-        ResponseEntity<String> response;
-        DeutscheAccountData[] accounts;
-        ObjectMapper beautifier = new ObjectMapper();
-        //beautifier.enable(SerializationFeature.INDENT_OUTPUT);
-
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder
-                .fromUriString(accountUrl)
-                .queryParam("iban", iban);
-
         try {
-            response = template.exchange(uriBuilder.toUriString(),
-                    HttpMethod.GET,
-                    new HttpEntity(headers),
-                    String.class);
-
-            accounts = beautifier.readValue(response.getBody(), DeutscheAccountData[].class);
-            return beautifier.writerWithDefaultPrettyPrinter().writeValueAsString(accounts);
-        } catch(JsonProcessingException | HttpClientErrorException ex){
-            ex.printStackTrace();
-            return "An error has occurred.";
+            String accessToken = tokenRenewal.getNewToken(OAuthToken);
+            UriComponentsBuilder uriBuilder = UriComponentsBuilder
+                    .fromUriString(accountUrl)
+                    .queryParam("iban", iban);
+            return accountRetrieval.processRequest(accessToken, uriBuilder.toUriString());
+        } catch (TokenFetchException e) {
+            return "Token negotiation failed. Application clearance might have expired";
         }
     }
 }

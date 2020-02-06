@@ -2,6 +2,7 @@ package com.j2020.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.j2020.model.AccessTokenDeutscheRenewalResponse;
+import com.j2020.model.TokenFetchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class DeutscheRenewalService implements TokenRenewalService {
     @Value("${deutscheTokenRenewal.deutClientSecret}")
     private String deutClientSecret;
 
-    public String getNewToken(String OAuthToken){
+    public String getNewToken(String OAuthToken) throws TokenFetchException {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("client_id", deutClientId);
         params.add("client_secret", deutClientSecret);
