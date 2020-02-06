@@ -14,7 +14,7 @@ public class RevolutAccountData {
     private String updated_at;
 
     // Public setter since Jackson expects the field 'public' which is a Java keyword
-    public void setPublic(Boolean aPublic) {
+    public void setPublic(Boolean aPublic){
         isPublic = aPublic;
     }
 }
