@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class HomeController implements ErrorController {
     @GetMapping("/")
     public String index(){
-        return "Currently supports /revolut[/accountId] and /deutsche[?iban=iban] endpoints";
+        return "";
     }
 
     @GetMapping("/error")
     public String error(){
-        return "error here";
+        return "Unforeseen action has been performed. Refer to index at '/' for help.";
     }
 
     @Override
