@@ -24,7 +24,7 @@ public class AccountRequestRetrievalService {
                     String.class);
 
             return response.getBody();
-        } catch(HttpClientErrorException ex){
+        } catch (HttpClientErrorException ex){
             ex.printStackTrace();
             return "Failed to retrieve accounts.";
         }

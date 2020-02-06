@@ -25,7 +25,7 @@ public class DeutscheAccountService implements AccountService {
         try {
             String accessToken = tokenRenewal.getNewToken(OAuthToken);
             return accountRetrieval.processRequest(accessToken, accountUrl);
-        } catch (TokenFetchException e) {
+        } catch (TokenFetchException e){
             return "Token negotiation failed. Application clearance might have expired";
         }
     }
@@ -37,7 +37,7 @@ public class DeutscheAccountService implements AccountService {
                     .fromUriString(accountUrl)
                     .queryParam("iban", iban);
             return accountRetrieval.processRequest(accessToken, uriBuilder.toUriString());
-        } catch (TokenFetchException e) {
+        } catch (TokenFetchException e){
             return "Token negotiation failed. Application clearance might have expired";
         }
     }

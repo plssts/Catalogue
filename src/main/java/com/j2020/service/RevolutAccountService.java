@@ -25,18 +25,18 @@ public class RevolutAccountService implements AccountService {
         try {
             String OAuthToken = tokenRenewal.getNewToken(OAuthJWT);
             return accountRetrieval.processRequest(OAuthToken, accountUrl);
-        } catch (TokenFetchException e) {
+        } catch (TokenFetchException e){
             return "Token negotiation failed. Application clearance might have expired";
         }
     }
 
     @Override
-    public String retrieveSpecificAccount(String account) {
+    public String retrieveSpecificAccount(String account){
         try {
             String OAuthToken = tokenRenewal.getNewToken(OAuthJWT);
             UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(accountUrl).pathSegment(account);
             return accountRetrieval.processRequest(OAuthToken, uriBuilder.toUriString());
-        } catch (TokenFetchException e) {
+        } catch (TokenFetchException e){
             return "Token negotiation failed. Application clearance might have expired";
         }
     }
