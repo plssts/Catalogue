@@ -3,8 +3,6 @@ package com.j2020.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.j2020.model.DeutscheAccountData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +20,11 @@ public class DeutscheService implements AccountService {
     @Value("${deutscheTokenRenewal.OAuthToken}")
     private String OAuthToken;
 
-    @Override
-    public String retrieveAccountData() {
-        String url = "https://simulator-api.db.com/gw/dbapi/v1/cashAccounts";
+    @Value("${deutscheAccount.accountUrl}")
+    private String accountUrl;
 
+    @Override
+    public String retrieveAccountData(){
         // TODO only request a new token if the current one is broken
         String accessToken = tokenRenewal.getNewToken(OAuthToken);
 
@@ -40,7 +39,11 @@ public class DeutscheService implements AccountService {
         beautifier.enable(SerializationFeature.INDENT_OUTPUT);
 
         try {
-            response = template.exchange(url, HttpMethod.GET, new HttpEntity(headers), String.class);
+            response = template.exchange(accountUrl,
+                    HttpMethod.GET,
+                    new HttpEntity(headers),
+                    String.class);
+
             accounts = beautifier.readValue(response.getBody(), DeutscheAccountData[].class);
             return beautifier.writerWithDefaultPrettyPrinter().writeValueAsString(accounts);
         } catch(JsonProcessingException | HttpClientErrorException ex){

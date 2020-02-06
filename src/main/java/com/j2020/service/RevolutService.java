@@ -22,10 +22,11 @@ public class RevolutService implements AccountService {
     @Value("${revolutTokenRenewal.OAuthJWT}")
     private String OAuthJWT;
 
+    @Value("${revolutAccount.accountUrl}")
+    private String accountUrl;
+
     @Override
     public String retrieveAccountData(){
-        String url = "https://sandbox-b2b.revolut.com/api/1.0/accounts";
-
         // TODO only request a new token if the current one is broken
         String OAuthToken = tokenRenewal.getNewToken(OAuthJWT);
 
@@ -37,7 +38,11 @@ public class RevolutService implements AccountService {
         RevolutAccountData[] accounts;
         ObjectMapper beautifier = new ObjectMapper();
         try {
-            response = template.exchange(url, HttpMethod.GET, new HttpEntity(headers), String.class);
+            response = template.exchange(accountUrl,
+                    HttpMethod.GET,
+                    new HttpEntity(headers),
+                    String.class);
+
             accounts = beautifier.readValue(response.getBody(), RevolutAccountData[].class);
             return beautifier.writerWithDefaultPrettyPrinter().writeValueAsString(accounts);
         } catch(JsonProcessingException | HttpClientErrorException ex){
