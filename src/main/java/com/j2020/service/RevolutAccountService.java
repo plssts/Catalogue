@@ -13,9 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
-public class RevolutService implements AccountService {
+public class RevolutAccountService implements AccountService {
     @Autowired
     private RevolutRenewalService tokenRenewal;
 
@@ -45,6 +46,35 @@ public class RevolutService implements AccountService {
 
             accounts = beautifier.readValue(response.getBody(), RevolutAccountData[].class);
             return beautifier.writerWithDefaultPrettyPrinter().writeValueAsString(accounts);
+        } catch(JsonProcessingException | HttpClientErrorException ex){
+            ex.printStackTrace();
+            return "An error has occurred.";
+        }
+    }
+
+    @Override
+    public String retrieveSpecificAccount(String account) {
+        // TODO fix token regen the same way as above
+        String OAuthToken = tokenRenewal.getNewToken(OAuthJWT);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + OAuthToken);
+
+        RestTemplate template = new RestTemplateBuilder().build();
+        ResponseEntity<String> response;
+        RevolutAccountData singleAccount;
+        ObjectMapper beautifier = new ObjectMapper();
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(accountUrl).pathSegment(account);
+
+        try {
+            response = template.exchange(uriBuilder.toUriString(),
+                    HttpMethod.GET,
+                    new HttpEntity(headers),
+                    String.class);
+
+            singleAccount = beautifier.readValue(response.getBody(), RevolutAccountData.class);
+            return beautifier.writerWithDefaultPrettyPrinter().writeValueAsString(singleAccount);
         } catch(JsonProcessingException | HttpClientErrorException ex){
             ex.printStackTrace();
             return "An error has occurred.";

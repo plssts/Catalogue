@@ -3,17 +3,16 @@ package com.j2020.service;
 import com.j2020.Bank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @Service
 public class BankingService {
     @Autowired
-    private RevolutService revService;
+    private RevolutAccountService revService;
 
     @Autowired
-    private DeutscheService dbService;
+    private DeutscheAccountService dbService;
 
-    public AccountService retrieveAccountService(@PathVariable Bank bankingService){
+    public AccountService retrieveAccountService(Bank bankingService){
         switch (bankingService){
             case REVOLUT:
                 return revService;

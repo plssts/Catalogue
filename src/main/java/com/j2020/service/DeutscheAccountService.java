@@ -11,9 +11,10 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
-public class DeutscheService implements AccountService {
+public class DeutscheAccountService implements AccountService {
     @Autowired
     private DeutscheRenewalService tokenRenewal;
 
@@ -30,13 +31,13 @@ public class DeutscheService implements AccountService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        //headers.setContentType(MediaType.APPLICATION_JSON);
 
         RestTemplate template = new RestTemplateBuilder().build();
         ResponseEntity<String> response;
         DeutscheAccountData[] accounts;
         ObjectMapper beautifier = new ObjectMapper();
-        beautifier.enable(SerializationFeature.INDENT_OUTPUT);
+        //beautifier.enable(SerializationFeature.INDENT_OUTPUT);
 
         try {
             response = template.exchange(accountUrl,
@@ -47,6 +48,39 @@ public class DeutscheService implements AccountService {
             accounts = beautifier.readValue(response.getBody(), DeutscheAccountData[].class);
             return beautifier.writerWithDefaultPrettyPrinter().writeValueAsString(accounts);
         } catch(JsonProcessingException | HttpClientErrorException ex){
+            ex.printStackTrace();
+            return "An error has occurred.";
+        }
+    }
+
+    public String retrieveSpecificAccount(String iban){
+        // TODO fix token regen the same way as above
+        String accessToken = tokenRenewal.getNewToken(OAuthToken);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + accessToken);
+        //headers.setContentType(MediaType.APPLICATION_JSON);
+
+        RestTemplate template = new RestTemplateBuilder().build();
+        ResponseEntity<String> response;
+        DeutscheAccountData[] accounts;
+        ObjectMapper beautifier = new ObjectMapper();
+        //beautifier.enable(SerializationFeature.INDENT_OUTPUT);
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder
+                .fromUriString(accountUrl)
+                .queryParam("iban", iban);
+
+        try {
+            response = template.exchange(uriBuilder.toUriString(),
+                    HttpMethod.GET,
+                    new HttpEntity(headers),
+                    String.class);
+
+            accounts = beautifier.readValue(response.getBody(), DeutscheAccountData[].class);
+            return beautifier.writerWithDefaultPrettyPrinter().writeValueAsString(accounts);
+        } catch(JsonProcessingException | HttpClientErrorException ex){
+            ex.printStackTrace();
             return "An error has occurred.";
         }
     }

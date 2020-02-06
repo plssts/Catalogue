@@ -3,7 +3,7 @@ package com.j2020.model;
 import lombok.Data;
 
 @Data
-public class AccessTokenDeutscheRenewalResponse {
+public class AccessTokenDeutscheRenewalResponse implements TokenRenewalResponse {
     private String access_token;
     private String token_type;
     private String refresh_token;

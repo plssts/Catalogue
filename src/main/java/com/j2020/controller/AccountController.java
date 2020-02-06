@@ -5,6 +5,8 @@ import com.j2020.service.BankingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 public class AccountController {
     @Autowired
@@ -15,8 +17,17 @@ public class AccountController {
         return service.retrieveAccountService(Bank.REVOLUT).retrieveAccountData();
     }
 
+    @GetMapping("/revolut/{accountId}")
+    public String readSpecificRevoAccount(@PathVariable String accountId){
+        return service.retrieveAccountService(Bank.REVOLUT).retrieveSpecificAccount(accountId);
+    }
+
     @GetMapping("/deutsche")
-    public String readDeutAccount(){
-        return service.retrieveAccountService(Bank.DEUTSCHE).retrieveAccountData();
+    public String readDeutAccount(@RequestParam(required = false) Map<String, String> params){
+        if (params.containsKey("iban")){
+            return service.retrieveAccountService(Bank.DEUTSCHE).retrieveSpecificAccount(params.get("iban"));
+        } else {
+            return service.retrieveAccountService(Bank.DEUTSCHE).retrieveAccountData();
+        }
     }
 }

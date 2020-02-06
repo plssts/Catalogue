@@ -1,19 +1,18 @@
 package com.j2020.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.j2020.model.AccessTokenRevolutRenewalResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 public class RevolutRenewalService implements TokenRenewalService {
+    @Autowired
+    private TokenRequestRetrievalService tokenRetrieval;
+
     @Value("${revolutTokenRenewal.revoTokenRenewalUri}")
     private String revoTokenRenewalUri;
 
@@ -34,23 +33,8 @@ public class RevolutRenewalService implements TokenRenewalService {
         params.add("client_assertion_type", clAssertType);
         params.add("client_assertion", OAuthJWT);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-        RestTemplate template = new RestTemplateBuilder().build();
-        ResponseEntity<String> response;
-        try {
-            response = template.postForEntity(revoTokenRenewalUri,
-                    request,
-                    String.class);
-
-            return new ObjectMapper()
-                    .readValue(response.getBody(), AccessTokenRevolutRenewalResponse.class)
-                    .getAccessToken();
-        } catch(JsonProcessingException | HttpClientErrorException ex){
-            ex.printStackTrace();
-            return "";
-        }
+        return tokenRetrieval.processRequest(params,
+                revoTokenRenewalUri,
+                new TypeReference<AccessTokenRevolutRenewalResponse>(){});
     }
 }
