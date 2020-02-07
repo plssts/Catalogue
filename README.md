@@ -6,8 +6,6 @@ The endpoints are used as
 
 `GET /revolut[/accountId]` and 
 
-`GET /deutsche[?iban=iban]` accordingly.
-
-__(Note the path vs query parameter difference)__
+`GET /deutsche[/iban]` accordingly.
 
 Navigate to the index page `/` to see this text.

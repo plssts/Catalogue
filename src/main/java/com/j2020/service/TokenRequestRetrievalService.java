@@ -1,3 +1,7 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,6 +39,7 @@ public class TokenRequestRetrievalService {
             return new ObjectMapper()
                     .readValue(response.getBody(), reference)
                     .getAccessToken();
+
         } catch (JsonProcessingException | HttpClientErrorException ex){
             ex.printStackTrace();
             throw new TokenFetchException();

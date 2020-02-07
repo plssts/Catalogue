@@ -1,3 +1,7 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.controller;
 
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -20,6 +24,7 @@ public class HomeController implements ErrorController {
             Markdown mark = new Markdown();
             mark.transform(file, writer);
             return writer.toString();
+
         } catch (FileNotFoundException | ParseException ex){
             return "Issues with README. Please refer to " +
                     "https://github.com/plssts/Java2020/blob/Uzd2/README.md";

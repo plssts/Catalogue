@@ -1,3 +1,7 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.service;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -25,8 +29,7 @@ public class AccountRequestRetrievalService {
 
             return response.getBody();
         } catch (HttpClientErrorException ex){
-            ex.printStackTrace();
-            return "Failed to retrieve accounts.";
+            throw ex;
         }
     }
 }

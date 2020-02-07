@@ -1,32 +1,37 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.controller;
 
 import com.j2020.Bank;
 import com.j2020.service.BankingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import java.util.Map;
 
 @RestController
 public class AccountController {
     @Autowired
     private BankingService service;
 
-    @GetMapping("/revolut")
+    @GetMapping(value="/revolut", produces=MediaType.APPLICATION_JSON_VALUE)
     public String readRevoAccount(){
         return service.retrieveAccountService(Bank.REVOLUT).retrieveAccountData();
     }
 
-    @GetMapping("/revolut/{accountId}")
+    @GetMapping(value="/revolut/{accountId}", produces=MediaType.APPLICATION_JSON_VALUE)
     public String readSpecificRevoAccount(@PathVariable String accountId){
         return service.retrieveAccountService(Bank.REVOLUT).retrieveSpecificAccount(accountId);
     }
 
-    @GetMapping("/deutsche")
-    public String readDeutAccount(@RequestParam(required = false) Map<String, String> params){
-        if (params.containsKey("iban")){
-            return service.retrieveAccountService(Bank.DEUTSCHE).retrieveSpecificAccount(params.get("iban"));
-        } else {
-            return service.retrieveAccountService(Bank.DEUTSCHE).retrieveAccountData();
-        }
+    @GetMapping(value="/deutsche", produces=MediaType.APPLICATION_JSON_VALUE)
+    public String readDeutAccount(){
+        return service.retrieveAccountService(Bank.DEUTSCHE).retrieveAccountData();
+    }
+
+    @GetMapping(value="/deutsche/{iban}", produces=MediaType.APPLICATION_JSON_VALUE)
+    public String readSpecificDeutAccount(@PathVariable String iban){
+        return service.retrieveAccountService(Bank.DEUTSCHE).retrieveSpecificAccount(iban);
     }
 }

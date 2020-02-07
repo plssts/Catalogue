@@ -1,3 +1,7 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.service;
 
 public interface AccountService {
