@@ -5,6 +5,7 @@
 package com.j2020.service;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -15,7 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class AccountRequestRetrievalService {
-    public String processRequest(String token, String url){
+    public List<Account> processRequest(String token, String url){
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
 
@@ -25,7 +26,8 @@ public class AccountRequestRetrievalService {
             response = template.exchange(url,
                     HttpMethod.GET,
                     new HttpEntity(headers),
-                    String.class);
+                    new ParameterizedTypeReference<List<Account>>() {
+                    });
 
             return response.getBody();
         } catch (HttpClientErrorException ex){

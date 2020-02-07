@@ -23,23 +23,23 @@ public class DeutscheAccountService implements AccountService {
     private String accountUrl;
 
     @Override
-    public String retrieveAccountData(){
+    public String retrieveAccountData() {
         try {
             String accessToken = tokenRenewal.getToken();
             return accountRetrieval.processRequest(accessToken, accountUrl);
 
-        } catch (HttpClientErrorException ex){
+        } catch (HttpClientErrorException ex) {
             try {
                 tokenRenewal.refreshToken();
                 return "Access token has been refreshed. Reload this page.";
 
-            } catch (TokenFetchException e){
+            } catch (TokenFetchException e) {
                 return "Token negotiation failed. Application clearance might have expired";
             }
         }
     }
 
-    public String retrieveSpecificAccount(String iban){
+    public List<Account> retrieveSpecificAccount(String iban) {
         try {
             String accessToken = tokenRenewal.getToken();
             UriComponentsBuilder uriBuilder = UriComponentsBuilder
@@ -47,12 +47,12 @@ public class DeutscheAccountService implements AccountService {
                     .queryParam("iban", iban);
             return accountRetrieval.processRequest(accessToken, uriBuilder.toUriString());
 
-        } catch (HttpClientErrorException ex){
+        } catch (HttpClientErrorException ex) {
             try {
                 tokenRenewal.refreshToken();
                 return "Access token has been refreshed. Reload this page.";
 
-            } catch (TokenFetchException e){
+            } catch (TokenFetchException e) {
                 return "Token negotiation failed. Application clearance might have expired";
             }
         }

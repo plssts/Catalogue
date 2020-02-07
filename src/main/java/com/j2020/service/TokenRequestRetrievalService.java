@@ -21,9 +21,9 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class TokenRequestRetrievalService {
-    public String processRequest(MultiValueMap<String, String> params,
-                                 String uri,
-                                 TypeReference<? extends TokenRenewalResponse> reference) throws TokenFetchException {
+    public String retrieveToken(MultiValueMap<String, String> params,
+                                String uri,
+                                TypeReference<? extends TokenRenewalResponse> reference) throws TokenFetchException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
@@ -32,15 +32,13 @@ public class TokenRequestRetrievalService {
         ResponseEntity<String> response;
 
         try {
-            response = template.postForEntity(uri,
-                    request,
-                    String.class);
+            response = template.postForEntity(uri, request, String.class);
 
             return new ObjectMapper()
                     .readValue(response.getBody(), reference)
                     .getAccessToken();
 
-        } catch (JsonProcessingException | HttpClientErrorException ex){
+        } catch (JsonProcessingException | HttpClientErrorException ex) {
             ex.printStackTrace();
             throw new TokenFetchException();
         }

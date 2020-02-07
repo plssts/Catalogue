@@ -5,7 +5,7 @@
 package com.j2020.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.j2020.model.AccessTokenDeutscheRenewalResponse;
+import com.j2020.model.DeutscheTokenRenewalResponse;
 import com.j2020.model.TokenFetchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,15 +41,16 @@ public class DeutscheTokenService implements TokenService {
     }
 
     public void refreshToken() throws TokenFetchException {
-        currentToken = tokenRetrieval.processRequest(params,
+        currentToken = tokenRetrieval.retrieveToken(params,
                 deutTokenRenewalUri,
-                new TypeReference<AccessTokenDeutscheRenewalResponse>(){});
+                new TypeReference<DeutscheTokenRenewalResponse>(){});
     }
 
     @PostConstruct
     private void init(){
         try {
             params = new LinkedMultiValueMap<>();
+            params.add("client_id", deutClientId);
             params.add("client_id", deutClientId);
             params.add("client_secret", deutClientSecret);
             params.add("grant_type", "refresh_token");
