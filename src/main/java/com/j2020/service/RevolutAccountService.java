@@ -5,7 +5,6 @@
 package com.j2020.service;
 
 import com.j2020.model.TokenFetchException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -13,14 +12,17 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class RevolutAccountService implements AccountService {
-    @Autowired
     private RevolutTokenService tokenRenewal;
-
-    @Autowired
     private AccountRequestRetrievalService accountRetrieval;
 
     @Value("${revolutAccount.accountUrl}")
     private String accountUrl;
+
+    public RevolutAccountService(RevolutTokenService tokenRenewal,
+                                 AccountRequestRetrievalService accountRetrieval) {
+        this.tokenRenewal = tokenRenewal;
+        this.accountRetrieval = accountRetrieval;
+    }
 
     @Override
     public String retrieveAccountData(){

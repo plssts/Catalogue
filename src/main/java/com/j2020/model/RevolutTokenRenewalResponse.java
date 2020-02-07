@@ -4,14 +4,16 @@
 
 package com.j2020.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 
 public class RevolutTokenRenewalResponse implements TokenRenewalResponse {
-    @JsonProperty(value = )
+    @JsonProperty(value = "access_token")
     private String accessToken;
+
+    @JsonProperty(value = "token_type")
     private String tokenType;
+
+    @JsonProperty(value = "expires_in")
     private int secondsUntilExpiring;
 
     @Override

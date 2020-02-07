@@ -7,7 +7,6 @@ package com.j2020.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.j2020.model.RevolutTokenRenewalResponse;
 import com.j2020.model.TokenFetchException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -17,8 +16,9 @@ import javax.annotation.PostConstruct;
 
 @Service
 public class RevolutTokenService implements TokenService {
-    @Autowired
     private TokenRequestRetrievalService tokenRetrieval;
+    private String currentToken;
+    private static MultiValueMap<String, String> PARAM_MAP = new LinkedMultiValueMap<>();
 
     @Value("${revolutTokenRenewal.revoTokenRenewalUri}")
     private String revoTokenRenewalUri;
@@ -35,10 +35,6 @@ public class RevolutTokenService implements TokenService {
     @Value("${revolutTokenRenewal.OAuthJWT}")
     private String OAuthJWT;
 
-    private String currentToken;
-
-    private static MultiValueMap<String, String> PARAM_MAP = new LinkedMultiValueMap<>();
-
     static {
         params.add("grant_type", "refresh_token");
         params.add("refresh_token", revoRefreshToken);
@@ -47,7 +43,9 @@ public class RevolutTokenService implements TokenService {
         params.add("client_assertion", OAuthJWT);
     }
 
-
+    public RevolutTokenService(TokenRequestRetrievalService tokenRetrieval) {
+        this.tokenRetrieval = tokenRetrieval;
+    }
 
     public String getToken(){
         return currentToken;

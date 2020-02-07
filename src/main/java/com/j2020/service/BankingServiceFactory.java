@@ -5,21 +5,17 @@
 package com.j2020.service;
 
 import com.j2020.model.Bank;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BankingServiceFactory {
-    @Autowired
     private RevolutAccountService revService;
+    private DeutscheAccountService dbService;
 
     public BankingServiceFactory(RevolutAccountService revService, DeutscheAccountService dbService) {
         this.revService = revService;
         this.dbService = dbService;
     }
-
-    @Autowired
-    private DeutscheAccountService dbService;
 
     public AccountService retrieveAccountService(Bank bankingService){
         switch (bankingService){
