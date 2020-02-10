@@ -11,5 +11,4 @@ import java.util.Optional;
 
 public interface AccountService {
     List<? extends Account> retrieveAccountData(Optional<String> specificAccount);
-    //Account retrieveSpecificAccount (String account) throws TokenFetchException;
 }

@@ -1,6 +1,6 @@
 package com.j2020.model;
 
-public class DeutscheAccount extends Account {
+public class DeutscheAccount implements Account {
     private String iban;
     private String currencyCode;
     private String bic;

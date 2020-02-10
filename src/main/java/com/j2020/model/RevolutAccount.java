@@ -2,7 +2,7 @@ package com.j2020.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class RevolutAccount extends Account {
+public class RevolutAccount implements Account {
     private String id;
     private String name;
     private Float balance;
