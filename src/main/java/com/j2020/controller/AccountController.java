@@ -25,23 +25,21 @@ public class AccountController {
         this.bankingService = bankingService;
     }
 
-    @GetMapping({"/{bank}/accounts/{id}", "/{bank}/accounts"})
-    public ResponseEntity<List<? extends Account>> readAccounts(@PathVariable String bank, @PathVariable(required = false) String id) {
+    @GetMapping({"/{bank}/accounts/{accountId}", "/{bank}/accounts"})
+    public ResponseEntity<List<? extends Account>> readAccounts(@PathVariable String bank, @PathVariable(required = false) String accountId) {
         List<? extends Account> accounts = null;
 
-        if (!StringUtils.isAllBlank(id)) {
-            Optional<String> str = Optional.of(id);
-            accounts = bankingService.retrieveAccountService(Bank.valueOf(StringUtils.upperCase(bank))).retrieveAccountData(str);
+        if (!StringUtils.isAllBlank(accountId)) {
+            accounts = bankingService.retrieveAccountService(Bank.valueOf(StringUtils.upperCase(bank))).retrieveAccountData(Optional.of(accountId));
         } else {
-            Optional<String> str = Optional.ofNullable(null);
-            accounts = bankingService.retrieveAccountService(Bank.valueOf(StringUtils.upperCase(bank))).retrieveAccountData(str);
+            accounts = bankingService.retrieveAccountService(Bank.valueOf(StringUtils.upperCase(bank))).retrieveAccountData(Optional.ofNullable(null));
         }
 
         return ok(accounts);
     }
 
-    @GetMapping({"/{bank}/transfers/{id}", "/{bank}/transfers"})
-    public ResponseEntity<String> readTransfers(@PathVariable String bank, @PathVariable(required = false) String id) {
+    @GetMapping({"/{bank}/transfers/{transferId}", "/{bank}/transfers"})
+    public ResponseEntity<String> readTransfers(@PathVariable String bank, @PathVariable(required = false) String transferId) {
         return new ResponseEntity<>("To be implemented", HttpStatus.NOT_IMPLEMENTED);
     }
 }

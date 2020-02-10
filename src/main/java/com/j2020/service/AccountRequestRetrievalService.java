@@ -32,12 +32,12 @@ public class AccountRequestRetrievalService {
             response = template.exchange(url, HttpMethod.GET, new HttpEntity(headers), String.class);
 
             String content = response.getBody();
-            StringBuilder sb = new StringBuilder(content);
+            StringBuilder builder = new StringBuilder(content);
             if (!content.startsWith("[")) {
-                sb.insert(0, "[").append("]");
+                builder.insert(0, "[").append("]");
             }
 
-            return new ObjectMapper().readValue(sb.toString(), reference);
+            return new ObjectMapper().readValue(builder.toString(), reference);
         } catch (JsonProcessingException | HttpClientErrorException ex) {
             throw new TokenFetchException();
         }
