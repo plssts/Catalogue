@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +40,7 @@ public class DeutscheAccountService implements AccountService {
             JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, DeutscheAccount.class);
             UriComponentsBuilder uriBuilder;
 
-            if (specificAccount.isPresent()){
+            if (specificAccount.isPresent()) {
                 uriBuilder = UriComponentsBuilder.fromUriString(accountUrl).queryParam("iban", specificAccount.get());
                 return accountRetrieval.retrieveAccounts(accessToken, uriBuilder.toUriString(), type);
             } else {

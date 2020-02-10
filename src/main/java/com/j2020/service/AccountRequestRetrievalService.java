@@ -17,30 +17,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
 import java.util.List;
 
 @Service
 public class AccountRequestRetrievalService {
-    public List<? extends Account> retrieveAccounts(String token, String url, JavaType reference){
+    public List<? extends Account> retrieveAccounts(String token, String url, JavaType reference) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
 
         RestTemplate template = new RestTemplateBuilder().build();
         ResponseEntity<String> response;
         try {
-            response = template.exchange(url,
-                    HttpMethod.GET,
-                    new HttpEntity(headers),
-                    String.class);
+            response = template.exchange(url, HttpMethod.GET, new HttpEntity(headers), String.class);
 
             String content = response.getBody();
             StringBuilder sb = new StringBuilder(content);
-            if (!content.startsWith("[")){
+            if (!content.startsWith("[")) {
                 sb.insert(0, "[").append("]");
             }
 
             return new ObjectMapper().readValue(sb.toString(), reference);
-        } catch (JsonProcessingException | HttpClientErrorException ex){
+        } catch (JsonProcessingException | HttpClientErrorException ex) {
             throw new TokenFetchException();
         }
     }

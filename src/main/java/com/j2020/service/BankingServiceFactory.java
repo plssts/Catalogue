@@ -19,8 +19,8 @@ public class BankingServiceFactory {
         this.dbService = dbService;
     }
 
-    public AccountService retrieveAccountService(Bank bankingService){
-        switch (bankingService){
+    public AccountService retrieveAccountService(Bank bankingService) {
+        switch (bankingService) {
             case REVOLUT:
                 return revService;
 

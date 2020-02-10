@@ -5,7 +5,7 @@
 package com.j2020.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.model.TokenFetchException;
 import com.j2020.model.TokenRenewalResponse;
@@ -21,9 +21,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class TokenRequestRetrievalService {
-    public TokenRenewalResponse retrieveToken(MultiValueMap<String, String> params,
-                                              String uri,
-                                              TypeReference<? extends TokenRenewalResponse> reference) {
+    public TokenRenewalResponse retrieveToken(MultiValueMap<String, String> params, String uri, JavaType reference) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
@@ -34,8 +32,7 @@ public class TokenRequestRetrievalService {
         try {
             response = template.postForEntity(uri, request, String.class);
 
-            return new ObjectMapper()
-                    .readValue(response.getBody(), reference);
+            return new ObjectMapper().readValue(response.getBody(), reference);
 
         } catch (JsonProcessingException | HttpClientErrorException ex) {
             ex.printStackTrace();

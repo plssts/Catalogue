@@ -4,15 +4,17 @@
 
 package com.j2020.service.revolut;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.j2020.model.deutsche.DeutscheTokenRenewalResponse;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.model.TokenRenewalResponse;
+import com.j2020.model.revolut.RevolutTokenRenewalResponse;
 import com.j2020.service.TokenRequestRetrievalService;
 import com.j2020.service.TokenService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 
@@ -44,20 +46,18 @@ public class RevolutTokenService implements TokenService {
     }
 
     public String getToken() {
-        if (lastRefreshDayTime.plusSeconds(tokenValidFor).isBefore(LocalDateTime.now())){
+        if (lastRefreshDayTime.plusSeconds(tokenValidFor).isBefore(LocalDateTime.now())) {
             refreshToken();
         }
         return currentToken;
     }
 
-    public void refreshToken(){
-        TokenRenewalResponse renewalResponse = tokenRetrieval.retrieveToken(params,
-                revoTokenRenewalUri,
-                new TypeReference<DeutscheTokenRenewalResponse>(){});
+    public void refreshToken() {
+        JavaType type = new ObjectMapper().getTypeFactory().constructType(RevolutTokenRenewalResponse.class);
+        TokenRenewalResponse renewalResponse = tokenRetrieval.retrieveToken(params, revoTokenRenewalUri, type);
 
         currentToken = renewalResponse.getAccessToken();
         tokenValidFor = renewalResponse.getSecondsUntilExpiring();
-
         lastRefreshDayTime = LocalDateTime.now();
     }
 

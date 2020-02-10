@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -33,20 +34,20 @@ public class RevolutAccountService implements AccountService {
     }
 
     @Override
-    public List<? extends Account> retrieveAccountData(Optional<String> specificAccount){
+    public List<? extends Account> retrieveAccountData(Optional<String> specificAccount) {
         try {
             String OAuthToken = tokenRenewal.getToken();
             JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, RevolutAccount.class);
             UriComponentsBuilder uriBuilder;
 
-            if (specificAccount.isPresent()){
+            if (specificAccount.isPresent()) {
                 uriBuilder = UriComponentsBuilder.fromUriString(accountUrl).pathSegment(specificAccount.get());
 
                 return accountRetrieval.retrieveAccounts(OAuthToken, uriBuilder.toUriString(), type);
             } else {
                 return accountRetrieval.retrieveAccounts(OAuthToken, accountUrl, type);
             }
-        } catch (HttpClientErrorException ex){
+        } catch (HttpClientErrorException ex) {
             throw new TokenFetchException();
         }
     }
