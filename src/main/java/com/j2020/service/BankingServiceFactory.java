@@ -5,6 +5,8 @@
 package com.j2020.service;
 
 import com.j2020.model.Bank;
+import com.j2020.service.deutsche.DeutscheAccountService;
+import com.j2020.service.revolut.RevolutAccountService;
 import org.springframework.stereotype.Service;
 
 @Service

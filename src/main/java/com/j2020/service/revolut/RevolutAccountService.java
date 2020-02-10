@@ -2,18 +2,19 @@
  * @author Paulius Staisiunas
  */
 
-package com.j2020.service;
+package com.j2020.service.revolut;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.model.Account;
-import com.j2020.model.RevolutAccount;
+import com.j2020.model.revolut.RevolutAccount;
 import com.j2020.model.TokenFetchException;
+import com.j2020.service.AccountRequestRetrievalService;
+import com.j2020.service.AccountService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -38,9 +39,7 @@ public class RevolutAccountService implements AccountService {
             JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, RevolutAccount.class);
             UriComponentsBuilder uriBuilder;
 
-            System.out.println("gonna check if anything is present");
             if (specificAccount.isPresent()){
-                System.out.println("needed specific amount: " + specificAccount.toString());
                 uriBuilder = UriComponentsBuilder.fromUriString(accountUrl).pathSegment(specificAccount.get());
 
                 return accountRetrieval.retrieveAccounts(OAuthToken, uriBuilder.toUriString(), type);
@@ -48,7 +47,7 @@ public class RevolutAccountService implements AccountService {
                 return accountRetrieval.retrieveAccounts(OAuthToken, accountUrl, type);
             }
         } catch (HttpClientErrorException ex){
-            throw new RuntimeException();
+            throw new TokenFetchException();
         }
     }
 }

@@ -14,8 +14,6 @@ import org.tautua.markdownpapers.parser.ParseException;
 import java.io.*;
 import static org.springframework.http.ResponseEntity.ok;
 
-// FIXME I don't recall this being reviewed on Friday?
-
 @RestController
 public class HomeController implements ErrorController {
     @GetMapping("/")

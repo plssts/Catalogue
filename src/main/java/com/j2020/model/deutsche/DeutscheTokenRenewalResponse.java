@@ -2,12 +2,11 @@
  * @author Paulius Staisiunas
  */
 
-package com.j2020.model;
+package com.j2020.model.deutsche;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import com.j2020.model.TokenRenewalResponse;
 
-@Data
 public class DeutscheTokenRenewalResponse implements TokenRenewalResponse {
     @JsonProperty(value = "access_token")
     private String accessToken;

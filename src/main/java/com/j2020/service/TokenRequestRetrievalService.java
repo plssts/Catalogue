@@ -22,8 +22,8 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class TokenRequestRetrievalService {
     public TokenRenewalResponse retrieveToken(MultiValueMap<String, String> params,
-                                String uri,
-                                TypeReference<? extends TokenRenewalResponse> reference) throws TokenFetchException {
+                                              String uri,
+                                              TypeReference<? extends TokenRenewalResponse> reference) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 

@@ -2,18 +2,17 @@
  * @author Paulius Staisiunas
  */
 
-package com.j2020.service;
+package com.j2020.service.revolut;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.j2020.model.DeutscheTokenRenewalResponse;
-import com.j2020.model.RevolutTokenRenewalResponse;
-import com.j2020.model.TokenFetchException;
+import com.j2020.model.deutsche.DeutscheTokenRenewalResponse;
 import com.j2020.model.TokenRenewalResponse;
+import com.j2020.service.TokenRequestRetrievalService;
+import com.j2020.service.TokenService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 
@@ -51,7 +50,7 @@ public class RevolutTokenService implements TokenService {
         return currentToken;
     }
 
-    public void refreshToken() throws TokenFetchException {
+    public void refreshToken(){
         TokenRenewalResponse renewalResponse = tokenRetrieval.retrieveToken(params,
                 revoTokenRenewalUri,
                 new TypeReference<DeutscheTokenRenewalResponse>(){});
@@ -64,19 +63,11 @@ public class RevolutTokenService implements TokenService {
 
     @PostConstruct
     private void init() {
-        try {
-            System.out.println("post construct of revolut token");
-            params.add("grant_type", "refresh_token");
-            params.add("refresh_token", revoRefreshToken);
-            params.add("client_id", revoClientId);
-            params.add("client_assertion_type", clAssertType);
-            params.add("client_assertion", OAuthJWT);
-            refreshToken();
-
-        } catch (TokenFetchException ex) {
-            System.out.println("post construct failed");
-            ex.printStackTrace();
-            throw new RuntimeException("Token negotiation failed. Application clearance might have expired");
-        }
+        params.add("grant_type", "refresh_token");
+        params.add("refresh_token", revoRefreshToken);
+        params.add("client_id", revoClientId);
+        params.add("client_assertion_type", clAssertType);
+        params.add("client_assertion", OAuthJWT);
+        refreshToken();
     }
 }

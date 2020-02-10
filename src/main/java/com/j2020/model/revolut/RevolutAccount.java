@@ -1,6 +1,7 @@
-package com.j2020.model;
+package com.j2020.model.revolut;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.j2020.model.Account;
 
 public class RevolutAccount implements Account {
     private String id;

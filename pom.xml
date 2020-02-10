@@ -48,14 +48,6 @@
 			<artifactId>jackson-core</artifactId>
 		</dependency>
 
-		<!-- @Data auto getters and setters -->
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.16.22</version>
-			<scope>provided</scope>
-		</dependency>
-
 		<!-- markdown parser -->
 		<dependency>
 			<groupId>org.tautua.markdownpapers</groupId>

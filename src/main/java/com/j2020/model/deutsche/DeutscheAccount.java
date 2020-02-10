@@ -1,4 +1,6 @@
-package com.j2020.model;
+package com.j2020.model.deutsche;
+
+import com.j2020.model.Account;
 
 public class DeutscheAccount implements Account {
     private String iban;
