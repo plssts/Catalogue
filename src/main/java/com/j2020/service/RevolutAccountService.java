@@ -4,11 +4,18 @@
 
 package com.j2020.service;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.j2020.model.Account;
+import com.j2020.model.RevolutAccount;
 import com.j2020.model.TokenFetchException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RevolutAccountService implements AccountService {
@@ -25,34 +32,23 @@ public class RevolutAccountService implements AccountService {
     }
 
     @Override
-    public String retrieveAccountData(){
+    public List<? extends Account> retrieveAccountData(Optional<String> specificAccount){
         try {
             String OAuthToken = tokenRenewal.getToken();
-            return accountRetrieval.processRequest(OAuthToken, accountUrl);
+            JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, RevolutAccount.class);
+            UriComponentsBuilder uriBuilder;
 
-        } catch (HttpClientErrorException ex){
-            try {
-                tokenRenewal.refreshToken();
-                return "Access token has been refreshed. Reload this page.";
+            System.out.println("gonna check if anything is present");
+            if (specificAccount.isPresent()){
+                System.out.println("needed specific amount: " + specificAccount.toString());
+                uriBuilder = UriComponentsBuilder.fromUriString(accountUrl).pathSegment(specificAccount.get());
 
-            } catch (TokenFetchException e){
-                return "Token negotiation failed. Application clearance might have expired";
+                return accountRetrieval.retrieveAccounts(OAuthToken, uriBuilder.toUriString(), type);
+            } else {
+                return accountRetrieval.retrieveAccounts(OAuthToken, accountUrl, type);
             }
-        }
-    }
-
-    @Override
-    public String retrieveSpecificAccount(String account) throws TokenFetchException {
-        try {
-            String OAuthToken = tokenRenewal.getToken();
-            UriComponentsBuilder uriBuilder = UriComponentsBuilder
-                    .fromUriString(accountUrl)
-                    .pathSegment(account);
-            return accountRetrieval.processRequest(OAuthToken, uriBuilder.toUriString());
-
         } catch (HttpClientErrorException ex){
-                tokenRenewal.refreshToken();
-                return "Access token has been refreshed. Reload this page.";
+            throw new RuntimeException();
         }
     }
 }

@@ -33,7 +33,7 @@ public class RevolutTokenRenewalResponse implements TokenRenewalResponse {
         this.tokenType = tokenType;
     }
 
-    public int getSecondsUntilExpiring() {
+    public long getSecondsUntilExpiring() {
         return secondsUntilExpiring;
     }
 

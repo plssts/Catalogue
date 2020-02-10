@@ -4,11 +4,22 @@
 
 package com.j2020.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.j2020.model.Account;
+import com.j2020.model.DeutscheAccount;
+import com.j2020.model.RevolutTokenRenewalResponse;
 import com.j2020.model.TokenFetchException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
+import java.util.List;
+import java.util.Optional;
+
+import com.j2020.model.DeutscheAccount;
 
 @Service
 public class DeutscheAccountService implements AccountService {
@@ -20,46 +31,30 @@ public class DeutscheAccountService implements AccountService {
     private String accountUrl;
 
     public DeutscheAccountService(DeutscheTokenService tokenRenewal,
-                                  AccountRequestRetrievalService accountRetrieval,
-                                  String accountUrl) {
+                                  AccountRequestRetrievalService accountRetrieval) {
         this.tokenRenewal = tokenRenewal;
         this.accountRetrieval = accountRetrieval;
-        this.accountUrl = accountUrl;
     }
 
     @Override
-    public String retrieveAccountData() {
+    public List<? extends Account> retrieveAccountData(Optional<String> specificAccount) {
         try {
+            System.out.println("Deutshce service retrieving");
             String accessToken = tokenRenewal.getToken();
-            return accountRetrieval.processRequest(accessToken, accountUrl);
+            JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, DeutscheAccount.class);
+            UriComponentsBuilder uriBuilder;
 
-        } catch (HttpClientErrorException ex) {
-            try {
-                tokenRenewal.refreshToken();
-                return "Access token has been refreshed. Reload this page.";
-
-            } catch (TokenFetchException e) {
-                return "Token negotiation failed. Application clearance might have expired";
+            System.out.println("Deutsche checking presence");
+            if (specificAccount.isPresent()){
+                System.out.println("specific: " + specificAccount.get());
+                uriBuilder = UriComponentsBuilder.fromUriString(accountUrl).queryParam("iban", specificAccount.get());
+                return accountRetrieval.retrieveAccounts(accessToken, uriBuilder.toUriString(), type);
+            } else {
+                System.out.println("all accounts please");
+                return accountRetrieval.retrieveAccounts(accessToken, accountUrl, type);
             }
-        }
-    }
-
-    public List<Account> retrieveSpecificAccount(String iban) {
-        try {
-            String accessToken = tokenRenewal.getToken();
-            UriComponentsBuilder uriBuilder = UriComponentsBuilder
-                    .fromUriString(accountUrl)
-                    .queryParam("iban", iban);
-            return accountRetrieval.processRequest(accessToken, uriBuilder.toUriString());
-
         } catch (HttpClientErrorException ex) {
-            try {
-                tokenRenewal.refreshToken();
-                return "Access token has been refreshed. Reload this page.";
-
-            } catch (TokenFetchException e) {
-                return "Token negotiation failed. Application clearance might have expired";
-            }
+            throw new RuntimeException();
         }
     }
 }

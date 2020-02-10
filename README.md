@@ -2,10 +2,11 @@
 
 Currently supports Revolut and Deutsche Bank account listing services only.
 
-The endpoints are used as 
+The endpoints are called as:
 
-`GET /revolut[/accountId]` and 
+####Account lists
 
-`GET /deutsche[/iban]` accordingly.
+`GET /revolut/accounts[/accountId]` and 
 
-Navigate to the index page `/` to see this text.
+`GET /deutsche/accounts[/iban]` accordingly.
+

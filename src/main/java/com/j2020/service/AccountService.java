@@ -4,9 +4,12 @@
 
 package com.j2020.service;
 
+import com.j2020.model.Account;
 import com.j2020.model.TokenFetchException;
+import java.util.List;
+import java.util.Optional;
 
 public interface AccountService {
-    String retrieveAccountData();
-    String retrieveSpecificAccount(String account) throws TokenFetchException;
+    List<? extends Account> retrieveAccountData(Optional<String> specificAccount);
+    //Account retrieveSpecificAccount (String account) throws TokenFetchException;
 }

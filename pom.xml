@@ -62,6 +62,13 @@
 			<artifactId>markdownpapers-core</artifactId>
 			<version>1.4.1</version>
 		</dependency>
+
+		<!-- StringUtils -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.9</version>
+		</dependency>
 	</dependencies>
 
 	<build>

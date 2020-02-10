@@ -52,7 +52,8 @@ public class DeutscheTokenRenewalResponse implements TokenRenewalResponse {
         this.refreshToken = refreshToken;
     }
 
-    public int getSecondsUntilExpiring() {
+    @Override
+    public long getSecondsUntilExpiring() {
         return secondsUntilExpiring;
     }
 
