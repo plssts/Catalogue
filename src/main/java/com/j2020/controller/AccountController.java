@@ -30,9 +30,11 @@ public class AccountController {
         List<? extends Account> accounts = null;
 
         if (!StringUtils.isAllBlank(accountId)) {
-            accounts = bankingService.retrieveAccountService(Bank.valueOf(StringUtils.upperCase(bank))).retrieveAccountData(Optional.of(accountId));
+            accounts = bankingService.retrieveAccountService(Bank.valueOf(StringUtils.upperCase(bank)))
+                    .retrieveAccountData(Optional.of(accountId));
         } else {
-            accounts = bankingService.retrieveAccountService(Bank.valueOf(StringUtils.upperCase(bank))).retrieveAccountData(Optional.ofNullable(null));
+            accounts = bankingService.retrieveAccountService(Bank.valueOf(StringUtils.upperCase(bank)))
+                    .retrieveAccountData(Optional.ofNullable(null));
         }
 
         return ok(accounts);
