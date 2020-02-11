@@ -34,8 +34,8 @@ public class TokenRequestRetrievalService {
 
             return new ObjectMapper().readValue(response.getBody(), reference);
 
-        } catch (JsonProcessingException | HttpClientErrorException ex) {
-            ex.printStackTrace();
+        } catch (JsonProcessingException | HttpClientErrorException exception) {
+            exception.printStackTrace();
             throw new TokenFetchException();
         }
     }

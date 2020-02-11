@@ -47,7 +47,7 @@ public class RevolutAccountService implements AccountService {
             } else {
                 return accountRetrieval.retrieveAccounts(OAuthToken, accountUrl, type);
             }
-        } catch (HttpClientErrorException ex) {
+        } catch (HttpClientErrorException exception) {
             throw new TokenFetchException();
         }
     }

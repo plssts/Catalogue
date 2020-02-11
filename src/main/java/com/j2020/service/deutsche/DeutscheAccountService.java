@@ -46,7 +46,7 @@ public class DeutscheAccountService implements AccountService {
             } else {
                 return accountRetrieval.retrieveAccounts(accessToken, accountUrl, type);
             }
-        } catch (HttpClientErrorException ex) {
+        } catch (HttpClientErrorException exception) {
             throw new TokenFetchException();
         }
     }

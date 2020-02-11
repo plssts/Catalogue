@@ -38,7 +38,7 @@ public class AccountRequestRetrievalService {
             }
 
             return new ObjectMapper().readValue(builder.toString(), reference);
-        } catch (JsonProcessingException | HttpClientErrorException ex) {
+        } catch (JsonProcessingException | HttpClientErrorException exception) {
             throw new TokenFetchException();
         }
     }
