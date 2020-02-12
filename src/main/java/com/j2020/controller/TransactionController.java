@@ -26,12 +26,12 @@ public class TransactionController {
     }
 
     @GetMapping("/transactions")
-    public ResponseEntity<Map<Bank, List<? extends Transaction>>> readTransfers() {
-        List<? extends Transaction> transactionsRevo = bankingService.retrieveTransactionService(Bank.REVOLUT).retrieveTransactionData();
+    public ResponseEntity<Map<Bank, List<? extends Transaction>>> readTransactions() {
+        List<? extends Transaction> transactionsRevo = bankingService.retrieveTransactionService(Bank.REVOLUT).retrieveTransactionData(Optional.empty());
 
         List<String> ibans = bankingService.retrieveAccountService(Bank.DEUTSCHE)
                 .retrieveAccountData(Optional.empty()).stream()
-                .map(account -> account.getAccountId()).collect(Collectors.toList());
+                .map(Account::getAccountId).collect(Collectors.toList());
         List<? extends Transaction> transactionsDeut = bankingService.retrieveTransactionService(Bank.DEUTSCHE).retrieveTransactionData(Optional.of(ibans));
 
         Map<Bank, List<? extends Transaction>> ret = new EnumMap<>(Bank.class);
