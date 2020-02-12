@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.j2020.model.Account;
 
 public class RevolutAccount implements Account {
-    private String id;
+    @JsonProperty(value = "id")
+    private String accountId;
+
     private String name;
     private Float balance;
     private String currency;
@@ -19,12 +21,13 @@ public class RevolutAccount implements Account {
     @JsonProperty(value = "updated_at")
     private String dateOfUpdating;
 
-    public String getId() {
-        return id;
+    @Override
+    public String getAccountId() {
+        return accountId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
     }
 
     public String getName() {

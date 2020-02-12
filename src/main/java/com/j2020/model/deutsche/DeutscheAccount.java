@@ -1,21 +1,25 @@
 package com.j2020.model.deutsche;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.j2020.model.Account;
 
 public class DeutscheAccount implements Account {
-    private String iban;
+    @JsonProperty(value = "iban")
+    private String accountId;
+
     private String currencyCode;
     private String bic;
     private String accountType;
     private Float currentBalance;
     private String productDescription;
 
-    public String getIban() {
-        return iban;
+    @Override
+    public String getAccountId() {
+        return accountId;
     }
 
-    public void setIban(String iban) {
-        this.iban = iban;
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
     }
 
     public String getCurrencyCode() {

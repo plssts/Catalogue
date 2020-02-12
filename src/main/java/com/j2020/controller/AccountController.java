@@ -6,14 +6,13 @@ package com.j2020.controller;
 
 import com.j2020.model.Account;
 import com.j2020.model.Bank;
+import com.j2020.model.Transaction;
 import com.j2020.service.BankingServiceFactory;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -25,23 +24,15 @@ public class AccountController {
         this.bankingService = bankingService;
     }
 
-    @GetMapping({"/{bank}/accounts/{accountId}", "/{bank}/accounts"})
-    public ResponseEntity<List<? extends Account>> readAccounts(@PathVariable String bank, @PathVariable(required = false) String accountId) {
-        List<? extends Account> accounts = null;
+    @GetMapping("/accounts")
+    public ResponseEntity<Map<Bank, List<? extends Account>>> readAccounts() {
+        List<? extends Account> accountsRevo = bankingService.retrieveAccountService(Bank.REVOLUT).retrieveAccountData(Optional.empty());
+        List<? extends Account> accountsDeut = bankingService.retrieveAccountService(Bank.DEUTSCHE).retrieveAccountData(Optional.empty());
 
-        if (!StringUtils.isAllBlank(accountId)) {
-            accounts = bankingService.retrieveAccountService(Bank.valueOf(StringUtils.upperCase(bank)))
-                    .retrieveAccountData(Optional.of(accountId));
-        } else {
-            accounts = bankingService.retrieveAccountService(Bank.valueOf(StringUtils.upperCase(bank)))
-                    .retrieveAccountData(Optional.ofNullable(null));
-        }
+        Map<Bank, List<? extends Account>> ret = new EnumMap<>(Bank.class);
+        ret.put(Bank.REVOLUT, accountsRevo);
+        ret.put(Bank.DEUTSCHE, accountsDeut);
 
-        return ok(accounts);
-    }
-
-    @GetMapping({"/{bank}/transfers/{transferId}", "/{bank}/transfers"})
-    public ResponseEntity<String> readTransfers(@PathVariable String bank, @PathVariable(required = false) String transferId) {
-        return new ResponseEntity<>("To be implemented", HttpStatus.NOT_IMPLEMENTED);
+        return ok(ret);
     }
 }
