@@ -40,4 +40,9 @@ public class TransactionController {
 
         return ok(ret);
     }
+
+    @GetMapping("/trans")
+    public ResponseEntity<String> postTransactions(){
+        return ok(bankingService.retrieveTransactionService(Bank.DEUTSCHE).createPayment());
+    }
 }

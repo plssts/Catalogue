@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface TransactionService {
     List<? extends Transaction> retrieveTransactionData(Optional<List<String>> accountIds);
+    String createPayment();
 }

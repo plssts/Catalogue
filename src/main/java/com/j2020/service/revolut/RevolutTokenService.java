@@ -49,6 +49,7 @@ public class RevolutTokenService implements TokenService {
         if (lastRefreshDayTime.plusSeconds(tokenValidFor).isBefore(LocalDateTime.now())) {
             refreshToken();
         }
+        System.out.println("Use this:\n" + currentToken); // FIXME remove after debugging
         return currentToken;
     }
 

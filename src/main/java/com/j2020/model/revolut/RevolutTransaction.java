@@ -18,8 +18,11 @@ public class RevolutTransaction implements Transaction {
     @JsonProperty(value = "updated_at")
     private String dateOfUpdating;
 
-    @JsonProperty(value = "completed_at")
+    @JsonProperty(value = "completed_at", required = false)
     private String dateOfCompleting;
+
+    @JsonProperty(value = "related_transaction_id", required = false)
+    private String relatedTransactionId;
 
     @JsonProperty(required = false)
     private String reference;
@@ -30,6 +33,7 @@ public class RevolutTransaction implements Transaction {
     @JsonProperty(value = "legs")
     private RevolutTransactionLeg[] revolutLegs;
 
+    @JsonProperty(required = false)
     private RevolutTransactionCard card;
 
     public String getId() {
@@ -118,5 +122,13 @@ public class RevolutTransaction implements Transaction {
 
     public void setCard(RevolutTransactionCard card) {
         this.card = card;
+    }
+
+    public String getRelatedTransactionId() {
+        return relatedTransactionId;
+    }
+
+    public void setRelatedTransactionId(String relatedTransactionId) {
+        this.relatedTransactionId = relatedTransactionId;
     }
 }

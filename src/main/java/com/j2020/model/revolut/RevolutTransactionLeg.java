@@ -14,6 +14,14 @@ public class RevolutTransactionLeg {
 
     private Float amount;
     private String currency;
+
+    @JsonProperty(value = "bill_amount", required = false)
+    private Float billAmount;
+
+    @JsonProperty(value = "bill_currency", required = false)
+    private String billCurrency;
+
+    @JsonProperty(required = false)
     private String description;
 
     @JsonProperty(required = false)
@@ -73,5 +81,21 @@ public class RevolutTransactionLeg {
 
     public void setBalance(Float balance) {
         this.balance = balance;
+    }
+
+    public Float getBillAmount() {
+        return billAmount;
+    }
+
+    public void setBillAmount(Float billAmount) {
+        this.billAmount = billAmount;
+    }
+
+    public String getBillCurrency() {
+        return billCurrency;
+    }
+
+    public void setBillCurrency(String billCurrency) {
+        this.billCurrency = billCurrency;
     }
 }
