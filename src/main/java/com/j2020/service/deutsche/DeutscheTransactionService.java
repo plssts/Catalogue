@@ -2,16 +2,14 @@ package com.j2020.service.deutsche;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.j2020.model.Payment;
+import com.j2020.model.PaymentResponse;
 import com.j2020.model.TokenFetchException;
 import com.j2020.model.Transaction;
 import com.j2020.model.deutsche.DeutscheTransaction;
-import com.j2020.model.revolut.RevolutTransaction;
-import com.j2020.service.MFA;
 import com.j2020.service.TransactionRequestRetrievalService;
 import com.j2020.service.TransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ListFactoryBean;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
@@ -20,15 +18,13 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class DeutscheTransactionService implements TransactionService {
     private DeutscheTokenService tokenRenewal;
     private TransactionRequestRetrievalService transactionRetrieval;
-    private MFA mfa;
+    private DeutscheMultiFactorService multiFactor;
 
     @Value("${deutscheTransaction.ibanAvailableUrlPrepend}")
     private String ibanOnUrlPrepend;
@@ -36,10 +32,10 @@ public class DeutscheTransactionService implements TransactionService {
     @Value("${deutscheTransaction.transactionUrl}")
     private String transactionUrl;
 
-    public DeutscheTransactionService(DeutscheTokenService tokenRenewal, TransactionRequestRetrievalService transactionRetrieval, MFA mfa) {
+    public DeutscheTransactionService(DeutscheTokenService tokenRenewal, TransactionRequestRetrievalService transactionRetrieval, DeutscheMultiFactorService multiFactor) {
         this.tokenRenewal = tokenRenewal;
         this.transactionRetrieval = transactionRetrieval;
-        this.mfa = mfa;
+        this.multiFactor = multiFactor;
     }
 
     @Override
@@ -66,7 +62,13 @@ public class DeutscheTransactionService implements TransactionService {
         }
     }
 
-    public String createPayment() {
+    @Override
+    public List<? extends PaymentResponse> createPayments(List payments) {
+        return null;
+    }
+
+    @Override
+    public String demo() {
         System.out.println("Creating");
 
         String json1 = "{\n" +
@@ -95,7 +97,7 @@ public class DeutscheTransactionService implements TransactionService {
         String id = answer.get("id").toString();
 
         String url2 = "https://simulator-api.db.com/gw/dbapi/others/onetimepasswords/v2/single/" + id;
-        int field = mfa.getOTP();
+        int field = multiFactor.getOneTimePass();
         String json2 = "{\n" +
                 "  \"response\": \"" + field + "\"\n" +
                 "}";
@@ -125,7 +127,7 @@ public class DeutscheTransactionService implements TransactionService {
                 "}";
         headers.set("otp", answer2.get("otp"));
         //headers.set("Authorization", "otp "+ answer2.get("otp"));
-        headers.set("idempotency-id", id/*getRandomHexString(36)*/);
+        headers.set("idempotency-id", id/*generateRequestId()*/);
 
         System.out.println("Sending with headers\n" + headers);
 

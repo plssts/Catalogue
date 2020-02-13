@@ -1,10 +1,12 @@
 package com.j2020.model.revolut;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RevolutTransactionLegCounterparty {
-    @JsonProperty(required = false)
-    private String id;
+    @JsonProperty(value = "counterparty_id", required = false)
+    @JsonAlias("id")
+    private String counterpartyId;
 
     @JsonProperty(value = "account_type")
     private String accountType;
@@ -28,11 +30,11 @@ public class RevolutTransactionLegCounterparty {
         this.accountType = accountType;
     }
 
-    public String getId() {
-        return id;
+    public String getCounterpartyId() {
+        return counterpartyId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setCounterpartyId(String counterpartyId) {
+        this.counterpartyId = counterpartyId;
     }
 }
