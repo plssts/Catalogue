@@ -16,7 +16,7 @@ public class DeutscheSepaPaymentRequestData {
         this.amountValue = formatValue(amountValue);
     }
 
-    private String formatValue(String value) {
+    public static String formatValue(String value) {
         StringBuilder builder = new StringBuilder(value);
 
         if (builder.indexOf(".") > 0){

@@ -3,31 +3,61 @@ package com.j2020.model.deutsche;
 import com.j2020.model.Payment;
 
 public class DeutschePayment implements Payment {
-    /*
-    "{\n" +
-        "  \"debtorAccount\": {\n" +
-        "    \"currencyCode\": \"EUR\",\n" +
-        "    \"iban\": \"DE10010000000000005772\"\n" +
-        "  },\n" +
-        "  \"instructedAmount\": {\n" +
-        "    \"amount\": \"1\",\n" +
-        "    \"currencyCode\": \"EUR\"\n" +
-        "  },\n" +
-        "  \"creditorName\": \"Test Name\",\n" +
-        "  \"creditorAccount\": {\n" +
-        "    \"currencyCode\": \"EUR\",\n" +
-        "    \"iban\": \"DE10010000000000005771\"\n" +
-        "  }\n" +
-        "}";
-     */
+    private DeutscheSepaPaymentAccount debtorAccount;
+    private DeutscheSepaPaymentAmount instructedAmount;
+    private String creditorName;
+    private DeutscheSepaPaymentAccount creditorAccount;
+
+    public DeutschePayment() {
+
+    }
+
+    public DeutschePayment(DeutscheSepaPaymentAccount debtorAccount, DeutscheSepaPaymentAmount instructedAmount, String creditorName, DeutscheSepaPaymentAccount creditorAccount) {
+        this.debtorAccount = debtorAccount;
+        this.instructedAmount = instructedAmount;
+        this.creditorName = creditorName;
+        this.creditorAccount = creditorAccount;
+    }
 
     @Override
     public Float getAmount() {
-        return null;
+        return Float.valueOf(instructedAmount.getAmount());
     }
 
     @Override
     public void setIdentifyingInformation(String info) {
-        // TODO to creditor name
+        creditorName = info;
+    }
+
+    public DeutscheSepaPaymentAccount getDebtorAccount() {
+        return debtorAccount;
+    }
+
+    public void setDebtorAccount(DeutscheSepaPaymentAccount debtorAccount) {
+        this.debtorAccount = debtorAccount;
+    }
+
+    public DeutscheSepaPaymentAmount getInstructedAmount() {
+        return instructedAmount;
+    }
+
+    public void setInstructedAmount(DeutscheSepaPaymentAmount instructedAmount) {
+        this.instructedAmount = instructedAmount;
+    }
+
+    public String getCreditorName() {
+        return creditorName;
+    }
+
+    public void setCreditorName(String creditorName) {
+        this.creditorName = creditorName;
+    }
+
+    public DeutscheSepaPaymentAccount getCreditorAccount() {
+        return creditorAccount;
+    }
+
+    public void setCreditorAccount(DeutscheSepaPaymentAccount creditorAccount) {
+        this.creditorAccount = creditorAccount;
     }
 }

@@ -1,8 +1,9 @@
 package com.j2020.model.revolut;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.j2020.model.PaymentResponse;
 
-public class RevolutPaymentResponse {
+public class RevolutPaymentResponse implements PaymentResponse {
     private String id;
     private String state;
 
