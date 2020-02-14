@@ -1,13 +1,7 @@
 package com.j2020.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.model.*;
-import com.j2020.model.revolut.RevolutPayment;
-import com.j2020.model.revolut.RevolutTransaction;
 import com.j2020.service.BankingServiceFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,7 +38,7 @@ public class TransactionController {
     }
 
     @PostMapping("/transactions")
-    public ResponseEntity<Map<Bank, List<? extends PaymentResponse>>> createPayment(@RequestBody Map<Bank, List> params){
+    public ResponseEntity<Map<Bank, List<? extends PaymentResponse>>> createPayments(@RequestBody Map<Bank, List> params){
         List<? extends PaymentResponse> revolutResponses = bankingService.retrieveTransactionService(Bank.REVOLUT).createPayments(params.get(Bank.REVOLUT));
         List<? extends PaymentResponse> deutscheResponses = bankingService.retrieveTransactionService(Bank.DEUTSCHE).createPayments(params.get(Bank.DEUTSCHE));
 

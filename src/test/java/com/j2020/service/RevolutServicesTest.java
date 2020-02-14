@@ -7,22 +7,14 @@ import com.j2020.model.revolut.RevolutAccount;
 import com.j2020.service.revolut.RevolutAccountService;
 import com.j2020.service.revolut.RevolutTokenService;
 import com.j2020.service.revolut.RevolutTransactionService;
-//import jdk.vm.ci.meta.Local;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.event.annotation.BeforeTestExecution;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +46,7 @@ public class RevolutServicesTest {
     }
 
     @Test
-    public void getAccounts(){
+    public void getAccounts() {
         List<RevolutAccount> accounts = new ArrayList<>();
         RevolutAccount demoResponseAccountOne = new RevolutAccount("800", "savings", 500.1f,
                 "EUR", "active", false, LocalDateTime.now().toString(), LocalDateTime.now().toString());

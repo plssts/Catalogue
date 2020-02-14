@@ -1,6 +1,5 @@
 package com.j2020.service;
 
-import com.j2020.model.Account;
 import com.j2020.model.Payment;
 import com.j2020.model.PaymentResponse;
 import com.j2020.model.Transaction;

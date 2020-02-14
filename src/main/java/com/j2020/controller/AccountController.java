@@ -6,9 +6,7 @@ package com.j2020.controller;
 
 import com.j2020.model.Account;
 import com.j2020.model.Bank;
-import com.j2020.model.Transaction;
 import com.j2020.service.BankingServiceFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

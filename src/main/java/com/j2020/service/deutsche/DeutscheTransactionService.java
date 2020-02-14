@@ -155,8 +155,7 @@ public class DeutscheTransactionService implements TransactionService {
                 "  }\n" +
                 "}";
         headers.set("otp", answer2.get("otp"));
-        //headers.set("Authorization", "otp "+ answer2.get("otp"));
-        headers.set("idempotency-id", id/*generateRequestId()*/);
+        headers.set("idempotency-id", id);
 
         System.out.println("Sending with headers\n" + headers);
 

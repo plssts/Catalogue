@@ -7,7 +7,6 @@ import com.j2020.model.Payment;
 import com.j2020.model.PaymentResponse;
 import com.j2020.model.TokenFetchException;
 import com.j2020.model.Transaction;
-import com.j2020.model.revolut.RevolutAccount;
 import com.j2020.model.revolut.RevolutPayment;
 import com.j2020.model.revolut.RevolutPaymentResponse;
 import com.j2020.model.revolut.RevolutTransaction;
@@ -16,12 +15,9 @@ import com.j2020.service.TransactionService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 public class RevolutTransactionService implements TransactionService {
@@ -55,24 +51,15 @@ public class RevolutTransactionService implements TransactionService {
     public List<? extends PaymentResponse> createPayments(List<? extends Payment> payments) {
         String OAuthToken = tokenRenewal.getToken();
         JavaType type = new ObjectMapper().getTypeFactory().constructType(RevolutPaymentResponse.class);
-        List<? extends PaymentResponse> responses = new ArrayList<>();
-
-        //System.out.println("INTERMISSION::payments: " + payments.getClass() +"\n");
-        //System.out.println(payments.get(0));
 
         ObjectMapper mapper = new ObjectMapper();
+        List<RevolutPayment> castedObjects = mapper.convertValue(payments, new TypeReference<List<RevolutPayment>>() {
+        });
 
-        List<RevolutPayment> pojos = mapper.convertValue(
-                payments,
-                new TypeReference<List<RevolutPayment>>() {});
-        pojos.forEach(System.out::println);
-
-        //payments = new ObjectMapper().convertValue(payments, new TypeReference<List<RevolutPayment>>(){});
-
-        return transactionRetrieval.pushPayments(OAuthToken, Optional.empty(), paymentUrl, pojos, type);
+        return transactionRetrieval.pushPayments(OAuthToken, Optional.empty(), paymentUrl, castedObjects, type);
     }
 
-    // FIXME DELETE THIS AFTER DB WORKS
+    // FIXME DELETE THIS AFTER DB WORKS - this method is not needed anywhere else afterwards
     @Override
     public String demo() {
         return null;

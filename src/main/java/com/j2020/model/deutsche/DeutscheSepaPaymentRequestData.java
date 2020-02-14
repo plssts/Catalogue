@@ -1,7 +1,5 @@
 package com.j2020.model.deutsche;
 
-//import com.sun.org.apache.xpath.internal.operations.String;
-
 public class DeutscheSepaPaymentRequestData {
     private String type = "challengeRequestDataInstantSepaCreditTransfers";
     private String targetIban;
