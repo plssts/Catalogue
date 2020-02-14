@@ -98,11 +98,9 @@ public class DeutscheTransactionService implements TransactionService {
         //ResponseEntity<String> response = restTemplate.exchange(url1, HttpMethod.POST, new HttpEntity<>(json1, headers), String.class);
 
         DeutscheSepaPaymentRequest object = new DeutscheSepaPaymentRequest("DE10010000000000005771", "EUR", "1.0");
-        //System.out.println(object.getRequestData().getAmountValue());
 
         HttpEntity<DeutscheSepaPaymentRequest> entity = new HttpEntity<>(object, headers);
 
-        //HttpEntity<String> entity = new HttpEntity<>(json1, headers);
         DeutschePhototanResponse answer = restTemplate.postForObject(url1, entity, DeutschePhototanResponse.class);
 
 
