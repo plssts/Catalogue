@@ -29,10 +29,10 @@ public class AccountController {
         List<? extends Account> accountsRevo = bankingService.retrieveAccountService(Bank.REVOLUT).retrieveAccountData(Optional.empty());
         List<? extends Account> accountsDeut = bankingService.retrieveAccountService(Bank.DEUTSCHE).retrieveAccountData(Optional.empty());
 
-        Map<Bank, List<? extends Account>> ret = new EnumMap<>(Bank.class);
-        ret.put(Bank.REVOLUT, accountsRevo);
-        ret.put(Bank.DEUTSCHE, accountsDeut);
+        Map<Bank, List<? extends Account>> outcome = new EnumMap<>(Bank.class);
+        outcome.put(Bank.REVOLUT, accountsRevo);
+        outcome.put(Bank.DEUTSCHE, accountsDeut);
 
-        return ok(ret);
+        return ok(outcome);
     }
 }

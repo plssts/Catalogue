@@ -2,7 +2,7 @@ package com.j2020.model.deutsche;
 
 import com.j2020.model.Payment;
 
-public class DeutschePayment extends Payment {
+public class DeutschePayment implements Payment {
 
 
     @Override

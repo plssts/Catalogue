@@ -15,10 +15,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.swing.text.html.Option;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,13 +44,14 @@ public class TransactionRequestRetrievalService {
         }
     }
 
-    public List<? extends PaymentResponse> pushPayments(String token, Optional<String> oneTimePass, String url, List<? extends Payment> payments, JavaType reference) {
+    public List<? extends PaymentResponse> pushPayments(String token, Optional<Map<String, String>> extraHeaders, String url, List<? extends Payment> payments, JavaType reference) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        if (oneTimePass.isPresent()){ // TODO test and fix for DB
-            headers.set("otp", oneTimePass.get());
+        if (extraHeaders.isPresent()){ // TODO test and fix for DB
+            headers.set("otp", extraHeaders.get().get("otp"));
+            headers.set("idempotency-id", extraHeaders.get().get("idempotency-id"));
         }
 
         RestTemplate template = new RestTemplateBuilder().build();
@@ -63,18 +61,13 @@ public class TransactionRequestRetrievalService {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            System.out.println("INTERMISSION > TRANSACTION::payments: " + payments.getClass() +"\n");
-            System.out.println(payments.get(1));
+            //System.out.println("INTERMISSION > TRANSACTION::payments: " + payments.getClass() +"\n");
+            //System.out.println(payments.get(1));
             //payments = payments.stream().collect(Collectors.toList());
             /*CollectionType listType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, RevolutPayment.class);
             List<RevolutPayment> ts = mapper.readValue(payments, listType);*/
 
-            List<RevolutPayment> pojos = mapper.convertValue(
-                    payments,
-                    new TypeReference<List<RevolutPayment>>() { });
-            pojos.forEach(System.out::println);
-
-            for (Payment payment : pojos) {
+            for (Payment payment : payments) {
                 payment.setIdentifyingInformation(generateRequestId());
                 response = template.exchange(url, HttpMethod.POST, new HttpEntity<>(payment, headers), String.class);
                 responses.add(mapper.readValue(response.getBody(), reference));

@@ -3,7 +3,7 @@ package com.j2020.model.revolut;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.j2020.model.Payment;
 
-public class RevolutPayment extends Payment {
+public class RevolutPayment implements Payment {
     @JsonProperty(value = "request_id")
     private String requestId;
 

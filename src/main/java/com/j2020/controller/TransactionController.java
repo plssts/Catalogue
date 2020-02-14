@@ -14,10 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.ResponseEntity.ok;
@@ -39,19 +36,22 @@ public class TransactionController {
                 .map(Account::getAccountId).collect(Collectors.toList());
         List<? extends Transaction> transactionsDeut = bankingService.retrieveTransactionService(Bank.DEUTSCHE).retrieveTransactionData(Optional.of(ibans));
 
-        Map<Bank, List<? extends Transaction>> ret = new EnumMap<>(Bank.class);
-        ret.put(Bank.REVOLUT, transactionsRevo);
-        ret.put(Bank.DEUTSCHE, transactionsDeut);
+        Map<Bank, List<? extends Transaction>> outcome = new EnumMap<>(Bank.class);
+        outcome.put(Bank.REVOLUT, transactionsRevo);
+        outcome.put(Bank.DEUTSCHE, transactionsDeut);
 
-        return ok(ret);
+        return ok(outcome);
     }
 
     @PostMapping("/transactions")
-    public ResponseEntity<List<? extends PaymentResponse>> createPayment(@RequestBody Map<Bank, List> params){
-        //return ok(params.get(Bank.REVOLUT));
-        //List payments = params.get(Bank.REVOLUT);
-        //payments.forEach(System.out::println);
-        return ok(bankingService.retrieveTransactionService(Bank.REVOLUT).createPayments(params.get(Bank.REVOLUT)));
+    public ResponseEntity<Map<Bank, List<? extends PaymentResponse>>> createPayment(@RequestBody Map<Bank, List> params){
+        List<? extends PaymentResponse> revolutResponses = bankingService.retrieveTransactionService(Bank.REVOLUT).createPayments(params.get(Bank.REVOLUT));
+        List<? extends PaymentResponse> deutscheResponses = bankingService.retrieveTransactionService(Bank.DEUTSCHE).createPayments(params.get(Bank.DEUTSCHE));
+
+        Map<Bank, List<? extends PaymentResponse>> outcome = new EnumMap<>(Bank.class);
+        outcome.put(Bank.REVOLUT, revolutResponses);
+        outcome.put(Bank.DEUTSCHE, deutscheResponses);
+        return ok(outcome);
     }
 
     @GetMapping("/trans") // FIXME remove this properly

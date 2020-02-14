@@ -8,9 +8,15 @@ import org.springframework.stereotype.Service;
 public class DeutscheMultiFactorService {
     @Value("${deutscheTransaction.twoFactorSecret}")
     private String twoFactorSecret;
+
     private GoogleAuthenticator auth = new GoogleAuthenticator();
 
-    public int getOneTimePass(){
-        return auth.getTotpPassword(twoFactorSecret);
+    public String getOneTimePass(){
+        StringBuilder otpValue = new StringBuilder(String.valueOf(auth.getTotpPassword(twoFactorSecret)));
+        while (otpValue.length() < 6){
+            otpValue.insert(0, "0");
+        }
+        System.out.println("TOKEN: " + otpValue.toString()); // FIXME remove
+        return otpValue.toString();
     }
 }

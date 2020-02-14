@@ -52,76 +52,24 @@ public class RevolutTransactionService implements TransactionService {
     }
 
     @Override
-    public List<? extends PaymentResponse> createPayments(List payments) {
+    public List<? extends PaymentResponse> createPayments(List<? extends Payment> payments) {
         String OAuthToken = tokenRenewal.getToken();
         JavaType type = new ObjectMapper().getTypeFactory().constructType(RevolutPaymentResponse.class);
         List<? extends PaymentResponse> responses = new ArrayList<>();
 
-        System.out.println("INTERMISSION::payments: " + payments.getClass() +"\n");
-        System.out.println(payments.get(0));
+        //System.out.println("INTERMISSION::payments: " + payments.getClass() +"\n");
+        //System.out.println(payments.get(0));
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<RevolutPayment> pojos = mapper.convertValue(
+                payments,
+                new TypeReference<List<RevolutPayment>>() {});
+        pojos.forEach(System.out::println);
+
         //payments = new ObjectMapper().convertValue(payments, new TypeReference<List<RevolutPayment>>(){});
 
-        return transactionRetrieval.pushPayments(OAuthToken, Optional.empty(), paymentUrl, payments, type);
-        /*
-        Demo sample transaction
-        {
-        "id":"63e0c9ee-8884-47e6-82d5-a0392d47808b",
-        "type":"transfer",
-        "state":"completed",
-        "reference":"payment",
-        "merchant":null,
-        "card":null,
-        "request_id":null,
-        "created_at":"2020-02-04T09:12:53.776451Z",
-        "updated_at":"2020-02-04T09:12:53.776451Z",
-        "completed_at":"2020-02-04T09:12:53.778209Z",
-        "legs":[
-            {"counterparty":{
-                "account_type":"revolut",
-                "account_id":"88888888-4444-4444-4444-222222222222"
-                },
-             "amount":-210.0,
-             "currency":"EUR",
-             "description":"To Rory Pearson",
-             "balance":3490.0,
-             "leg_id":"3f4dcdc5-0625-4e26-8077-cfe23cef52ae",
-             "account_id":"8a7d6a71-0bbc-4691-b04e-9ac7c54e0b5e"
-            }
-        ]}
-        */
-
-        /*
-        {
-	"REVOLUT":[
-		{
-			"request_id": "e0cbf84638264ee082a808b",
-			"account_id": "8a7d6a71-0bbc-4691-b04e-9ac7c54e0b5e",
-			"receiver": {
-			"counterparty_id": "b3314028-6158-4d11-8d4a-ef5e1bc9bc73",
-			"account_id": "62670460-561e-4955-ba19-0b4c4df46566"
-			},
-			"amount": 1,
-			"currency": "EUR",
-			"reference": "test"
-		},
-		{
-			"request_id": "e0cbf84638264ee082a848a",
-			"account_id": "8a7d6a71-0bbc-4691-b04e-9ac7c54e0b5e",
-			"receiver": {
-			"counterparty_id": "b3314028-6158-4d11-8d4a-ef5e1bc9bc73",
-			"account_id": "62670460-561e-4955-ba19-0b4c4df46566"
-			},
-			"amount": 1,
-			"currency": "EUR",
-			"reference": "test"
-		}
-	]
-}
-         */
-
-        //generateRequestId();
-
-        //return "";
+        return transactionRetrieval.pushPayments(OAuthToken, Optional.empty(), paymentUrl, pojos, type);
     }
 
     // FIXME DELETE THIS AFTER DB WORKS
