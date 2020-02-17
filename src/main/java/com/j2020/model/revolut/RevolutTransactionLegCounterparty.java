@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RevolutTransactionLegCounterparty {
-    @JsonProperty(value = "counterparty_id", required = false)
+    @JsonProperty(value = "counterparty_id")
     @JsonAlias("id")
     private String counterpartyId;
 

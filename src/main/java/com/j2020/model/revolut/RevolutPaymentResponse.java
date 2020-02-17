@@ -10,7 +10,7 @@ public class RevolutPaymentResponse implements PaymentResponse {
     @JsonProperty(value = "created_at")
     private String createdAt;
 
-    @JsonProperty(value = "completed_at", required = false)
+    @JsonProperty(value = "completed_at")
     private String completedAt;
 
     public String getId() {

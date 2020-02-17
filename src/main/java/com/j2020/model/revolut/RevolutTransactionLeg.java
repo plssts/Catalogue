@@ -9,22 +9,18 @@ public class RevolutTransactionLeg {
     @JsonProperty(value = "account_id")
     private String accountId;
 
-    @JsonProperty(required = false)
     private RevolutTransactionLegCounterparty counterparty;
 
     private Float amount;
     private String currency;
 
-    @JsonProperty(value = "bill_amount", required = false)
+    @JsonProperty(value = "bill_amount")
     private Float billAmount;
 
-    @JsonProperty(value = "bill_currency", required = false)
+    @JsonProperty(value = "bill_currency")
     private String billCurrency;
 
-    @JsonProperty(required = false)
     private String description;
-
-    @JsonProperty(required = false)
     private Float balance;
 
     public String getLegId() {

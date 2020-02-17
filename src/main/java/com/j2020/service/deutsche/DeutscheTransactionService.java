@@ -33,6 +33,9 @@ public class DeutscheTransactionService implements TransactionService {
     @Value("${deutscheTransaction.transactionUrl}")
     private String transactionUrl;
 
+    @Value("${deutscheTransaction.paymentUrl}")
+    private String paymentUrl;
+
     public DeutscheTransactionService(DeutscheTokenService tokenRenewal, TransactionRequestRetrievalService transactionRetrieval, DeutscheMultiFactorService multiFactor) {
         this.tokenRenewal = tokenRenewal;
         this.transactionRetrieval = transactionRetrieval;
@@ -64,20 +67,15 @@ public class DeutscheTransactionService implements TransactionService {
     }
 
     @Override
-    @Validated(DeutschePayment.class)
-    // FIXME move urls to application.properties
     public List<PaymentResponse> createPayments(List<Payment> payments) {
         if (payments == null){
             return new ArrayList<>();
         }
 
         ObjectMapper mapper = new ObjectMapper();
-        List<@Valid DeutschePayment> castedObjects = mapper.convertValue(payments, new TypeReference<List<@Valid DeutschePayment>>() {
+        List<DeutschePayment> castedObjects = mapper.convertValue(payments, new TypeReference<List<DeutschePayment>>() {
         });
 
-        String paymentUrl = "https://simulator-api.db.com/gw/dbapi/paymentInitiation/payments/v1/instantSepaCreditTransfers";
-
         return transactionRetrieval.pushPayments(tokenRenewal.getToken(), Optional.empty(), paymentUrl, castedObjects, new ObjectMapper().getTypeFactory().constructType(DeutschePaymentResponse.class));
-
     }
 }

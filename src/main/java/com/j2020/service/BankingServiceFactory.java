@@ -14,13 +14,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BankingServiceFactory { //++final
+public class BankingServiceFactory {
     private static final Logger logger = LoggerFactory.getLogger(BankingServiceFactory.class);
 
-    private RevolutAccountService revAccountService;
-    private DeutscheAccountService dbAccountService;
-    private RevolutTransactionService revTransactionService;
-    private DeutscheTransactionService dbTransactionService;
+    private final RevolutAccountService revAccountService;
+    private final DeutscheAccountService dbAccountService;
+    private final RevolutTransactionService revTransactionService;
+    private final DeutscheTransactionService dbTransactionService;
 
     public BankingServiceFactory(RevolutAccountService revAccountService, DeutscheAccountService dbAccountService,
                                  RevolutTransactionService revTransactionService, DeutscheTransactionService dbTransactionService) {

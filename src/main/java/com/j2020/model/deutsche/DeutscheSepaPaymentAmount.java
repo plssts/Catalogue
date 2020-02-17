@@ -1,12 +1,7 @@
 package com.j2020.model.deutsche;
 
-import javax.validation.constraints.NotNull;
-
 public class DeutscheSepaPaymentAmount {
-    @NotNull(message = "Payment amount is missing")
     private String amount;
-
-    @NotNull(message = "Currency code is missing")
     private String currencyCode;
 
     public DeutscheSepaPaymentAmount() {
