@@ -17,7 +17,7 @@ import java.io.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
-public class HomeController implements ErrorController {
+public class HomeController/* implements ErrorController*/ {
     @GetMapping("/")
     public ResponseEntity<String> index() {
         try (Reader file = new FileReader("README.md")) {
@@ -32,6 +32,7 @@ public class HomeController implements ErrorController {
         }
     }
 
+    /*
     @GetMapping("/error")
     public ResponseEntity<String> error() {
         return new ResponseEntity<>("Illegal action. Refer to index at '/' for help.", HttpStatus.NOT_FOUND);
@@ -40,5 +41,5 @@ public class HomeController implements ErrorController {
     @Override
     public String getErrorPath() {
         return "/error";
-    }
+    }*/
 }

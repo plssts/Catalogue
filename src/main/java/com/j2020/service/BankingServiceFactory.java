@@ -31,9 +31,9 @@ public class BankingServiceFactory {
     }
 
     public AccountService retrieveAccountService(Bank bankingService) {
+        logger.info("Fetching {} account service", bankingService);
         switch (bankingService) {
             case REVOLUT:
-                logger.info("Working with {}", bankingService.getClass().getName());
                 return revAccountService;
 
             case DEUTSCHE:
@@ -43,6 +43,7 @@ public class BankingServiceFactory {
     }
 
     public TransactionService retrieveTransactionService(Bank bankingService) {
+        logger.info("Fetching {} transaction service", bankingService);
         switch (bankingService) {
             case REVOLUT:
                 return revTransactionService;

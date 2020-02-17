@@ -19,8 +19,8 @@ public class DeutschePayment implements Payment {
     public DeutschePayment(DeutscheSepaPaymentAccount debtorAccount, DeutscheSepaPaymentAmount instructedAmount, String creditorName, DeutscheSepaPaymentAccount creditorAccount) {
         this.debtorAccount = debtorAccount;
         this.instructedAmount = instructedAmount;
-        this.creditorName = creditorName;
         this.creditorAccount = creditorAccount;
+        this.creditorName = creditorName;
     }
 
     @Override

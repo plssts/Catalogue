@@ -3,13 +3,12 @@ package com.j2020.service.deutsche;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.j2020.model.Payment;
-import com.j2020.model.PaymentResponse;
-import com.j2020.model.TokenFetchException;
-import com.j2020.model.Transaction;
+import com.j2020.model.*;
 import com.j2020.model.deutsche.*;
 import com.j2020.service.TransactionRequestRetrievalService;
 import com.j2020.service.TransactionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -23,9 +22,10 @@ import java.util.stream.Collectors;
 @Service
 @Validated
 public class DeutscheTransactionService implements TransactionService {
+    private static final Logger logger = LoggerFactory.getLogger(DeutscheTransactionService.class);
     private DeutscheTokenService tokenRenewal;
     private TransactionRequestRetrievalService transactionRetrieval;
-    private DeutscheMultiFactorService multiFactor;
+    private DeutscheMapperService deutscheMapper;
 
     @Value("${deutscheTransaction.ibanAvailableUrlPrepend}")
     private String ibanOnUrlPrepend;
@@ -36,10 +36,10 @@ public class DeutscheTransactionService implements TransactionService {
     @Value("${deutscheTransaction.paymentUrl}")
     private String paymentUrl;
 
-    public DeutscheTransactionService(DeutscheTokenService tokenRenewal, TransactionRequestRetrievalService transactionRetrieval, DeutscheMultiFactorService multiFactor) {
+    public DeutscheTransactionService(DeutscheTokenService tokenRenewal, TransactionRequestRetrievalService transactionRetrieval, DeutscheMapperService deutscheMapper) {
         this.tokenRenewal = tokenRenewal;
         this.transactionRetrieval = transactionRetrieval;
-        this.multiFactor = multiFactor;
+        this.deutscheMapper = deutscheMapper;
     }
 
     @Override
@@ -67,15 +67,32 @@ public class DeutscheTransactionService implements TransactionService {
     }
 
     @Override
-    public List<PaymentResponse> createPayments(List<Payment> payments) {
-        if (payments == null){
+    public List<PaymentResponse> createPayments(List<GeneralPayment> payments) {
+        if (payments == null) {
+            logger.info("No payments included for Deutsche Bank. Skipping.");
             return new ArrayList<>();
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        List<DeutschePayment> castedObjects = mapper.convertValue(payments, new TypeReference<List<DeutschePayment>>() {
-        });
+        //ObjectMapper mapper = new ObjectMapper();
+        List<DeutschePayment> parsedPayments = new ArrayList<>();
 
-        return transactionRetrieval.pushPayments(tokenRenewal.getToken(), Optional.empty(), paymentUrl, castedObjects, new ObjectMapper().getTypeFactory().constructType(DeutschePaymentResponse.class));
+        payments.forEach(payment -> parsedPayments.add(deutscheMapper.toDeutschePayment(payment)));
+
+        /*List<DeutschePayment> list = mapper.convertValue(payments.get(0), new TypeReference<List<DeutschePayment>>() {
+        });*/
+
+        /*GeneralPayment gp = new GeneralPayment();
+        gp.setAmount(parsedPayments.get(0).getAmount());
+        gp.setCurrency(parsedPayments.get(0).getDebtorAccount().getCurrencyCode());
+        gp.setSourceAccount(parsedPayments.get(0).getDebtorAccount().getIban());
+        gp.setDestinationAccount(parsedPayments.get(0).getCreditorAccount().getIban());
+
+        DeutschePayment dp = new DeutscheMapperService().toDeutschePayment(gp);
+        throw new RuntimeException("" + dp + "");*/
+
+        /*List<DeutschePayment> castedObjects = mapper.convertValue(payments, new TypeReference<List<DeutschePayment>>() {
+        });*/
+
+        return transactionRetrieval.pushPayments(tokenRenewal.getToken(), Optional.empty(), paymentUrl, parsedPayments, new ObjectMapper().getTypeFactory().constructType(DeutschePaymentResponse.class));
     }
 }
