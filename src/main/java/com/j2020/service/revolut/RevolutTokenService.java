@@ -10,6 +10,9 @@ import com.j2020.model.TokenRenewalResponse;
 import com.j2020.model.revolut.RevolutTokenRenewalResponse;
 import com.j2020.service.TokenRequestRetrievalService;
 import com.j2020.service.TokenService;
+import com.j2020.service.deutsche.DeutscheTokenService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -25,6 +28,8 @@ public class RevolutTokenService implements TokenService {
     private LocalDateTime lastRefreshDayTime;
     private long tokenValidFor;
     private MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+
+    private static final Logger logger = LoggerFactory.getLogger(RevolutTokenService.class);
 
     @Value("${revolutTokenRenewal.revoTokenRenewalUri}")
     private String revoTokenRenewalUri;
@@ -47,6 +52,7 @@ public class RevolutTokenService implements TokenService {
 
     public String getToken() {
         if (lastRefreshDayTime.plusSeconds(tokenValidFor).isBefore(LocalDateTime.now())) {
+            logger.info("Refreshing Revolut access token");
             refreshToken();
         }
         return currentToken;

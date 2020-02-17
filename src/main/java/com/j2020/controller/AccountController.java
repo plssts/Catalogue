@@ -23,13 +23,13 @@ public class AccountController {
     }
 
     @GetMapping("/accounts")
-    public ResponseEntity<Map<Bank, List<Account>>> readAccounts() {
+    public ResponseEntity<Map<String, List<Account>>> readAccounts() {
         List<Account> accountsRevo = bankingService.retrieveAccountService(Bank.REVOLUT).retrieveAccountData(Optional.empty());
         List<Account> accountsDeut = bankingService.retrieveAccountService(Bank.DEUTSCHE).retrieveAccountData(Optional.empty());
 
-        Map<Bank, List<Account>> outcome = new EnumMap<>(Bank.class);
-        outcome.put(Bank.REVOLUT, accountsRevo);
-        outcome.put(Bank.DEUTSCHE, accountsDeut);
+        Map<String, List<Account>> outcome = new HashMap<>();
+        outcome.put(Bank.REVOLUT.toString(), accountsRevo);
+        outcome.put(Bank.DEUTSCHE.toString(), accountsDeut);
 
         return ok(outcome);
     }

@@ -6,10 +6,13 @@ package com.j2020.service.deutsche;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.j2020.controller.TransactionController;
 import com.j2020.model.deutsche.DeutscheTokenRenewalResponse;
 import com.j2020.model.TokenRenewalResponse;
 import com.j2020.service.TokenRequestRetrievalService;
 import com.j2020.service.TokenService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -38,12 +41,15 @@ public class DeutscheTokenService implements TokenService {
     @Value("${deutscheTokenRenewal.OAuthToken}")
     private String oAuthToken;
 
+    private static final Logger logger = LoggerFactory.getLogger(DeutscheTokenService.class);
+
     public DeutscheTokenService(TokenRequestRetrievalService tokenRetrieval) {
         this.tokenRetrieval = tokenRetrieval;
     }
 
     public String getToken() {
         if (lastRefreshDayTime.plusSeconds(tokenValidFor).isBefore(LocalDateTime.now())) {
+            logger.info("Refreshing Deutsche Bank access token");
             refreshToken();
         }
         return currentToken;

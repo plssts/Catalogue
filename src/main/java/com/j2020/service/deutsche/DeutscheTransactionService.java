@@ -73,25 +73,10 @@ public class DeutscheTransactionService implements TransactionService {
             return new ArrayList<>();
         }
 
-        //ObjectMapper mapper = new ObjectMapper();
         List<DeutschePayment> parsedPayments = new ArrayList<>();
 
+        logger.info("Constructing and validating Deutsche Bank payments");
         payments.forEach(payment -> parsedPayments.add(deutscheMapper.toDeutschePayment(payment)));
-
-        /*List<DeutschePayment> list = mapper.convertValue(payments.get(0), new TypeReference<List<DeutschePayment>>() {
-        });*/
-
-        /*GeneralPayment gp = new GeneralPayment();
-        gp.setAmount(parsedPayments.get(0).getAmount());
-        gp.setCurrency(parsedPayments.get(0).getDebtorAccount().getCurrencyCode());
-        gp.setSourceAccount(parsedPayments.get(0).getDebtorAccount().getIban());
-        gp.setDestinationAccount(parsedPayments.get(0).getCreditorAccount().getIban());
-
-        DeutschePayment dp = new DeutscheMapperService().toDeutschePayment(gp);
-        throw new RuntimeException("" + dp + "");*/
-
-        /*List<DeutschePayment> castedObjects = mapper.convertValue(payments, new TypeReference<List<DeutschePayment>>() {
-        });*/
 
         return transactionRetrieval.pushPayments(tokenRenewal.getToken(), Optional.empty(), paymentUrl, parsedPayments, new ObjectMapper().getTypeFactory().constructType(DeutschePaymentResponse.class));
     }

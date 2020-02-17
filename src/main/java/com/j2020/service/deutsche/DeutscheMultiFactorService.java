@@ -1,10 +1,13 @@
 package com.j2020.service.deutsche;
 
+import com.j2020.controller.TransactionController;
 import com.j2020.model.deutsche.DeutscheOneTimePassword;
 import com.j2020.model.deutsche.DeutschePhototanChallengeResponse;
 import com.j2020.model.deutsche.DeutschePhototanResponse;
 import com.j2020.model.deutsche.DeutscheSepaPaymentRequest;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +26,8 @@ public class DeutscheMultiFactorService {
 
     private final GoogleAuthenticator auth = new GoogleAuthenticator();
 
+    private static final Logger logger = LoggerFactory.getLogger(DeutscheMultiFactorService.class);
+
     public String getOneTimePass(){
         StringBuilder otpValue = new StringBuilder(String.valueOf(auth.getTotpPassword(twoFactorSecret)));
         while (otpValue.length() < 6){
@@ -33,6 +38,8 @@ public class DeutscheMultiFactorService {
 
     // FIXME move urls to application.properties
     public Map<String, String> prepareAuthorisation(String token, String targetIban, String currency, String amount){
+        logger.info("Negotiating OTP for target account {}", targetIban);
+
         RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

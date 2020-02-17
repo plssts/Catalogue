@@ -42,7 +42,7 @@ public class TransactionController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<Bank, List<Transaction>>> readTransactions() {
+    public ResponseEntity<Map<String, List<Transaction>>> readTransactions() {
         List<Transaction> transactionsRevo = bankingService.retrieveTransactionService(Bank.REVOLUT).retrieveTransactionData(Optional.empty());
 
         List<String> ibans = bankingService.retrieveAccountService(Bank.DEUTSCHE)
@@ -50,17 +50,17 @@ public class TransactionController {
                 .map(Account::getAccountId).collect(Collectors.toList());
         List<Transaction> transactionsDeut = bankingService.retrieveTransactionService(Bank.DEUTSCHE).retrieveTransactionData(Optional.of(ibans));
 
-        Map<Bank, List<Transaction>> outcome = new EnumMap<>(Bank.class);
-        outcome.put(Bank.REVOLUT, transactionsRevo);
-        outcome.put(Bank.DEUTSCHE, transactionsDeut);
+        Map<String, List<Transaction>> outcome = new HashMap<>();
+        outcome.put(Bank.REVOLUT.toString(), transactionsRevo);
+        outcome.put(Bank.DEUTSCHE.toString(), transactionsDeut);
 
         return ok(outcome);
     }
 
     @PostMapping
-    public ResponseEntity<Map<Bank, List<PaymentResponse>>> createPayments(@RequestBody Map<Bank, List<GeneralPayment>> params){
+    public ResponseEntity<Map<String, List<PaymentResponse>>> createPayments(@RequestBody Map<String, List<GeneralPayment>> params){
         logger.info("Creating payments for {}", params.keySet());
-        Map<Bank, List<PaymentResponse>> outcome = transactionProcessing.initiatePaymentRequests(params);
+        Map<String, List<PaymentResponse>> outcome = transactionProcessing.initiatePaymentRequests(params);
 
         return ok(outcome);
     }

@@ -60,15 +60,9 @@ public class RevolutTransactionService implements TransactionService {
             return new ArrayList<>();
         }
 
-        /*String OAuthToken = tokenRenewal.getToken();
-        JavaType type = new ObjectMapper().getTypeFactory().constructType(RevolutPaymentResponse.class);
-
-        ObjectMapper mapper = new ObjectMapper();
-        List<RevolutPayment> castedObjects = mapper.convertValue(payments, new TypeReference<List<RevolutPayment>>() {
-        });*/
-
         List<RevolutPayment> parsedPayments = new ArrayList<>();
 
+        logger.info("Constructing and validating Revolut payments");
         payments.forEach(payment -> parsedPayments.add(revolutMapper.toRevolutPayment(payment)));
 
         return transactionRetrieval.pushPayments(tokenRenewal.getToken(), Optional.empty(), paymentUrl, parsedPayments, new ObjectMapper().getTypeFactory().constructType(RevolutPaymentResponse.class));

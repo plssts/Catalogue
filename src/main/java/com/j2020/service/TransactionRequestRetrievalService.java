@@ -7,6 +7,9 @@ import com.j2020.model.*;
 import com.j2020.model.deutsche.DeutschePayment;
 import com.j2020.model.deutsche.DeutscheSepaPaymentRequestData;
 import com.j2020.service.deutsche.DeutscheMultiFactorService;
+import com.j2020.service.deutsche.DeutscheTransactionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
@@ -19,6 +22,7 @@ import java.util.*;
 @Service
 public class TransactionRequestRetrievalService {
     private DeutscheMultiFactorService deutscheMultiFactor;
+    private static final Logger logger = LoggerFactory.getLogger(TransactionRequestRetrievalService.class);
 
     @Value("${revolutTransaction.MAX_REQID_LENGTH}")
     private int MAX_REQID_LENGTH;
@@ -71,6 +75,9 @@ public class TransactionRequestRetrievalService {
                 } else {
                     payment.setIdentifyingInformation(generateIdentification());
                 }
+
+                logger.info("Processing {}", payment);
+
                 response = template.exchange(url, HttpMethod.POST, new HttpEntity<>(payment, headers), String.class);
                 responses.add(mapper.readValue(response.getBody(), reference));
             }
