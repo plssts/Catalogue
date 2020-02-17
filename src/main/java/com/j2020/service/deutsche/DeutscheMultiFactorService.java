@@ -31,31 +31,31 @@ public class DeutscheMultiFactorService {
         return otpValue.toString();
     }
 
-    public Map<String, String> prepareAuthorisation(String token){
+    // FIXME move urls to application.properties
+    public Map<String, String> prepareAuthorisation(String token, String targetIban, String currency, String amount){
         RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + token);
 
-        String url1 = "https://simulator-api.db.com/gw/dbapi/others/onetimepasswords/v2/single";
+        String otpUrl = "https://simulator-api.db.com/gw/dbapi/others/onetimepasswords/v2/single";
 
-        DeutscheSepaPaymentRequest object = new DeutscheSepaPaymentRequest("DE10010000000000005771", "EUR", "1.0");
+        DeutscheSepaPaymentRequest sepaRequest = new DeutscheSepaPaymentRequest(targetIban, currency, amount);
+        HttpEntity<DeutscheSepaPaymentRequest> entity = new HttpEntity<>(sepaRequest, headers);
 
-        HttpEntity<DeutscheSepaPaymentRequest> entity = new HttpEntity<>(object, headers);
+        DeutschePhototanResponse sepaAnswer = restTemplate.postForObject(otpUrl, entity, DeutschePhototanResponse.class);
 
-        DeutschePhototanResponse answer = restTemplate.postForObject(url1, entity, DeutschePhototanResponse.class);
+        String id = sepaAnswer.getId();
 
-        String id = answer.getId();
-        String url2 = "https://simulator-api.db.com/gw/dbapi/others/onetimepasswords/v2/single/" + id;
+        String challengeUrl = "https://simulator-api.db.com/gw/dbapi/others/onetimepasswords/v2/single/" + id;
 
         DeutschePhototanChallengeResponse phototanResponse = new DeutschePhototanChallengeResponse(getOneTimePass());
+        HttpEntity<DeutschePhototanChallengeResponse> challengeResponse = new HttpEntity<>(phototanResponse, headers);
 
-        HttpEntity<DeutschePhototanChallengeResponse> entity2 = new HttpEntity<>(phototanResponse, headers);
-
-        DeutscheOneTimePassword answer2 = restTemplate.patchForObject(url2, entity2, DeutscheOneTimePassword.class);
+        DeutscheOneTimePassword otpEntity = restTemplate.patchForObject(challengeUrl, challengeResponse, DeutscheOneTimePassword.class);
 
         HashMap<String, String> product = new HashMap<>();
-        product.put("otp", answer2.getOneTimePassword());
+        product.put("otp", otpEntity.getOneTimePassword());
         product.put("idempotency-id", id);
 
         return product;

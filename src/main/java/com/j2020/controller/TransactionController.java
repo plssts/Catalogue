@@ -47,9 +47,4 @@ public class TransactionController {
         outcome.put(Bank.DEUTSCHE, deutscheResponses);
         return ok(outcome);
     }
-
-    @GetMapping("/trans") // FIXME remove this properly
-    public ResponseEntity<String> postTransactions(){
-        return ok(bankingService.retrieveTransactionService(Bank.DEUTSCHE).demo());
-    }
 }

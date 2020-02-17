@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.model.*;
+import com.j2020.model.deutsche.DeutschePayment;
+import com.j2020.model.deutsche.DeutscheSepaPaymentRequestData;
+import com.j2020.service.deutsche.DeutscheMultiFactorService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
@@ -15,8 +18,14 @@ import java.util.*;
 
 @Service
 public class TransactionRequestRetrievalService {
+    private DeutscheMultiFactorService deutscheMultiFactor;
+
     @Value("${revolutTransaction.MAX_REQID_LENGTH}")
     private int MAX_REQID_LENGTH;
+
+    public TransactionRequestRetrievalService(DeutscheMultiFactorService deutscheMultiFactor) {
+        this.deutscheMultiFactor = deutscheMultiFactor;
+    }
 
     public List<? extends Transaction> retrieveTransactions(String token, String url, JavaType reference) {
         HttpHeaders headers = new HttpHeaders();
@@ -39,15 +48,11 @@ public class TransactionRequestRetrievalService {
         }
     }
 
+    // FIXME remove optional map
     public List<? extends PaymentResponse> pushPayments(String token, Optional<Map<String, String>> extraHeaders, String url, List<? extends Payment> payments, JavaType reference) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        if (extraHeaders.isPresent()) { // TODO test and fix for DB
-            headers.set("otp", extraHeaders.get().get("otp"));
-            headers.set("idempotency-id", extraHeaders.get().get("idempotency-id"));
-        }
 
         RestTemplate template = new RestTemplateBuilder().build();
         ResponseEntity<String> response;
@@ -56,7 +61,17 @@ public class TransactionRequestRetrievalService {
 
         try {
             for (Payment payment : payments) {
-                payment.setIdentifyingInformation(generateRequestId());
+                if (payment instanceof DeutschePayment) {
+                    System.out.println("Deutsche payment processing now");
+                    Map<String, String> headerInfo = deutscheMultiFactor.prepareAuthorisation(token,
+                            ((DeutschePayment) payment).getCreditorAccount().getIban(),
+                            ((DeutschePayment) payment).getInstructedAmount().getCurrencyCode(),
+                            DeutscheSepaPaymentRequestData.formatValue(((DeutschePayment) payment).getInstructedAmount().getAmount()));
+                    headers.set("otp", headerInfo.get("otp"));
+                    headers.set("idempotency-id", headerInfo.get("idempotency-id"));
+                } else {
+                    payment.setIdentifyingInformation(generateIdentification(/*extraHeaders*/));
+                }
                 response = template.exchange(url, HttpMethod.POST, new HttpEntity<>(payment, headers), String.class);
                 responses.add(mapper.readValue(response.getBody(), reference));
             }
@@ -68,7 +83,7 @@ public class TransactionRequestRetrievalService {
         }
     }
 
-    private String generateRequestId() {
+    private String generateIdentification() {
         StringBuilder builder = new StringBuilder();
         Random random = new Random();
 

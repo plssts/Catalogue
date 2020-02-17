@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +50,10 @@ public class RevolutTransactionService implements TransactionService {
 
     @Override
     public List<? extends PaymentResponse> createPayments(List<? extends Payment> payments) {
+        if (payments.isEmpty()){
+            return new ArrayList<>();
+        }
+
         String OAuthToken = tokenRenewal.getToken();
         JavaType type = new ObjectMapper().getTypeFactory().constructType(RevolutPaymentResponse.class);
 
@@ -57,11 +62,5 @@ public class RevolutTransactionService implements TransactionService {
         });
 
         return transactionRetrieval.pushPayments(OAuthToken, Optional.empty(), paymentUrl, castedObjects, type);
-    }
-
-    // FIXME DELETE THIS AFTER DB WORKS - this method is not needed anywhere else afterwards
-    @Override
-    public String demo() {
-        return null;
     }
 }

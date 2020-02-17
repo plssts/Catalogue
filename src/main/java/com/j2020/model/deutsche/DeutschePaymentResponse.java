@@ -1,6 +1,5 @@
 package com.j2020.model.deutsche;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.j2020.model.PaymentResponse;
 
 public class DeutschePaymentResponse implements PaymentResponse {
