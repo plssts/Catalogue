@@ -27,7 +27,7 @@ public class TransactionRequestRetrievalService {
         this.deutscheMultiFactor = deutscheMultiFactor;
     }
 
-    public List<? extends Transaction> retrieveTransactions(String token, String url, JavaType reference) {
+    public List<Transaction> retrieveTransactions(String token, String url, JavaType reference) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
 
@@ -49,7 +49,7 @@ public class TransactionRequestRetrievalService {
     }
 
     // FIXME remove optional map
-    public List<? extends PaymentResponse> pushPayments(String token, Optional<Map<String, String>> extraHeaders, String url, List<? extends Payment> payments, JavaType reference) {
+    public List<PaymentResponse> pushPayments(String token, Optional<Map<String, String>> extraHeaders, String url, List<? extends Payment> payments, JavaType reference) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -62,7 +62,6 @@ public class TransactionRequestRetrievalService {
         try {
             for (Payment payment : payments) {
                 if (payment instanceof DeutschePayment) {
-                    System.out.println("Deutsche payment processing now");
                     Map<String, String> headerInfo = deutscheMultiFactor.prepareAuthorisation(token,
                             ((DeutschePayment) payment).getCreditorAccount().getIban(),
                             ((DeutschePayment) payment).getInstructedAmount().getCurrencyCode(),
@@ -70,7 +69,7 @@ public class TransactionRequestRetrievalService {
                     headers.set("otp", headerInfo.get("otp"));
                     headers.set("idempotency-id", headerInfo.get("idempotency-id"));
                 } else {
-                    payment.setIdentifyingInformation(generateIdentification(/*extraHeaders*/));
+                    payment.setIdentifyingInformation(generateIdentification());
                 }
                 response = template.exchange(url, HttpMethod.POST, new HttpEntity<>(payment, headers), String.class);
                 responses.add(mapper.readValue(response.getBody(), reference));

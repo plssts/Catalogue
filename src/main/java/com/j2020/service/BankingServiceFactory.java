@@ -9,10 +9,14 @@ import com.j2020.service.deutsche.DeutscheAccountService;
 import com.j2020.service.deutsche.DeutscheTransactionService;
 import com.j2020.service.revolut.RevolutAccountService;
 import com.j2020.service.revolut.RevolutTransactionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BankingServiceFactory {
+public class BankingServiceFactory { //++final
+    private static final Logger logger = LoggerFactory.getLogger(BankingServiceFactory.class);
+
     private RevolutAccountService revAccountService;
     private DeutscheAccountService dbAccountService;
     private RevolutTransactionService revTransactionService;
@@ -29,6 +33,7 @@ public class BankingServiceFactory {
     public AccountService retrieveAccountService(Bank bankingService) {
         switch (bankingService) {
             case REVOLUT:
+                logger.info("Working with {}", bankingService.getClass().getName());
                 return revAccountService;
 
             case DEUTSCHE:

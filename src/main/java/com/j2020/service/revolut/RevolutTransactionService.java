@@ -37,7 +37,7 @@ public class RevolutTransactionService implements TransactionService {
     }
 
     @Override
-    public List<? extends Transaction> retrieveTransactionData(Optional<List<String>> accountIds) {
+    public List<Transaction> retrieveTransactionData(Optional<List<String>> accountIds) {
         try {
             String OAuthToken = tokenRenewal.getToken();
             JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, RevolutTransaction.class);
@@ -49,8 +49,8 @@ public class RevolutTransactionService implements TransactionService {
     }
 
     @Override
-    public List<? extends PaymentResponse> createPayments(List<? extends Payment> payments) {
-        if (payments.isEmpty()){
+    public List<PaymentResponse> createPayments(List<Payment> payments) {
+        if (payments == null){
             return new ArrayList<>();
         }
 

@@ -22,7 +22,7 @@ import java.util.List;
 
 @Service
 public class AccountRequestRetrievalService {
-    public List<? extends Account> retrieveAccounts(String token, String url, JavaType reference) {
+    public List<Account> retrieveAccounts(String token, String url, JavaType reference) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
 

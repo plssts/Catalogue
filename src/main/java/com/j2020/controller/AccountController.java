@@ -23,11 +23,11 @@ public class AccountController {
     }
 
     @GetMapping("/accounts")
-    public ResponseEntity<Map<Bank, List<? extends Account>>> readAccounts() {
-        List<? extends Account> accountsRevo = bankingService.retrieveAccountService(Bank.REVOLUT).retrieveAccountData(Optional.empty());
-        List<? extends Account> accountsDeut = bankingService.retrieveAccountService(Bank.DEUTSCHE).retrieveAccountData(Optional.empty());
+    public ResponseEntity<Map<Bank, List<Account>>> readAccounts() {
+        List<Account> accountsRevo = bankingService.retrieveAccountService(Bank.REVOLUT).retrieveAccountData(Optional.empty());
+        List<Account> accountsDeut = bankingService.retrieveAccountService(Bank.DEUTSCHE).retrieveAccountData(Optional.empty());
 
-        Map<Bank, List<? extends Account>> outcome = new EnumMap<>(Bank.class);
+        Map<Bank, List<Account>> outcome = new EnumMap<>(Bank.class);
         outcome.put(Bank.REVOLUT, accountsRevo);
         outcome.put(Bank.DEUTSCHE, accountsDeut);
 

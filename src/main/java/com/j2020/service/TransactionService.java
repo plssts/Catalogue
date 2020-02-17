@@ -8,6 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TransactionService {
-    List<? extends Transaction> retrieveTransactionData(Optional<List<String>> accountIds);
-    List<? extends PaymentResponse> createPayments(List<? extends Payment> payments);
+    List<Transaction> retrieveTransactionData(Optional<List<String>> accountIds);
+    List<PaymentResponse> createPayments(List<Payment> payments);
 }

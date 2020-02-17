@@ -7,7 +7,7 @@ public class RevolutTransaction implements Transaction {
     private String id;
     private String type;
 
-    @JsonProperty(value = "request_id", required = false)
+    @JsonProperty(value = "request_id"/*, required = false*/)
     private String requestId;
 
     private String state;
@@ -18,22 +18,22 @@ public class RevolutTransaction implements Transaction {
     @JsonProperty(value = "updated_at")
     private String dateOfUpdating;
 
-    @JsonProperty(value = "completed_at", required = false)
+    @JsonProperty(value = "completed_at"/*, required = false*/)
     private String dateOfCompleting;
 
-    @JsonProperty(value = "related_transaction_id", required = false)
+    @JsonProperty(value = "related_transaction_id"/*, required = false*/)
     private String relatedTransactionId;
 
-    @JsonProperty(required = false)
+    @JsonProperty(/*required = false*/)
     private String reference;
 
-    @JsonProperty(required = false)
+    @JsonProperty(/*required = false*/)
     private RevolutTransactionMerchant merchant;
 
     @JsonProperty(value = "legs")
     private RevolutTransactionLeg[] revolutLegs;
 
-    @JsonProperty(required = false)
+    @JsonProperty(/*required = false*/)
     private RevolutTransactionCard card;
 
     public String getId() {

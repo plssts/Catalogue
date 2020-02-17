@@ -10,5 +10,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AccountService {
-    List<? extends Account> retrieveAccountData(Optional<String> specificAccount);
+    List<Account> retrieveAccountData(Optional<String> specificAccount);
 }

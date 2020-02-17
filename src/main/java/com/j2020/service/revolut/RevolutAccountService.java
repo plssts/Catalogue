@@ -34,7 +34,7 @@ public class RevolutAccountService implements AccountService {
     }
 
     @Override
-    public List<? extends Account> retrieveAccountData(Optional<String> specificAccount) {
+    public List<Account> retrieveAccountData(Optional<String> specificAccount) {
         try {
             String OAuthToken = tokenRenewal.getToken();
             JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, RevolutAccount.class);

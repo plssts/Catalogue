@@ -65,8 +65,7 @@ public class RevolutServicesTest {
                 eq(type)));
 
         List<? extends Account> actual = accountService.retrieveAccountData(Optional.empty());
-        System.out.println(accounts);
-        System.out.println(actual);
+
         assertEquals(accounts, actual);
     }
 }

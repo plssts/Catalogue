@@ -40,7 +40,7 @@ public class DeutscheTransactionService implements TransactionService {
     }
 
     @Override
-    public List<? extends Transaction> retrieveTransactionData(Optional<List<String>> ibans) {
+    public List<Transaction> retrieveTransactionData(Optional<List<String>> ibans) {
         try {
             if (!ibans.isPresent()) {
                 return new ArrayList<>();
@@ -66,8 +66,8 @@ public class DeutscheTransactionService implements TransactionService {
     @Override
     @Validated(DeutschePayment.class)
     // FIXME move urls to application.properties
-    public List<? extends PaymentResponse> createPayments(List<? extends Payment> payments) {
-        if (payments.isEmpty()){
+    public List<PaymentResponse> createPayments(List<Payment> payments) {
+        if (payments == null){
             return new ArrayList<>();
         }
 
