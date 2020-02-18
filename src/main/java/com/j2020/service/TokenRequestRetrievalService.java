@@ -21,22 +21,14 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class TokenRequestRetrievalService {
-    public TokenRenewalResponse retrieveToken(MultiValueMap<String, String> params, String uri, JavaType reference) {
+    public TokenRenewalResponse retrieveToken(MultiValueMap<String, String> params, String uri, JavaType reference) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
         RestTemplate template = new RestTemplateBuilder().build();
-        ResponseEntity<String> response;
+        ResponseEntity<String> response = template.postForEntity(uri, request, String.class);
 
-        try {
-            response = template.postForEntity(uri, request, String.class);
-
-            return new ObjectMapper().readValue(response.getBody(), reference);
-
-        } catch (JsonProcessingException | HttpClientErrorException exception) {
-            exception.printStackTrace();
-            throw new TokenFetchException();
-        }
+        return new ObjectMapper().readValue(response.getBody(), reference);
     }
 }

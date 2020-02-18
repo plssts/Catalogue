@@ -1,13 +1,11 @@
 package com.j2020.service.deutsche;
 
-import com.j2020.controller.TransactionController;
 import com.j2020.model.GeneralPayment;
 import com.j2020.model.MissingPaymentRequestDataException;
 import com.j2020.model.deutsche.DeutschePayment;
 import com.j2020.model.deutsche.DeutscheSepaPaymentAccount;
 import com.j2020.model.deutsche.DeutscheSepaPaymentAmount;
 import com.j2020.model.deutsche.DeutscheSepaPaymentRequestData;
-import com.j2020.service.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -15,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class DeutscheMapperService implements Mapper {
+public class DeutscheMapperService {
     private static final Logger logger = LoggerFactory.getLogger(DeutscheMapperService.class);
 
     public DeutschePayment toDeutschePayment(GeneralPayment payment) {

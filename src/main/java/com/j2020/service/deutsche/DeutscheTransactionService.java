@@ -1,6 +1,6 @@
 package com.j2020.service.deutsche;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.model.*;
@@ -12,10 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
+//import com.diffplug.durian;
+//import static Throwing.rethrow;
 
-import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
 @Validated
 public class DeutscheTransactionService implements TransactionService {
     private static final Logger logger = LoggerFactory.getLogger(DeutscheTransactionService.class);
-    private DeutscheTokenService tokenRenewal;
-    private TransactionRequestRetrievalService transactionRetrieval;
-    private DeutscheMapperService deutscheMapper;
+    private final DeutscheTokenService tokenRenewal;
+    private final TransactionRequestRetrievalService transactionRetrieval;
+    private final DeutscheMapperService deutscheMapper;
 
     @Value("${deutscheTransaction.ibanAvailableUrlPrepend}")
     private String ibanOnUrlPrepend;
@@ -43,31 +43,37 @@ public class DeutscheTransactionService implements TransactionService {
     }
 
     @Override
-    public List<Transaction> retrieveTransactionData(Optional<List<String>> ibans) {
-        try {
-            if (!ibans.isPresent()) {
+    public List<Transaction> retrieveTransactionData(List<String> ibans) {
+        //try {
+            if (ibans == null) {
                 return new ArrayList<>();
             }
 
             String accessToken = tokenRenewal.getToken();
             JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, DeutscheTransaction.class);
 
-            return ibans.get().stream()
-                    .flatMap(current -> transactionRetrieval
-                            .retrieveTransactions(accessToken, UriComponentsBuilder
-                                    .fromUriString(transactionUrl)
-                                    .queryParam("iban", current)
-                                    .toUriString(), type)
-                            .stream())
+            return ibans.stream()
+                    .flatMap(current -> {
+                        try {
+                            return transactionRetrieval
+                                    .retrieveTransactions(accessToken, UriComponentsBuilder
+                                            .fromUriString(transactionUrl)
+                                            .queryParam("iban", current)
+                                            .toUriString(), type)
+                                    .stream();
+                        } catch (JsonProcessingException exception) {
+                            throw new JsonProcessingExceptionLambdaWrapper(exception.getMessage());
+                        }
+                    })
                     .collect(Collectors.toList());
 
-        } catch (HttpClientErrorException exception) {
-            throw new TokenFetchException();
-        }
+        //} catch (HttpClientErrorException exception) {
+            //throw new TokenFetchException();
+        //}
     }
 
     @Override
-    public List<PaymentResponse> createPayments(List<GeneralPayment> payments) {
+    public List<PaymentResponse> createPayments(List<GeneralPayment> payments) throws JsonProcessingException {
         if (payments == null) {
             logger.info("No payments included for Deutsche Bank. Skipping.");
             return new ArrayList<>();
@@ -78,6 +84,6 @@ public class DeutscheTransactionService implements TransactionService {
         logger.info("Constructing and validating Deutsche Bank payments");
         payments.forEach(payment -> parsedPayments.add(deutscheMapper.toDeutschePayment(payment)));
 
-        return transactionRetrieval.pushPayments(tokenRenewal.getToken(), Optional.empty(), paymentUrl, parsedPayments, new ObjectMapper().getTypeFactory().constructType(DeutschePaymentResponse.class));
+        return transactionRetrieval.pushPayments(tokenRenewal.getToken(), paymentUrl, parsedPayments, new ObjectMapper().getTypeFactory().constructType(DeutschePaymentResponse.class));
     }
 }

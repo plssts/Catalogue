@@ -4,9 +4,13 @@
 
 package com.j2020.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.j2020.model.Account;
 import com.j2020.model.Bank;
+import com.j2020.service.AccountProcessingService;
 import com.j2020.service.BankingServiceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,21 +19,18 @@ import java.util.*;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
+@RequestMapping("/accounts")
 public class AccountController {
-    private BankingServiceFactory bankingService;
+    private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
+    private final AccountProcessingService accountProcessing;
 
-    public AccountController(BankingServiceFactory bankingService) {
-        this.bankingService = bankingService;
+    public AccountController(AccountProcessingService accountProcessing) {
+        this.accountProcessing = accountProcessing;
     }
 
-    @GetMapping("/accounts")
-    public ResponseEntity<Map<String, List<Account>>> readAccounts() {
-        List<Account> accountsRevo = bankingService.retrieveAccountService(Bank.REVOLUT).retrieveAccountData(Optional.empty());
-        List<Account> accountsDeut = bankingService.retrieveAccountService(Bank.DEUTSCHE).retrieveAccountData(Optional.empty());
-
-        Map<String, List<Account>> outcome = new HashMap<>();
-        outcome.put(Bank.REVOLUT.toString(), accountsRevo);
-        outcome.put(Bank.DEUTSCHE.toString(), accountsDeut);
+    @GetMapping
+    public ResponseEntity<Map<String, List<Account>>> readAccounts() throws JsonProcessingException {
+        Map<String, List<Account>> outcome = accountProcessing.collectAccountResponse();
 
         return ok(outcome);
     }

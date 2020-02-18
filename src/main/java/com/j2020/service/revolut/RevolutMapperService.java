@@ -1,15 +1,9 @@
 package com.j2020.service.revolut;
 
-import com.j2020.controller.TransactionController;
 import com.j2020.model.GeneralPayment;
 import com.j2020.model.MissingPaymentRequestDataException;
-import com.j2020.model.deutsche.DeutschePayment;
-import com.j2020.model.deutsche.DeutscheSepaPaymentAccount;
-import com.j2020.model.deutsche.DeutscheSepaPaymentAmount;
-import com.j2020.model.deutsche.DeutscheSepaPaymentRequestData;
 import com.j2020.model.revolut.RevolutPayment;
 import com.j2020.model.revolut.RevolutTransactionLegCounterparty;
-import com.j2020.service.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class RevolutMapperService implements Mapper {
+public class RevolutMapperService {
     private static final Logger logger = LoggerFactory.getLogger(RevolutMapperService.class);
 
     public RevolutPayment toRevolutPayment(GeneralPayment payment) {

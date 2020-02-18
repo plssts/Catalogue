@@ -4,9 +4,13 @@
 
 package com.j2020.service.revolut;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.j2020.model.TokenFetchException;
 import com.j2020.model.TokenRenewalResponse;
+import com.j2020.model.deutsche.DeutscheSepaPaymentRequest;
+import com.j2020.model.deutsche.DeutscheTokenRenewalResponse;
 import com.j2020.model.revolut.RevolutTokenRenewalResponse;
 import com.j2020.service.TokenRequestRetrievalService;
 import com.j2020.service.TokenService;
@@ -17,17 +21,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 
 @Service
 public class RevolutTokenService implements TokenService {
-    private TokenRequestRetrievalService tokenRetrieval;
+    private final TokenRequestRetrievalService tokenRetrieval;
     private String currentToken;
     private LocalDateTime lastRefreshDayTime;
     private long tokenValidFor;
-    private MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    private final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
     private static final Logger logger = LoggerFactory.getLogger(RevolutTokenService.class);
 
@@ -60,7 +65,13 @@ public class RevolutTokenService implements TokenService {
 
     public void refreshToken() {
         JavaType type = new ObjectMapper().getTypeFactory().constructType(RevolutTokenRenewalResponse.class);
-        TokenRenewalResponse renewalResponse = tokenRetrieval.retrieveToken(params, revoTokenRenewalUri, type);
+        TokenRenewalResponse renewalResponse;
+
+        try {
+            renewalResponse = tokenRetrieval.retrieveToken(params, revoTokenRenewalUri, type);
+        } catch (HttpClientErrorException | JsonProcessingException exception) {
+            throw new TokenFetchException("Could not fetch token for Revolut. " + exception.getMessage());
+        }
 
         currentToken = renewalResponse.getAccessToken();
         tokenValidFor = renewalResponse.getSecondsUntilExpiring();
@@ -74,6 +85,7 @@ public class RevolutTokenService implements TokenService {
         params.add("client_id", revoClientId);
         params.add("client_assertion_type", clAssertType);
         params.add("client_assertion", OAuthJWT);
+
         refreshToken();
     }
 }

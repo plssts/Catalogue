@@ -22,24 +22,19 @@ import java.util.List;
 
 @Service
 public class AccountRequestRetrievalService {
-    public List<Account> retrieveAccounts(String token, String url, JavaType reference) {
+    public List<Account> retrieveAccounts(String token, String url, JavaType reference) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
 
         RestTemplate template = new RestTemplateBuilder().build();
-        ResponseEntity<String> response;
-        try {
-            response = template.exchange(url, HttpMethod.GET, new HttpEntity(headers), String.class);
+        ResponseEntity<String> response = template.exchange(url, HttpMethod.GET, new HttpEntity(headers), String.class);
 
-            String content = response.getBody();
-            StringBuilder builder = new StringBuilder(content);
-            if (!content.startsWith("[")) {
-                builder.insert(0, "[").append("]");
-            }
-
-            return new ObjectMapper().readValue(builder.toString(), reference);
-        } catch (JsonProcessingException | HttpClientErrorException exception) {
-            throw new TokenFetchException();
+        String content = response.getBody();
+        StringBuilder builder = new StringBuilder(content);
+        if (!content.startsWith("[")) {
+            builder.insert(0, "[").append("]");
         }
+
+        return new ObjectMapper().readValue(builder.toString(), reference);
     }
 }

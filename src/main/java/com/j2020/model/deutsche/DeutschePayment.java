@@ -12,17 +12,6 @@ public class DeutschePayment implements Payment {
     private String creditorName;
     private DeutscheSepaPaymentAccount creditorAccount;
 
-    public DeutschePayment() {
-
-    }
-
-    public DeutschePayment(DeutscheSepaPaymentAccount debtorAccount, DeutscheSepaPaymentAmount instructedAmount, String creditorName, DeutscheSepaPaymentAccount creditorAccount) {
-        this.debtorAccount = debtorAccount;
-        this.instructedAmount = instructedAmount;
-        this.creditorAccount = creditorAccount;
-        this.creditorName = creditorName;
-    }
-
     @Override
     public Float getAmount() {
         return Float.valueOf(instructedAmount.getAmount());

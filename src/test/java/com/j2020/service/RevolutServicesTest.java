@@ -1,5 +1,6 @@
 package com.j2020.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.model.Account;
@@ -46,16 +47,8 @@ public class RevolutServicesTest {
     }
 
     @Test
-    public void getAccounts() {
-        List<RevolutAccount> accounts = new ArrayList<>();
-        RevolutAccount demoResponseAccountOne = new RevolutAccount("800", "savings", 500.1f,
-                "EUR", "active", false, LocalDateTime.now().toString(), LocalDateTime.now().toString());
-
-        RevolutAccount demoResponseAccountTwo = new RevolutAccount("801", "business", 3700f,
-                "USD", "active", true, LocalDateTime.now().toString(), LocalDateTime.now().toString());
-
-        accounts.add(demoResponseAccountOne);
-        accounts.add(demoResponseAccountTwo);
+    public void getAccountsNormalConditions() throws JsonProcessingException {
+        List<RevolutAccount> accounts = generateAccounts();
 
         JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, RevolutAccount.class);
 
@@ -64,8 +57,37 @@ public class RevolutServicesTest {
                 eq("https://sandbox-b2b.revolut.com/api/1.0/accounts"),
                 eq(type)));
 
-        List<? extends Account> actual = accountService.retrieveAccountData(Optional.empty());
+        List<? extends Account> actual = accountService.retrieveAccountData();
 
         assertEquals(accounts, actual);
+    }
+
+    private List<RevolutAccount> generateAccounts(){
+        List<RevolutAccount> accounts = new ArrayList<>();
+
+        RevolutAccount demoResponseAccountOne = new RevolutAccount();
+        demoResponseAccountOne.setAccountId("800");
+        demoResponseAccountOne.setName("savings");
+        demoResponseAccountOne.setBalance(500.1f);
+        demoResponseAccountOne.setCurrency("EUR");
+        demoResponseAccountOne.setState("active");
+        demoResponseAccountOne.setPublic(false);
+        demoResponseAccountOne.setDateOfCreating(LocalDateTime.now().toString());
+        demoResponseAccountOne.setDateOfUpdating(LocalDateTime.now().toString());
+
+        RevolutAccount demoResponseAccountTwo = new RevolutAccount();
+        demoResponseAccountTwo.setAccountId("801");
+        demoResponseAccountTwo.setName("business");
+        demoResponseAccountTwo.setBalance(3700f);
+        demoResponseAccountTwo.setCurrency("EUR");
+        demoResponseAccountTwo.setState("active");
+        demoResponseAccountTwo.setPublic(true);
+        demoResponseAccountTwo.setDateOfCreating(LocalDateTime.now().toString());
+        demoResponseAccountTwo.setDateOfUpdating(LocalDateTime.now().toString());
+
+        accounts.add(demoResponseAccountOne);
+        accounts.add(demoResponseAccountTwo);
+
+        return accounts;
     }
 }

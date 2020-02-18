@@ -21,21 +21,6 @@ public class RevolutAccount implements Account {
     @JsonProperty(value = "updated_at")
     private String dateOfUpdating;
 
-    public RevolutAccount(){
-
-    }
-
-    public RevolutAccount(String accountId, String name, Float balance, String currency, String state, Boolean isPublic, String dateOfCreating, String dateOfUpdating) {
-        this.accountId = accountId;
-        this.name = name;
-        this.balance = balance;
-        this.currency = currency;
-        this.state = state;
-        this.isPublic = isPublic;
-        this.dateOfCreating = dateOfCreating;
-        this.dateOfUpdating = dateOfUpdating;
-    }
-
     @Override
     public String getAccountId() {
         return accountId;

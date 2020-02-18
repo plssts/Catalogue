@@ -4,6 +4,7 @@
 
 package com.j2020.service.deutsche;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.model.Account;
@@ -21,8 +22,8 @@ import java.util.Optional;
 
 @Service
 public class DeutscheAccountService implements AccountService {
-    private DeutscheTokenService tokenRenewal;
-    private AccountRequestRetrievalService accountRetrieval;
+    private final DeutscheTokenService tokenRenewal;
+    private final AccountRequestRetrievalService accountRetrieval;
 
     @Value("${deutscheAccount.accountUrl}")
     private String accountUrl;
@@ -34,20 +35,10 @@ public class DeutscheAccountService implements AccountService {
     }
 
     @Override
-    public List<Account> retrieveAccountData(Optional<String> specificAccount) {
-        try {
-            String accessToken = tokenRenewal.getToken();
-            JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, DeutscheAccount.class);
-            UriComponentsBuilder uriBuilder;
+    public List<Account> retrieveAccountData() throws JsonProcessingException {
+        String accessToken = tokenRenewal.getToken();
+        JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, DeutscheAccount.class);
 
-            if (specificAccount.isPresent()) {
-                uriBuilder = UriComponentsBuilder.fromUriString(accountUrl).queryParam("iban", specificAccount.get());
-                return accountRetrieval.retrieveAccounts(accessToken, uriBuilder.toUriString(), type);
-            } else {
-                return accountRetrieval.retrieveAccounts(accessToken, accountUrl, type);
-            }
-        } catch (HttpClientErrorException exception) {
-            throw new TokenFetchException();
-        }
+        return accountRetrieval.retrieveAccounts(accessToken, accountUrl, type);
     }
 }

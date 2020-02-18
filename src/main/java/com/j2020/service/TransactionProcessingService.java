@@ -1,9 +1,7 @@
 package com.j2020.service;
 
-import com.j2020.model.Bank;
-import com.j2020.model.BankNotSupportedException;
-import com.j2020.model.GeneralPayment;
-import com.j2020.model.PaymentResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.j2020.model.*;
 import com.j2020.model.revolut.RevolutPaymentResponse;
 import com.j2020.service.deutsche.DeutscheTransactionService;
 import org.apache.commons.lang3.EnumUtils;
@@ -18,17 +16,16 @@ import java.util.stream.Stream;
 
 @Service
 public class TransactionProcessingService {
-    private BankingServiceFactory bankingService;
+    private final BankingServiceFactory bankingService;
     private static final Logger logger = LoggerFactory.getLogger(TransactionProcessingService.class);
 
     public TransactionProcessingService(BankingServiceFactory bankingService) {
         this.bankingService = bankingService;
     }
 
-    public Map<String, List<PaymentResponse>> initiatePaymentRequests(Map<String, List<GeneralPayment>> params) {
-        System.out.println(Arrays.toString(Bank.values()) + " contains " + params.keySet().toString());
-
+    public Map<String, List<PaymentResponse>> initiatePaymentRequests(Map<String, List<GeneralPayment>> params) throws JsonProcessingException {
         if (!Arrays.stream(params.keySet().toArray()).allMatch(bank -> EnumUtils.isValidEnum(Bank.class, bank.toString()))) {
+            logger.error("Detected requests for bank services that are not supported");
             throw new BankNotSupportedException("Requested payments for services " + Arrays.toString(params.keySet().toArray()) + " do not correspond to supported services of " + Arrays.toString(Bank.values()));
         }
 
@@ -36,15 +33,34 @@ public class TransactionProcessingService {
         List<PaymentResponse> deutscheResponses = new ArrayList<>();
 
         if (params.containsKey(Bank.REVOLUT.toString())){
+            logger.info("Processing Revolut transactions");
             revolutResponses = bankingService.retrieveTransactionService(Bank.REVOLUT).createPayments(params.get(Bank.REVOLUT.toString()));
         }
         if (params.containsKey(Bank.DEUTSCHE.toString())){
+            logger.info("Retrieving Deutsche Bank transactions");
             deutscheResponses = bankingService.retrieveTransactionService(Bank.DEUTSCHE).createPayments(params.get(Bank.DEUTSCHE.toString()));
         }
 
         Map<String, List<PaymentResponse>> outcome = new HashMap<>();
         outcome.put(Bank.REVOLUT.toString(), revolutResponses);
         outcome.put(Bank.DEUTSCHE.toString(), deutscheResponses);
+
+        return outcome;
+    }
+
+    public Map<String, List<Transaction>> collectPaymentResponse() throws JsonProcessingException {
+        logger.info("Retrieving Revolut transactions");
+        List<Transaction> transactionsRevo = bankingService.retrieveTransactionService(Bank.REVOLUT).retrieveTransactionData(null);
+
+        logger.info("Collecting Deutsche Bank accounts and corresponding transactions");
+        List<String> ibans = bankingService.retrieveAccountService(Bank.DEUTSCHE)
+                .retrieveAccountData().stream()
+                .map(Account::getAccountId).collect(Collectors.toList());
+        List<Transaction> transactionsDeut = bankingService.retrieveTransactionService(Bank.DEUTSCHE).retrieveTransactionData(ibans);
+
+        Map<String, List<Transaction>> outcome = new HashMap<>();
+        outcome.put(Bank.REVOLUT.toString(), transactionsRevo);
+        outcome.put(Bank.DEUTSCHE.toString(), transactionsDeut);
 
         return outcome;
     }

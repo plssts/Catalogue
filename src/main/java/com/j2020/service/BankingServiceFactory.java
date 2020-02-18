@@ -5,6 +5,7 @@
 package com.j2020.service;
 
 import com.j2020.model.Bank;
+import com.j2020.model.BankNotSupportedException;
 import com.j2020.service.deutsche.DeutscheAccountService;
 import com.j2020.service.deutsche.DeutscheTransactionService;
 import com.j2020.service.revolut.RevolutAccountService;
@@ -39,7 +40,7 @@ public class BankingServiceFactory {
             case DEUTSCHE:
                 return dbAccountService;
         }
-        throw new RuntimeException("Should never happen since GetMapping prevents this");
+        throw new BankNotSupportedException("Should never happen since mapping prevents this");
     }
 
     public TransactionService retrieveTransactionService(Bank bankingService) {
@@ -51,6 +52,6 @@ public class BankingServiceFactory {
             case DEUTSCHE:
                 return dbTransactionService;
         }
-        throw new RuntimeException("Should never happen since GetMapping prevents this");
+        throw new BankNotSupportedException("Should never happen since mapping prevents this");
     }
 }
