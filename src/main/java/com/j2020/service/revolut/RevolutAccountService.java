@@ -9,19 +9,18 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.model.Account;
 import com.j2020.model.revolut.RevolutAccount;
-import com.j2020.model.TokenFetchException;
 import com.j2020.service.AccountRequestRetrievalService;
 import com.j2020.service.AccountService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RevolutAccountService implements AccountService {
+    private static final Logger logger = LoggerFactory.getLogger(RevolutAccountService.class);
     private final RevolutTokenService tokenRenewal;
     private final AccountRequestRetrievalService accountRetrieval;
 
@@ -36,6 +35,7 @@ public class RevolutAccountService implements AccountService {
 
     @Override
     public List<Account> retrieveAccountData() throws JsonProcessingException {
+        logger.info("Fetching Revolut accounts");
         String OAuthToken = tokenRenewal.getToken();
         JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, RevolutAccount.class);
 

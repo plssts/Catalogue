@@ -1,3 +1,7 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.model.deutsche;
 
 public class DeutscheSepaPaymentRequest {
@@ -6,7 +10,7 @@ public class DeutscheSepaPaymentRequest {
     private DeutscheSepaPaymentRequestData requestData;
     private String language = "de";
 
-    public DeutscheSepaPaymentRequest(){
+    public DeutscheSepaPaymentRequest() {
 
     }
 

@@ -1,3 +1,7 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.service.revolut;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RevolutTransactionService implements TransactionService {

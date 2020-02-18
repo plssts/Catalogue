@@ -7,14 +7,12 @@ import com.j2020.model.*;
 import com.j2020.model.deutsche.DeutschePayment;
 import com.j2020.model.deutsche.DeutscheSepaPaymentRequestData;
 import com.j2020.service.deutsche.DeutscheMultiFactorService;
-import com.j2020.service.deutsche.DeutscheTransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -47,7 +45,6 @@ public class TransactionRequestRetrievalService {
         return new ObjectMapper().readValue(builder.toString(), reference);
     }
 
-    // FIXME remove optional map
     public List<PaymentResponse> pushPayments(String token, String url, List<? extends Payment> payments, JavaType reference) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
@@ -55,33 +52,28 @@ public class TransactionRequestRetrievalService {
 
         RestTemplate template = new RestTemplateBuilder().build();
         ResponseEntity<String> response;
-        List responses = new ArrayList<>();
+        List<PaymentResponse> responses = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
 
-        //try {
-            for (Payment payment : payments) {
-                if (payment instanceof DeutschePayment) {
-                    Map<String, String> headerInfo = deutscheMultiFactor.prepareAuthorisation(token,
-                            ((DeutschePayment) payment).getCreditorAccount().getIban(),
-                            ((DeutschePayment) payment).getInstructedAmount().getCurrencyCode(),
-                            DeutscheSepaPaymentRequestData.formatValue(((DeutschePayment) payment).getInstructedAmount().getAmount()));
-                    headers.set("otp", headerInfo.get("otp"));
-                    headers.set("idempotency-id", headerInfo.get("idempotency-id"));
-                } else {
-                    payment.setIdentifyingInformation(generateIdentification());
-                }
-
-                logger.info("Processing {}", payment);
-
-                response = template.exchange(url, HttpMethod.POST, new HttpEntity<>(payment, headers), String.class);
-                responses.add(mapper.readValue(response.getBody(), reference));
+        for (Payment payment : payments) {
+            if (payment instanceof DeutschePayment) {
+                Map<String, String> headerInfo = deutscheMultiFactor.prepareAuthorisation(token,
+                        ((DeutschePayment) payment).getCreditorAccount().getIban(),
+                        ((DeutschePayment) payment).getInstructedAmount().getCurrencyCode(),
+                        DeutscheSepaPaymentRequestData.formatValue(((DeutschePayment) payment).getInstructedAmount().getAmount()));
+                headers.set("otp", headerInfo.get("otp"));
+                headers.set("idempotency-id", headerInfo.get("idempotency-id"));
+            } else {
+                payment.setIdentifyingInformation(generateIdentification());
             }
 
-            return responses;
-        //} catch (JsonProcessingException | HttpClientErrorException exception) {
-            //exception.printStackTrace();
-            //throw new TokenFetchException();
-        //}
+            logger.info("Processing {}", payment);
+
+            response = template.exchange(url, HttpMethod.POST, new HttpEntity<>(payment, headers), String.class);
+            responses.add(mapper.readValue(response.getBody(), reference));
+        }
+
+        return responses;
     }
 
     private String generateIdentification() {

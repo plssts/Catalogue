@@ -1,3 +1,7 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.model.deutsche;
 
 public class DeutscheSepaPaymentRequestData {
@@ -19,11 +23,11 @@ public class DeutscheSepaPaymentRequestData {
     public static String formatValue(String value) {
         StringBuilder builder = new StringBuilder(value);
 
-        if (builder.indexOf(".") > 0){
-            while (builder.substring(builder.length() - 1).equals("0")){
+        if (builder.indexOf(".") > 0) {
+            while (builder.substring(builder.length() - 1).equals("0")) {
                 builder = builder.deleteCharAt(builder.length() - 1);
             }
-            if (builder.substring(builder.length() - 1).equals(".")){
+            if (builder.substring(builder.length() - 1).equals(".")) {
                 builder = builder.deleteCharAt(builder.length() - 1);
             }
         }

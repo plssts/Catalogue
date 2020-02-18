@@ -7,7 +7,6 @@ package com.j2020.service.deutsche;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.j2020.controller.TransactionController;
 import com.j2020.model.TokenFetchException;
 import com.j2020.model.deutsche.DeutscheTokenRenewalResponse;
 import com.j2020.model.TokenRenewalResponse;

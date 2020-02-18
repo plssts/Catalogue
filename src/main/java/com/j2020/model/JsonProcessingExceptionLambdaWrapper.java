@@ -1,6 +1,8 @@
-package com.j2020.model;
+/**
+ * @author Paulius Staisiunas
+ */
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+package com.j2020.model;
 
 public class JsonProcessingExceptionLambdaWrapper extends RuntimeException {
     public JsonProcessingExceptionLambdaWrapper(String message) {

@@ -1,9 +1,12 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.service.revolut;
 
 import com.j2020.model.GeneralPayment;
 import com.j2020.model.MissingPaymentRequestDataException;
-import com.j2020.model.revolut.RevolutPayment;
-import com.j2020.model.revolut.RevolutTransactionLegCounterparty;
+import com.j2020.model.revolut.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,7 +34,7 @@ public class RevolutMapperService {
         String reference;
         String counterparty;
 
-        if (payment.getAdditionalInfo() != null){
+        if (payment.getAdditionalInfo() != null) {
             reference = Optional.ofNullable(payment.getAdditionalInfo().get("reference"))
                     .orElseThrow(() -> new MissingPaymentRequestDataException(payment + " has no reference specified under 'additionalInfo'"));
             counterparty = Optional.ofNullable(payment.getAdditionalInfo().get("counterparty"))

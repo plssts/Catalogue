@@ -1,3 +1,7 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.service.deutsche;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,16 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.util.UriComponentsBuilder;
-//import com.diffplug.durian;
-//import static Throwing.rethrow;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Validated
 public class DeutscheTransactionService implements TransactionService {
     private static final Logger logger = LoggerFactory.getLogger(DeutscheTransactionService.class);
     private final DeutscheTokenService tokenRenewal;
@@ -44,32 +44,27 @@ public class DeutscheTransactionService implements TransactionService {
 
     @Override
     public List<Transaction> retrieveTransactionData(List<String> ibans) {
-        //try {
-            if (ibans == null) {
-                return new ArrayList<>();
-            }
+        if (ibans == null) {
+            return new ArrayList<>();
+        }
 
-            String accessToken = tokenRenewal.getToken();
-            JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, DeutscheTransaction.class);
+        String accessToken = tokenRenewal.getToken();
+        JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, DeutscheTransaction.class);
 
-            return ibans.stream()
-                    .flatMap(current -> {
-                        try {
-                            return transactionRetrieval
-                                    .retrieveTransactions(accessToken, UriComponentsBuilder
-                                            .fromUriString(transactionUrl)
-                                            .queryParam("iban", current)
-                                            .toUriString(), type)
-                                    .stream();
-                        } catch (JsonProcessingException exception) {
-                            throw new JsonProcessingExceptionLambdaWrapper(exception.getMessage());
-                        }
-                    })
-                    .collect(Collectors.toList());
-
-        //} catch (HttpClientErrorException exception) {
-            //throw new TokenFetchException();
-        //}
+        return ibans.stream()
+                .flatMap(current -> {
+                    try {
+                        return transactionRetrieval
+                                .retrieveTransactions(accessToken, UriComponentsBuilder
+                                        .fromUriString(transactionUrl)
+                                        .queryParam("iban", current)
+                                        .toUriString(), type)
+                                .stream();
+                    } catch (JsonProcessingException exception) {
+                        throw new JsonProcessingExceptionLambdaWrapper(exception.getMessage());
+                    }
+                })
+                .collect(Collectors.toList());
     }
 
     @Override

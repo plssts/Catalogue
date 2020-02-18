@@ -1,6 +1,9 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.service.deutsche;
 
-import com.j2020.controller.TransactionController;
 import com.j2020.model.deutsche.DeutscheOneTimePassword;
 import com.j2020.model.deutsche.DeutschePhototanChallengeResponse;
 import com.j2020.model.deutsche.DeutschePhototanResponse;
@@ -15,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,20 +28,21 @@ public class DeutscheMultiFactorService {
     @Value("${deutscheTransaction.twoFactorSecret}")
     private String twoFactorSecret;
 
-    private final GoogleAuthenticator auth = new GoogleAuthenticator();
+    @Value("${deutscheTransaction.oneTimePassUrl}")
+    private String oneTimePassUrl;
 
+    private final GoogleAuthenticator auth = new GoogleAuthenticator();
     private static final Logger logger = LoggerFactory.getLogger(DeutscheMultiFactorService.class);
 
-    public String getOneTimePass(){
+    public String getOneTimePass() {
         StringBuilder otpValue = new StringBuilder(String.valueOf(auth.getTotpPassword(twoFactorSecret)));
-        while (otpValue.length() < 6){
+        while (otpValue.length() < 6) {
             otpValue.insert(0, "0");
         }
         return otpValue.toString();
     }
 
-    // FIXME move urls to application.properties
-    public Map<String, String> prepareAuthorisation(String token, String targetIban, String currency, String amount){
+    public Map<String, String> prepareAuthorisation(String token, String targetIban, String currency, String amount) {
         logger.info("Negotiating OTP for target account {}", targetIban);
 
         RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
@@ -45,16 +50,13 @@ public class DeutscheMultiFactorService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + token);
 
-        String otpUrl = "https://simulator-api.db.com/gw/dbapi/others/onetimepasswords/v2/single";
-
         DeutscheSepaPaymentRequest sepaRequest = new DeutscheSepaPaymentRequest(targetIban, currency, amount);
         HttpEntity<DeutscheSepaPaymentRequest> entity = new HttpEntity<>(sepaRequest, headers);
 
-        DeutschePhototanResponse sepaAnswer = restTemplate.postForObject(otpUrl, entity, DeutschePhototanResponse.class);
+        DeutschePhototanResponse sepaAnswer = restTemplate.postForObject(oneTimePassUrl, entity, DeutschePhototanResponse.class);
 
         String id = sepaAnswer.getId();
-
-        String challengeUrl = "https://simulator-api.db.com/gw/dbapi/others/onetimepasswords/v2/single/" + id;
+        String challengeUrl = UriComponentsBuilder.fromUriString(oneTimePassUrl).pathSegment(id).toUriString();
 
         DeutschePhototanChallengeResponse phototanResponse = new DeutschePhototanChallengeResponse(getOneTimePass());
         HttpEntity<DeutschePhototanChallengeResponse> challengeResponse = new HttpEntity<>(phototanResponse, headers);

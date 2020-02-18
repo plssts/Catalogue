@@ -24,6 +24,7 @@ public class AccountProcessingService {
     }
 
     public Map<String, List<Account>> collectAccountResponse() throws JsonProcessingException {
+        logger.info("Retrieving account entries");
         List<Account> accountsRevo = bankingService.retrieveAccountService(Bank.REVOLUT).retrieveAccountData();
         List<Account> accountsDeut = bankingService.retrieveAccountService(Bank.DEUTSCHE).retrieveAccountData();
 

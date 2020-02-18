@@ -1,23 +1,18 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.service;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.j2020.controller.TransactionController;
 import com.j2020.model.JsonProcessingExceptionLambdaWrapper;
-import com.j2020.model.TokenFetchException;
-import org.apache.http.message.TokenParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.context.request.WebRequest;
-
-import java.net.UnknownHostException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

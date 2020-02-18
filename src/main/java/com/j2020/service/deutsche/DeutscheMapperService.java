@@ -1,3 +1,7 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.service.deutsche;
 
 import com.j2020.model.GeneralPayment;
@@ -32,7 +36,7 @@ public class DeutscheMapperService {
 
         String creditorName;
 
-        if (payment.getAdditionalInfo() != null){
+        if (payment.getAdditionalInfo() != null) {
             creditorName = Optional.ofNullable(payment.getAdditionalInfo().get("creditorName"))
                     .orElseThrow(() -> new MissingPaymentRequestDataException(payment + " has no creditor name specified under 'additionalInfo'"));
         } else {

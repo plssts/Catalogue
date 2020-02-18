@@ -1,3 +1,7 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -62,7 +66,7 @@ public class RevolutServicesTest {
         assertEquals(accounts, actual);
     }
 
-    private List<RevolutAccount> generateAccounts(){
+    private List<RevolutAccount> generateAccounts() {
         List<RevolutAccount> accounts = new ArrayList<>();
 
         RevolutAccount demoResponseAccountOne = new RevolutAccount();

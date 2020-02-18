@@ -1,3 +1,7 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.model;
 
 import org.springframework.http.HttpStatus;
