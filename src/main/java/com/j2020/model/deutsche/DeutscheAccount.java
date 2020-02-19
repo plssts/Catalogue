@@ -7,7 +7,12 @@ package com.j2020.model.deutsche;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.j2020.model.Account;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
 public class DeutscheAccount implements Account {
+    @Id
     @JsonProperty(value = "iban")
     private String accountId;
 

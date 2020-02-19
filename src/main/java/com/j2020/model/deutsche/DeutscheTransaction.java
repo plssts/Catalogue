@@ -6,6 +6,11 @@ package com.j2020.model.deutsche;
 
 import com.j2020.model.Transaction;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class DeutscheTransaction implements Transaction {
     private String originIban;
     private Float amount;
@@ -21,6 +26,8 @@ public class DeutscheTransaction implements Transaction {
     private String mandateReference;
     private String creditorId;
     private String e2eReference;
+
+    @Id
     private String paymentIdentification;
 
     public String getOriginIban() {

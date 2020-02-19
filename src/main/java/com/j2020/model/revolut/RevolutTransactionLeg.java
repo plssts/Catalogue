@@ -6,13 +6,18 @@ package com.j2020.model.revolut;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.persistence.*;
+
+@Entity
 public class RevolutTransactionLeg {
+    @Id
     @JsonProperty(value = "leg_id")
     private String legId;
 
     @JsonProperty(value = "account_id")
     private String accountId;
 
+    @ManyToOne(cascade = CascadeType.ALL)
     private RevolutTransactionLegCounterparty counterparty;
 
     private Float amount;
@@ -97,5 +102,20 @@ public class RevolutTransactionLeg {
 
     public void setBillCurrency(String billCurrency) {
         this.billCurrency = billCurrency;
+    }
+
+    @Override
+    public String toString() {
+        return "RevolutTransactionLeg{" +
+                "legId='" + legId + '\'' +
+                ", accountId='" + accountId + '\'' +
+                ", counterparty=" + counterparty +
+                ", amount=" + amount +
+                ", currency='" + currency + '\'' +
+                ", billAmount=" + billAmount +
+                ", billCurrency='" + billCurrency + '\'' +
+                ", description='" + description + '\'' +
+                ", balance=" + balance +
+                '}';
     }
 }

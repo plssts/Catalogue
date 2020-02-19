@@ -7,8 +7,14 @@ package com.j2020.model.revolut;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.j2020.model.Transaction;
 
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
 public class RevolutTransaction implements Transaction {
+    @Id
     private String id;
+
     private String type;
 
     @JsonProperty(value = "request_id")
@@ -29,11 +35,15 @@ public class RevolutTransaction implements Transaction {
     private String relatedTransactionId;
 
     private String reference;
+
+    @ManyToOne(cascade = CascadeType.ALL)
     private RevolutTransactionMerchant merchant;
 
+    @OneToMany(cascade = CascadeType.ALL)
     @JsonProperty(value = "legs")
-    private RevolutTransactionLeg[] revolutLegs;
+    private List<RevolutTransactionLeg> revolutLegs;
 
+    @ManyToOne(cascade = CascadeType.ALL)
     private RevolutTransactionCard card;
 
     public String getId() {
@@ -100,11 +110,11 @@ public class RevolutTransaction implements Transaction {
         this.reference = reference;
     }
 
-    public RevolutTransactionLeg[] getRevolutLegs() {
+    public List<RevolutTransactionLeg> getRevolutLegs() {
         return revolutLegs;
     }
 
-    public void setRevolutLegs(RevolutTransactionLeg[] revolutLegs) {
+    public void setRevolutLegs(List<RevolutTransactionLeg> revolutLegs) {
         this.revolutLegs = revolutLegs;
     }
 
@@ -130,5 +140,23 @@ public class RevolutTransaction implements Transaction {
 
     public void setRelatedTransactionId(String relatedTransactionId) {
         this.relatedTransactionId = relatedTransactionId;
+    }
+
+    @Override
+    public String toString() {
+        return "RevolutTransaction{" +
+                "id='" + id + '\'' +
+                ", type='" + type + '\'' +
+                ", requestId='" + requestId + '\'' +
+                ", state='" + state + '\'' +
+                ", dateOfCreating='" + dateOfCreating + '\'' +
+                ", dateOfUpdating='" + dateOfUpdating + '\'' +
+                ", dateOfCompleting='" + dateOfCompleting + '\'' +
+                ", relatedTransactionId='" + relatedTransactionId + '\'' +
+                ", reference='" + reference + '\'' +
+                ", merchant=" + merchant +
+                ", revolutLegs=" + revolutLegs +
+                ", card=" + card +
+                '}';
     }
 }

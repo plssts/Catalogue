@@ -6,8 +6,17 @@ package com.j2020.model.revolut;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
+//import jdk.internal.jline.internal.Nullable;
 
+import javax.persistence.*;
+
+@Entity
 public class RevolutTransactionLegCounterparty {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = true)
     @JsonProperty(value = "counterparty_id")
     @JsonAlias("id")
     private String counterpartyId;
@@ -40,5 +49,14 @@ public class RevolutTransactionLegCounterparty {
 
     public void setCounterpartyId(String counterpartyId) {
         this.counterpartyId = counterpartyId;
+    }
+
+    @Override
+    public String toString() {
+        return "RevolutTransactionLegCounterparty{" +
+                "counterpartyId='" + counterpartyId + '\'' +
+                ", accountType='" + accountType + '\'' +
+                ", accountId='" + accountId + '\'' +
+                '}';
     }
 }

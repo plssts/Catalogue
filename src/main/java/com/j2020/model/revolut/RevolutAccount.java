@@ -6,8 +6,14 @@ package com.j2020.model.revolut;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.j2020.model.Account;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
 public class RevolutAccount implements Account {
+    @Id
     @JsonProperty(value = "id")
     private String accountId;
 

@@ -7,6 +7,8 @@ package com.j2020.model.revolut;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.j2020.model.Payment;
 
+import javax.persistence.*;
+
 public class RevolutPayment implements Payment {
     @JsonProperty(value = "request_id")
     private String requestId;

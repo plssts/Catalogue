@@ -37,7 +37,7 @@ public class TransactionProcessingService {
             revolutResponses = bankingService.retrieveTransactionService(Bank.REVOLUT).createPayments(params.get(Bank.REVOLUT.toString()));
         }
         if (params.containsKey(Bank.DEUTSCHE.toString())) {
-            logger.info("Retrieving Deutsche Bank transactions");
+            logger.info("Processing Deutsche Bank transactions");
             deutscheResponses = bankingService.retrieveTransactionService(Bank.DEUTSCHE).createPayments(params.get(Bank.DEUTSCHE.toString()));
         }
 

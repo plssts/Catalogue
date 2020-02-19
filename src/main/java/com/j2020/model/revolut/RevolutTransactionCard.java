@@ -6,7 +6,12 @@ package com.j2020.model.revolut;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
 public class RevolutTransactionCard {
+    @Id
     @JsonProperty(value = "card_number")
     private String cardNumber;
 
