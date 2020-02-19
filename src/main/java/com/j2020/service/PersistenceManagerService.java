@@ -5,6 +5,9 @@ import com.j2020.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
@@ -50,6 +53,7 @@ public class PersistenceManagerService {
         return outcome;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
     public Map<String, List<PaymentResponse>> processAndUpdateTransactions(Map<String, List<GeneralPayment>> params) throws JsonProcessingException {
         Map<String, List<PaymentResponse>> response = transactionService.initiatePaymentRequests(params);
 
@@ -70,6 +74,7 @@ public class PersistenceManagerService {
         return response;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
     private void updateAccounts() throws JsonProcessingException {
         logger.info("Fetching accounts for account repositories");
         Map<String, List<Account>> accounts = accountService.collectAccountResponse();
