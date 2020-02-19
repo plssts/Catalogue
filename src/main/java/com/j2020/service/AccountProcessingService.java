@@ -1,18 +1,19 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.j2020.controller.TransactionController;
 import com.j2020.model.Account;
 import com.j2020.model.Bank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-//import sun.jvm.hotspot.gc.z.ZCollectedHeap;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class AccountProcessingService {
