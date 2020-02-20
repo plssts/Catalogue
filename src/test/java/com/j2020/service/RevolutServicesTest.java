@@ -16,11 +16,15 @@ import com.j2020.service.revolut.RevolutAccountService;
 import com.j2020.service.revolut.RevolutMapperService;
 import com.j2020.service.revolut.RevolutTokenService;
 import com.j2020.service.revolut.RevolutTransactionService;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.event.annotation.BeforeTestExecution;
 import org.springframework.test.util.ReflectionTestUtils;
 //import sun.java2d.loops.FillRect;
@@ -32,29 +36,36 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class RevolutServicesTest {
-    @Mock
+    //@Mock
     private RevolutTokenService tokenService;
 
-    @Mock
+    //@Mock
     private AccountRequestRetrievalService accountRetrieval;
 
-    @Mock
+    //@Mock
     private TransactionRequestRetrievalService transactionRetrieval;
 
-    @InjectMocks
+    //@InjectMocks
     private RevolutAccountService accountService;
 
-    @InjectMocks
+    //@InjectMocks
     private RevolutTransactionService transactionService;
 
+    //@InjectMocks
     private RevolutMapperService mapper;
 
-    @BeforeTestExecution
-    public void setUpAccountsUrl() {
-        ReflectionTestUtils.setField(RevolutAccountService.class, "accountUrl",
-                "https://sandbox-b2b.revolut.com/api/1.0/accounts");
+    @Before
+    public void setUp() {
+        mapper = new RevolutMapperService();
+        tokenService = Mockito.mock(RevolutTokenService.class);
+        accountRetrieval = Mockito.mock(AccountRequestRetrievalService.class);
+        accountService = new RevolutAccountService(tokenService, accountRetrieval);
+
+        setField(accountService, "accountUrl", "https://sandbox-b2b.revolut.com/api/1.0/accounts");
     }
 
     @Test
@@ -62,13 +73,11 @@ public class RevolutServicesTest {
         //
         // GIVEN
         //
-        List<RevolutAccount> accounts = generateRevolutAccounts();
+        List<Account> accounts = generateRevolutAccounts();
         JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, RevolutAccount.class);
 
-        Mockito.doReturn(accounts).when(accountRetrieval.retrieveAccounts(
-                ArgumentMatchers.anyString(),
-                eq("https://sandbox-b2b.revolut.com/api/1.0/accounts"),
-                eq(type)));
+        when(accountRetrieval.retrieveAccounts(anyString(), eq("https://sandbox-b2b.revolut.com/api/1.0/accounts"), eq(type))).thenReturn(accounts);
+        when(tokenService.getToken()).thenReturn("someToken");
 
         //
         // WHEN
@@ -83,7 +92,9 @@ public class RevolutServicesTest {
 
     @Test
     public void getTransactionsNormalConditions(){
-
+        // FIXME |
+        // FIXME |
+        // FIXME |
     }
 
     @Test
@@ -109,8 +120,8 @@ public class RevolutServicesTest {
         return payment;
     }
 
-    private List<RevolutAccount> generateRevolutAccounts() {
-        List<RevolutAccount> accounts = new ArrayList<>();
+    private List<Account> generateRevolutAccounts() {
+        List<Account> accounts = new ArrayList<>();
 
         RevolutAccount demoResponseAccountOne = new RevolutAccount();
         demoResponseAccountOne.setAccountId("800");

@@ -10,14 +10,18 @@ import com.j2020.model.deutsche.DeutschePayment;
 import com.j2020.model.revolut.RevolutAccount;
 import com.j2020.service.deutsche.DeutscheAccountService;
 import com.j2020.service.deutsche.DeutscheMapperService;
+import com.j2020.service.deutsche.DeutscheTokenService;
+import com.j2020.service.deutsche.DeutscheTransactionService;
 import com.j2020.service.revolut.RevolutAccountService;
 import com.j2020.service.revolut.RevolutTokenService;
 import com.j2020.service.revolut.RevolutTransactionService;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.event.annotation.BeforeTestExecution;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -30,29 +34,36 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class DeutscheServicesTest {
-    @Mock
-    private RevolutTokenService tokenService;
+    //@Mock
+    private DeutscheTokenService tokenService;
 
-    @Mock
+    //@Mock
     private AccountRequestRetrievalService accountRetrieval;
 
-    @Mock
+    //@Mock
     private TransactionRequestRetrievalService transactionRetrieval;
 
-    @InjectMocks
-    private RevolutAccountService accountService;
+    //@InjectMocks
+    private DeutscheAccountService accountService;
 
-    @InjectMocks
-    private RevolutTransactionService transactionService;
+    //@InjectMocks
+    private DeutscheTransactionService transactionService;
 
+    //@InjectMocks
     private DeutscheMapperService mapper;
 
-    @BeforeTestExecution
-    public void setUpAccountsUrl() {
-        ReflectionTestUtils.setField(DeutscheAccountService.class, "accountUrl",
-                "https://simulator-api.db.com/gw/dbapi/v1/cashAccounts");
+    @Before
+    public void setUp() {
+        mapper = new DeutscheMapperService();
+        tokenService = Mockito.mock(DeutscheTokenService.class);
+        accountRetrieval = Mockito.mock(AccountRequestRetrievalService.class);
+        accountService = new DeutscheAccountService(tokenService, accountRetrieval);
+
+        setField(accountService, "accountUrl", "https://simulator-api.db.com/gw/dbapi/v1/cashAccounts");
     }
 
     @Test
@@ -60,13 +71,14 @@ public class DeutscheServicesTest {
         //
         // GIVEN
         //
-        List<DeutscheAccount> accounts = generateAccounts();
+        List<Account> accounts = generateAccounts();
         JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, DeutscheAccount.class);
 
-        Mockito.doReturn(accounts).when(accountRetrieval.retrieveAccounts(
+        when(accountRetrieval.retrieveAccounts(
                 ArgumentMatchers.anyString(),
-                eq("https://sandbox-b2b.revolut.com/api/1.0/accounts"),
-                eq(type)));
+                eq("https://simulator-api.db.com/gw/dbapi/v1/cashAccounts"),
+                eq(type))).thenReturn(accounts);
+        when(tokenService.getToken()).thenReturn("someToken");
 
         //
         // WHEN
@@ -81,26 +93,48 @@ public class DeutscheServicesTest {
 
     @Test
     public void getTransactionsNormalConditions(){
-
+        // FIXME |
+        // FIXME |
+        // FIXME |
     }
 
     @Test
     public void stripTrailingNullDecimals(){
+        //
+        // GIVEN
+        //
         GeneralPayment general = generateValidGeneralPayment();
         Float specifiedAmount = general.getAmount();
+
+        //
+        // WHEN
+        //
         DeutschePayment payment = mapper.toDeutschePayment(general);
 
+        //
+        // THEN
+        //
         assertEquals("10.0", Float.toString(specifiedAmount));
         assertEquals("10", payment.getInstructedAmount().getAmount());
     }
 
     @Test
     public void retainActualDecimalPart(){
+        //
+        // GIVEN
+        //
         GeneralPayment general = generateValidGeneralPayment();
         Float specifiedAmount = 10.01f;
         general.setAmount(specifiedAmount);
+
+        //
+        // WHEN
+        //
         DeutschePayment payment = mapper.toDeutschePayment(general);
 
+        //
+        // THEN
+        //
         assertEquals("10.01", Float.toString(specifiedAmount));
         assertEquals("10.01", payment.getInstructedAmount().getAmount());
     }
@@ -119,17 +153,17 @@ public class DeutscheServicesTest {
         return payment;
     }
 
-    private List<DeutscheAccount> generateAccounts() {
-        List<DeutscheAccount> accounts = new ArrayList<>();
+    private List<Account> generateAccounts() {
+        List<Account> accounts = new ArrayList<>();
 
-        DeutscheAccount demoResponseAccountOne = new DeutscheAccount();
-        demoResponseAccountOne.setAccountId("DE0001");
-        demoResponseAccountOne.setBic("BIC = code");
-        demoResponseAccountOne.setCurrencyCode("EUR");
-        demoResponseAccountOne.setCurrentBalance(80000f);
-        demoResponseAccountOne.setAccountType("public");
+        DeutscheAccount demoResponseAccount = new DeutscheAccount();
+        demoResponseAccount.setAccountId("DE0001");
+        demoResponseAccount.setBic("BIC = code");
+        demoResponseAccount.setCurrencyCode("EUR");
+        demoResponseAccount.setCurrentBalance(80000f);
+        demoResponseAccount.setAccountType("public");
 
-        accounts.add(demoResponseAccountOne);
+        accounts.add(demoResponseAccount);
 
         return accounts;
     }
