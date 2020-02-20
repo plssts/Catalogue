@@ -7,7 +7,6 @@ package com.j2020.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.j2020.model.*;
 import com.j2020.service.PersistenceManagerService;
-import com.j2020.service.TransactionProcessingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,6 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping("/transactions")
 public class TransactionController {
     private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
-    //private final TransactionProcessingService transactionProcessing;
     private final PersistenceManagerService persistence;
 
     public TransactionController(PersistenceManagerService persistence) {
@@ -30,7 +28,6 @@ public class TransactionController {
 
     @GetMapping
     public ResponseEntity<Map<String, List<Transaction>>> readTransactions() throws JsonProcessingException {
-        //Map<String, List<Transaction>> outcome = transactionProcessing.collectTransactionResponse();
         Map<String, List<Transaction>> outcome = persistence.returnTransactions();
 
         return ok(outcome);
@@ -39,7 +36,6 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<Map<String, List<PaymentResponse>>> createPayments(@RequestBody Map<String, List<GeneralPayment>> params) throws JsonProcessingException {
         logger.info("Creating payments for {}", params.keySet());
-        //Map<String, List<PaymentResponse>> outcome = transactionProcessing.initiatePaymentRequests(params);
         Map<String, List<PaymentResponse>> outcome = persistence.processAndUpdateTransactions(params);
 
         return ok(outcome);

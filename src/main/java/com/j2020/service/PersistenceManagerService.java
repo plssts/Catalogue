@@ -64,7 +64,7 @@ public class PersistenceManagerService {
             logger.info("Updating Revolut transaction repository");
             repositoryFactory.retrieveTransactionRepository(Bank.REVOLUT).saveAll(transactions.get(Bank.REVOLUT.toString()));
         }
-        if (params.containsKey(Bank.REVOLUT.toString())) {
+        if (params.containsKey(Bank.DEUTSCHE.toString())) {
             logger.info("Updating Deutsche Bank transaction repository");
             repositoryFactory.retrieveTransactionRepository(Bank.DEUTSCHE).saveAll(transactions.get(Bank.DEUTSCHE.toString()));
         }
@@ -74,7 +74,6 @@ public class PersistenceManagerService {
         return response;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
     private void updateAccounts() throws JsonProcessingException {
         logger.info("Fetching accounts for account repositories");
         Map<String, List<Account>> accounts = accountService.collectAccountResponse();
