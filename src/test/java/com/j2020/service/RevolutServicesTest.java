@@ -8,8 +8,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.model.Account;
+import com.j2020.model.GeneralPayment;
+import com.j2020.model.MissingPaymentRequestDataException;
 import com.j2020.model.revolut.RevolutAccount;
+import com.j2020.model.revolut.RevolutPayment;
 import com.j2020.service.revolut.RevolutAccountService;
+import com.j2020.service.revolut.RevolutMapperService;
 import com.j2020.service.revolut.RevolutTokenService;
 import com.j2020.service.revolut.RevolutTransactionService;
 import org.junit.Test;
@@ -19,13 +23,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.event.annotation.BeforeTestExecution;
 import org.springframework.test.util.ReflectionTestUtils;
+//import sun.java2d.loops.FillRect;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 
 public class RevolutServicesTest {
@@ -44,6 +49,8 @@ public class RevolutServicesTest {
     @InjectMocks
     private RevolutTransactionService transactionService;
 
+    private RevolutMapperService mapper;
+
     @BeforeTestExecution
     public void setUpAccountsUrl() {
         ReflectionTestUtils.setField(RevolutAccountService.class, "accountUrl",
@@ -55,7 +62,7 @@ public class RevolutServicesTest {
         //
         // GIVEN
         //
-        List<RevolutAccount> accounts = generateAccounts();
+        List<RevolutAccount> accounts = generateRevolutAccounts();
         JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, RevolutAccount.class);
 
         Mockito.doReturn(accounts).when(accountRetrieval.retrieveAccounts(
@@ -79,7 +86,30 @@ public class RevolutServicesTest {
 
     }
 
-    private List<RevolutAccount> generateAccounts() {
+    @Test
+    public void mapIncompleteGeneralPayment(){
+        //
+        // GIVEN
+        //
+        GeneralPayment payment = generateInvalidGeneralPayment();
+
+        //
+        // THEN
+        //
+        assertThrows(MissingPaymentRequestDataException.class, () -> mapper.toRevolutPayment(payment));
+    }
+
+    private GeneralPayment generateInvalidGeneralPayment(){
+        GeneralPayment payment = new GeneralPayment();
+        payment.setAmount(100f);
+        payment.setSourceAccount("anyValidAccount");
+        payment.setDestinationAccount("anyValidAccount");
+        payment.setCurrency("EUR");
+
+        return payment;
+    }
+
+    private List<RevolutAccount> generateRevolutAccounts() {
         List<RevolutAccount> accounts = new ArrayList<>();
 
         RevolutAccount demoResponseAccountOne = new RevolutAccount();
