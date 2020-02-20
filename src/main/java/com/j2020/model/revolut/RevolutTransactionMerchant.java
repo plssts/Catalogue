@@ -5,7 +5,6 @@
 package com.j2020.model.revolut;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-//import com.sun.javafx.beans.IDProperty;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

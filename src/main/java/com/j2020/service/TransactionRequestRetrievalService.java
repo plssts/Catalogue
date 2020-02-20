@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.model.*;
 import com.j2020.model.deutsche.DeutschePayment;
-import com.j2020.model.deutsche.DeutscheSepaPaymentRequestData;
 import com.j2020.service.deutsche.DeutscheMultiFactorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +25,8 @@ public class TransactionRequestRetrievalService {
     private final DeutscheMultiFactorService deutscheMultiFactor;
     private static final Logger logger = LoggerFactory.getLogger(TransactionRequestRetrievalService.class);
 
-    @Value("${revolutTransaction.MAX_REQID_LENGTH}")
-    private int MAX_REQID_LENGTH;
+    @Value("${revolutTransaction.maxReqIdLength}")
+    private int maxReqIdLength;
 
     public TransactionRequestRetrievalService(DeutscheMultiFactorService deutscheMultiFactor) {
         this.deutscheMultiFactor = deutscheMultiFactor;
@@ -64,7 +63,7 @@ public class TransactionRequestRetrievalService {
                 Map<String, String> headerInfo = deutscheMultiFactor.prepareAuthorisation(token,
                         ((DeutschePayment) payment).getCreditorAccount().getIban(),
                         ((DeutschePayment) payment).getInstructedAmount().getCurrencyCode(),
-                        DeutscheSepaPaymentRequestData.formatValue(((DeutschePayment) payment).getInstructedAmount().getAmount()));
+                        ((DeutschePayment) payment).getInstructedAmount().getAmount());
                 headers.set("otp", headerInfo.get("otp"));
                 headers.set("idempotency-id", headerInfo.get("idempotency-id"));
             } else {
@@ -84,10 +83,10 @@ public class TransactionRequestRetrievalService {
         StringBuilder builder = new StringBuilder();
         Random random = new Random();
 
-        while (builder.length() < MAX_REQID_LENGTH) {
+        while (builder.length() < maxReqIdLength) {
             builder.append(Integer.toHexString(random.nextInt()));
         }
 
-        return builder.toString().substring(0, MAX_REQID_LENGTH);
+        return builder.toString().substring(0, maxReqIdLength);
     }
 }

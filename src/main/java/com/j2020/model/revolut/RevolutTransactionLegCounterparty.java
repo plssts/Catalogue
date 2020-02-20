@@ -6,7 +6,6 @@ package com.j2020.model.revolut;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
-//import jdk.internal.jline.internal.Nullable;
 
 import javax.persistence.*;
 

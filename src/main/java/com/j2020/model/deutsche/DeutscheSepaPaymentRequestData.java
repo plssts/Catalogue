@@ -63,6 +63,6 @@ public class DeutscheSepaPaymentRequestData {
     }
 
     public void setAmountValue(String amountValue) {
-        this.amountValue = amountValue;
+        this.amountValue = formatValue(amountValue);
     }
 }

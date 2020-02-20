@@ -7,8 +7,6 @@ package com.j2020.model.revolut;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.j2020.model.Payment;
 
-import javax.persistence.*;
-
 public class RevolutPayment implements Payment {
     @JsonProperty(value = "request_id")
     private String requestId;
@@ -73,5 +71,17 @@ public class RevolutPayment implements Payment {
 
     public void setReference(String reference) {
         this.reference = reference;
+    }
+
+    @Override
+    public String toString() {
+        return "RevolutPayment{" +
+                "requestId='" + requestId + '\'' +
+                ", accountId='" + accountId + '\'' +
+                ", receiver=" + receiver +
+                ", amount=" + amount +
+                ", currency='" + currency + '\'' +
+                ", reference='" + reference + '\'' +
+                '}';
     }
 }

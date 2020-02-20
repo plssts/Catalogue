@@ -59,4 +59,14 @@ public class DeutschePayment implements Payment {
     public void setCreditorAccount(DeutscheSepaPaymentAccount creditorAccount) {
         this.creditorAccount = creditorAccount;
     }
+
+    @Override
+    public String toString() {
+        return "DeutschePayment{" +
+                "debtorAccount=" + debtorAccount +
+                ", instructedAmount=" + instructedAmount +
+                ", creditorName='" + creditorName + '\'' +
+                ", creditorAccount=" + creditorAccount +
+                '}';
+    }
 }

@@ -27,7 +27,7 @@ public class TransactionController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, List<Transaction>>> readTransactions() throws JsonProcessingException {
+    public ResponseEntity<Map<String, List<Transaction>>> readTransactions() {
         Map<String, List<Transaction>> outcome = persistence.returnTransactions();
 
         return ok(outcome);

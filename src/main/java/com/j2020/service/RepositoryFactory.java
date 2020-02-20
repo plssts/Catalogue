@@ -1,8 +1,11 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.service;
 
 import com.j2020.model.Bank;
 import com.j2020.model.BankNotSupportedException;
-import com.j2020.model.revolut.RevolutAccount;
 import com.j2020.repository.DeutscheAccountRepository;
 import com.j2020.repository.DeutscheTransactionRepository;
 import com.j2020.repository.RevolutAccountRepository;
