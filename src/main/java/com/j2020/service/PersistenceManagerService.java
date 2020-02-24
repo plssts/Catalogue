@@ -17,6 +17,7 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 @Service
 public class PersistenceManagerService {
@@ -25,7 +26,9 @@ public class PersistenceManagerService {
     private final AccountProcessingService accountService;
     private final RepositoryFactory repositoryFactory;
 
-    public PersistenceManagerService(TransactionProcessingService transactionService, RepositoryFactory repositoryFactory, AccountProcessingService accountService) {
+    public PersistenceManagerService(TransactionProcessingService transactionService,
+                                     RepositoryFactory repositoryFactory,
+                                     AccountProcessingService accountService) {
         this.transactionService = transactionService;
         this.repositoryFactory = repositoryFactory;
         this.accountService = accountService;
@@ -46,7 +49,7 @@ public class PersistenceManagerService {
 
     public Map<String, List<Transaction>> returnTransactions() {
         logger.info("Getting all transactions from repository");
-        List revTransactions = repositoryFactory.retrieveTransactionRepository(Bank.REVOLUT).findAll();
+        List<Transaction> revTransactions = repositoryFactory.retrieveTransactionRepository(Bank.REVOLUT).findAll();
         List dbTransactions = repositoryFactory.retrieveTransactionRepository(Bank.DEUTSCHE).findAll();
 
         logger.info("{} Revolut; {} Deutsche Bank transactions", revTransactions.size(), dbTransactions.size());

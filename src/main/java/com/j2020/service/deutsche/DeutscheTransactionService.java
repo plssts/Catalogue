@@ -36,7 +36,9 @@ public class DeutscheTransactionService implements TransactionService {
     @Value("${deutscheTransaction.paymentUrl}")
     private String paymentUrl;
 
-    public DeutscheTransactionService(DeutscheTokenService tokenRenewal, TransactionRequestRetrievalService transactionRetrieval, DeutscheMapperService deutscheMapper) {
+    public DeutscheTransactionService(DeutscheTokenService tokenRenewal,
+                                      TransactionRequestRetrievalService transactionRetrieval,
+                                      DeutscheMapperService deutscheMapper) {
         this.tokenRenewal = tokenRenewal;
         this.transactionRetrieval = transactionRetrieval;
         this.deutscheMapper = deutscheMapper;
@@ -79,6 +81,10 @@ public class DeutscheTransactionService implements TransactionService {
         logger.info("Constructing and validating Deutsche Bank payments");
         payments.forEach(payment -> parsedPayments.add(deutscheMapper.toDeutschePayment(payment)));
 
-        return transactionRetrieval.pushPayments(tokenRenewal.getToken(), paymentUrl, parsedPayments, new ObjectMapper().getTypeFactory().constructType(DeutschePaymentResponse.class));
+        return transactionRetrieval.pushPayments(
+                tokenRenewal.getToken(),
+                paymentUrl,
+                parsedPayments,
+                new ObjectMapper().getTypeFactory().constructType(DeutschePaymentResponse.class));
     }
 }

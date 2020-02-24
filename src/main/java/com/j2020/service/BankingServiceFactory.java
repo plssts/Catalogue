@@ -14,17 +14,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class BankingServiceFactory {
     private static final Logger logger = LoggerFactory.getLogger(BankingServiceFactory.class);
+
+    private List<AccountService> accServices;
 
     private final RevolutAccountService revAccountService;
     private final DeutscheAccountService dbAccountService;
     private final RevolutTransactionService revTransactionService;
     private final DeutscheTransactionService dbTransactionService;
 
-    public BankingServiceFactory(RevolutAccountService revAccountService, DeutscheAccountService dbAccountService,
-                                 RevolutTransactionService revTransactionService, DeutscheTransactionService dbTransactionService) {
+    public BankingServiceFactory(List<AccountService> accServices, RevolutAccountService revAccountService,
+                                 DeutscheAccountService dbAccountService,
+                                 RevolutTransactionService revTransactionService,
+                                 DeutscheTransactionService dbTransactionService) {
+        this.accServices = accServices;
         this.revAccountService = revAccountService;
         this.dbAccountService = dbAccountService;
         this.revTransactionService = revTransactionService;
@@ -33,6 +40,13 @@ public class BankingServiceFactory {
 
     public AccountService retrieveAccountService(Bank bankingService) {
         logger.info("Fetching {} account service", bankingService);
+
+        // FIXME do it like this
+        /*return accServices
+        .stream()
+        .filter(service -> service.canProcess(bankingService))
+        .findAny()
+        .orElseThrow(() -> new BankNotSupportedException("Should never happen since mapping prevents this"));*/
         switch (bankingService) {
             case REVOLUT:
                 return revAccountService;

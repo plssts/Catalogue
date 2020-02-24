@@ -34,7 +34,9 @@ public class RevolutTransactionService implements TransactionService {
     @Value("${revolutTransaction.paymentUrl}")
     private String paymentUrl;
 
-    public RevolutTransactionService(RevolutTokenService tokenRenewal, TransactionRequestRetrievalService transactionRetrieval, RevolutMapperService revolutMapper) {
+    public RevolutTransactionService(RevolutTokenService tokenRenewal,
+                                     TransactionRequestRetrievalService transactionRetrieval,
+                                     RevolutMapperService revolutMapper) {
         this.tokenRenewal = tokenRenewal;
         this.transactionRetrieval = transactionRetrieval;
         this.revolutMapper = revolutMapper;
@@ -60,6 +62,10 @@ public class RevolutTransactionService implements TransactionService {
         logger.info("Constructing and validating Revolut payments");
         payments.forEach(payment -> parsedPayments.add(revolutMapper.toRevolutPayment(payment)));
 
-        return transactionRetrieval.pushPayments(tokenRenewal.getToken(), paymentUrl, parsedPayments, new ObjectMapper().getTypeFactory().constructType(RevolutPaymentResponse.class));
+        return transactionRetrieval.pushPayments(
+                tokenRenewal.getToken(),
+                paymentUrl,
+                parsedPayments,
+                new ObjectMapper().getTypeFactory().constructType(RevolutPaymentResponse.class));
     }
 }

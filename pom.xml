@@ -69,7 +69,7 @@
 			<version>1.4.0</version>
 		</dependency>
 
-		<!-- for PATH -->
+		<!-- for PATCH -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
