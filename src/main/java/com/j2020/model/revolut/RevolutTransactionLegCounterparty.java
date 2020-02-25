@@ -7,15 +7,9 @@ package com.j2020.model.revolut;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.*;
-
-//@Entity
 public class RevolutTransactionLegCounterparty {
-    //@Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //@Column(nullable = true)
     @JsonProperty(value = "counterparty_id")
     @JsonAlias("id")
     private String counterpartyId;

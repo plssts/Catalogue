@@ -6,16 +6,7 @@ package com.j2020.model.revolut;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
-//@Entity
 public class RevolutTransactionMerchant {
-    //@Id
-    //@GeneratedValue
-    private Long id;
-
     private String name;
     private String city;
 

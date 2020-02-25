@@ -4,13 +4,11 @@
 
 package com.j2020.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.j2020.model.*;
 import com.j2020.repository.AccountRepository;
 import com.j2020.repository.TransactionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -27,17 +25,17 @@ public class PersistenceManagerService {
     private static final Logger logger = LoggerFactory.getLogger(PersistenceManagerService.class);
     private final TransactionProcessingService transactionService;
     private final AccountProcessingService accountService;
-
-    @Autowired
     private AccountRepository accountRepository;
-
-    @Autowired
     private TransactionRepository transactionRepository;
 
     public PersistenceManagerService(TransactionProcessingService transactionService,
-                                     AccountProcessingService accountService) {
+                                     AccountProcessingService accountService,
+                                     AccountRepository accountRepository,
+                                     TransactionRepository transactionRepository) {
         this.transactionService = transactionService;
         this.accountService = accountService;
+        this.accountRepository = accountRepository;
+        this.transactionRepository = transactionRepository;
     }
 
     public Map<String, List<GeneralAccount>> returnAccounts() {
@@ -57,7 +55,7 @@ public class PersistenceManagerService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.READ_COMMITTED)
-    public Map<String, List<PaymentResponse>> processAndUpdateTransactions(Map<String, List<GeneralPayment>> params) throws JsonProcessingException {
+    public Map<String, List<PaymentResponse>> processAndUpdateTransactions(Map<String, List<GeneralPayment>> params) {
         Map<String, List<PaymentResponse>> response = transactionService.initiatePaymentRequests(params);
 
         logger.info("Updating transaction repositories");
@@ -77,7 +75,7 @@ public class PersistenceManagerService {
     }
 
     @PostConstruct
-    private void init() throws JsonProcessingException {
+    private void init() {
         updateAccounts();
         Map<String, List<GeneralTransaction>> transactions = transactionService.collectTransactionResponse();
         Stream.of(Bank.values()).forEach(bank -> transactionRepository.saveAll(transactions.get(bank.toString())));

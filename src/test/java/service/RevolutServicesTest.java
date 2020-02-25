@@ -7,6 +7,7 @@ package service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.j2020.Constants;
 import com.j2020.model.*;
 import com.j2020.model.revolut.RevolutAccount;
 import com.j2020.model.revolut.RevolutPayment;
@@ -28,13 +29,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
-// FIXME move strings to @Value
 public class RevolutServicesTest {
     private RevolutTokenService tokenService;
     private AccountRequestRetrievalService accountRetrieval;
@@ -52,30 +53,23 @@ public class RevolutServicesTest {
         transactionRetrieval = Mockito.mock(TransactionRequestRetrievalService.class);
         transactionService = new RevolutTransactionService(tokenService, transactionRetrieval, mapper);
 
-        setField(accountService, "accountUrl", "https://sandbox-b2b.revolut.com/api/1.0/accounts");
-
-        setField(transactionService, "transactionUrl", "https://sandbox-b2b.revolut.com/api/1.0/transactions");
-        setField(transactionService, "paymentUrl", "https://sandbox-b2b.revolut.com/api/1.0/pay");
+        setField(accountService, "accountUrl", Constants.REVOLUT_ACCOUNT_URL);
+        setField(transactionService, "transactionUrl", Constants.REVOLUT_TRANSACTION_URL);
+        setField(transactionService, "paymentUrl", Constants.REVOLUT_PAYMENT_URL);
     }
 
     @Test
     public void returnWithNullPayments() throws JsonProcessingException {
-        //
         // WHEN
-        //
         List<PaymentResponse> actual = transactionService.createPayments(null);
 
-        //
         // THEN
-        //
-        assertIterableEquals(new ArrayList<>(), actual);
+        assertEquals(new ArrayList<>(), actual);
     }
 
     @Test
     public void createAndValidatePayments() throws JsonProcessingException {
-        //
         // GIVEN
-        //
         List<GeneralPayment> payments = new ArrayList<>();
         payments.add(TestDataHelper.generateValidGeneralPaymentForRevolut());
 
@@ -84,99 +78,79 @@ public class RevolutServicesTest {
 
         JavaType type = new ObjectMapper().getTypeFactory().constructType(RevolutPaymentResponse.class);
 
-        //
         // WHEN
-        //
-        when(transactionRetrieval.pushPayments(anyString(), eq("https://sandbox-b2b.revolut.com/api/1.0/pay"), anyList(), eq(type))).thenReturn(responses);
+        when(transactionRetrieval.pushPayments(anyString(), eq(Constants.REVOLUT_PAYMENT_URL), anyList(), eq(type))).thenReturn(responses);
         when(tokenService.getToken()).thenReturn("someToken");
 
         List<PaymentResponse> actual = transactionService.createPayments(payments);
 
-        //
         // THEN
-        //
-        assertIterableEquals(responses, actual);
+        assertEquals(responses, actual);
     }
 
     @Test
     public void getAccountsNormalConditions() throws JsonProcessingException {
-        //
         // GIVEN
-        //
         List<Account> accounts = TestDataHelper.generateRevolutAccounts();
+        List<GeneralAccount> parsedAccounts = accounts.stream()
+                .map(account -> mapper.toGeneralAccount((RevolutAccount) account))
+                .collect(Collectors.toList());
         JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, RevolutAccount.class);
 
-        when(accountRetrieval.retrieveAccounts(anyString(), eq("https://sandbox-b2b.revolut.com/api/1.0/accounts"), eq(type))).thenReturn(accounts);
+        when(accountRetrieval.retrieveAccounts(anyString(), eq(Constants.REVOLUT_ACCOUNT_URL), eq(type))).thenReturn(accounts);
         when(tokenService.getToken()).thenReturn("someToken");
 
-        //
         // WHEN
-        //
         List<GeneralAccount> actual = accountService.retrieveAccountData();
 
-        //
         // THEN
-        //
-        assertIterableEquals(accounts, actual);
+        assertEquals(parsedAccounts, actual);
     }
 
     @Test
     public void getTransactionsNormalConditions() throws JsonProcessingException {
-        //
         // GIVEN
-        //
-        /*List<Transaction> transactions = TestDataHelper.generateRevolutTransactions();
+        List<Transaction> transactions = TestDataHelper.generateRevolutTransactions();
         JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, RevolutTransaction.class);
+        List<GeneralTransaction> parsedTransactions = transactions.stream()
+                .map(transaction -> mapper.toGeneralTransaction((RevolutTransaction) transaction))
+                .collect(Collectors.toList());
 
         when(transactionRetrieval.retrieveTransactions(
                 ArgumentMatchers.anyString(),
-                eq("https://sandbox-b2b.revolut.com/api/1.0/transactions"),
+                eq(Constants.REVOLUT_TRANSACTION_URL),
                 eq(type))).thenReturn(transactions);
         when(tokenService.getToken()).thenReturn("someToken");
 
-        //
         // WHEN
-        //
-        List<Transaction> actual = transactionService.retrieveTransactionData(null);
+        List<GeneralTransaction> actual = transactionService.retrieveTransactionData(null);
 
-        //
         // THEN
-        //
-        assertIterableEquals(transactions, actual);*/
+        assertEquals(parsedTransactions, actual);
     }
 
     @Test
     public void mapIncompleteGeneralPayment() {
-        //
         // GIVEN
-        //
         GeneralPayment payment = TestDataHelper.generateInvalidGeneralPayment();
 
-        //
         // THEN
-        //
         assertThrows(MissingPaymentRequestDataException.class, () -> mapper.toRevolutPayment(payment));
     }
 
     @Test
     public void mapCompleteGeneralPayment() {
-        //
         // GIVEN
-        //
         GeneralPayment payment = TestDataHelper.generateInvalidGeneralPayment();
         Map<String, String> additionalInfo = new HashMap<>();
         additionalInfo.put("reference", "someReference");
         additionalInfo.put("counterparty", "testedValue");
         payment.setAdditionalInfo(additionalInfo);
 
-        //
         // WHEN
-        //
         RevolutPayment revolutPayment = mapper.toRevolutPayment(payment);
 
-        //
         // THEN
-        //
         assertEquals("testedValue", revolutPayment.getReceiver().getCounterpartyId());
     }
 }

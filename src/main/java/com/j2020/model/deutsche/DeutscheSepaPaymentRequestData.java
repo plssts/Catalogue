@@ -4,14 +4,15 @@
 
 package com.j2020.model.deutsche;
 
+import com.j2020.Constants;
+
 public class DeutscheSepaPaymentRequestData {
-    private String type = "challengeRequestDataInstantSepaCreditTransfers";
+    private String type = Constants.DEUTSCHE_SEPA_PAYMENT_REQUEST_DATA_TYPE;
     private String targetIban;
     private String amountCurrency;
     private String amountValue;
 
     public DeutscheSepaPaymentRequestData() {
-
     }
 
     public DeutscheSepaPaymentRequestData(String targetIban, String amountCurrency, String amountValue) {

@@ -1,6 +1,11 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.model;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class GeneralAccount {
@@ -59,5 +64,37 @@ public class GeneralAccount {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return "GeneralAccount{" +
+                "accountId='" + accountId + '\'' +
+                ", balance=" + balance +
+                ", currency='" + currency + '\'' +
+                ", type='" + type + '\'' +
+                ", description='" + description + '\'' +
+                ", bank=" + bank +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof GeneralAccount)) {
+            return false;
+        }
+        GeneralAccount that = (GeneralAccount) other;
+        return accountId.equals(that.accountId) &&
+                balance.equals(that.balance) &&
+                currency.equals(that.currency) &&
+                bank == that.bank;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(accountId, balance, currency, type, description, bank);
     }
 }

@@ -5,12 +5,6 @@
 package com.j2020.model.deutsche;
 
 import com.j2020.model.Payment;
-import com.j2020.model.revolut.RevolutTransactionLegCounterparty;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
 
 public class DeutschePayment implements Payment {
     private DeutscheSepaPaymentAccount debtorAccount;

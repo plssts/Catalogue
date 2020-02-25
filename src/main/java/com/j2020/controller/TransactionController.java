@@ -4,7 +4,6 @@
 
 package com.j2020.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.j2020.model.*;
 import com.j2020.service.PersistenceManagerService;
 import org.slf4j.Logger;
@@ -34,7 +33,7 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, List<PaymentResponse>>> createPayments(@RequestBody Map<String, List<GeneralPayment>> params) throws JsonProcessingException {
+    public ResponseEntity<Map<String, List<PaymentResponse>>> createPayments(@RequestBody Map<String, List<GeneralPayment>> params) {
         logger.info("Creating payments for {}", params.keySet());
         Map<String, List<PaymentResponse>> outcome = persistence.processAndUpdateTransactions(params);
 

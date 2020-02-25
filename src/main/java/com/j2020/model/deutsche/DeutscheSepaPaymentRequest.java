@@ -4,11 +4,13 @@
 
 package com.j2020.model.deutsche;
 
+import com.j2020.Constants;
+
 public class DeutscheSepaPaymentRequest {
-    private String method = "PHOTOTAN";
-    private String requestType = "INSTANT_SEPA_CREDIT_TRANSFERS";
+    private String method = Constants.DEUTSCHE_SEPA_PAYMENT_REQUEST_METHOD;
+    private String requestType = Constants.DEUTSCHE_SEPA_PAYMENT_REQUEST_TYPE;
     private DeutscheSepaPaymentRequestData requestData;
-    private String language = "de";
+    private String language = Constants.DEUTSCHE_SEPA_PAYMENT_REQUEST_LANGUAGE;
 
     public DeutscheSepaPaymentRequest() {
 

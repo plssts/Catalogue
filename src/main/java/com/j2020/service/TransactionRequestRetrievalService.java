@@ -24,6 +24,7 @@ import java.util.*;
 public class TransactionRequestRetrievalService {
     private final DeutscheMultiFactorService deutscheMultiFactor;
     private static final Logger logger = LoggerFactory.getLogger(TransactionRequestRetrievalService.class);
+    private Random random = new Random();
 
     @Value("${revolutTransaction.maxReqIdLength}")
     private int maxReqIdLength;
@@ -81,7 +82,6 @@ public class TransactionRequestRetrievalService {
 
     private String generateIdentification() {
         StringBuilder builder = new StringBuilder();
-        Random random = new Random();
 
         while (builder.length() < maxReqIdLength) {
             builder.append(Integer.toHexString(random.nextInt()));

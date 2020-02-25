@@ -7,6 +7,7 @@ package service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.j2020.Constants;
 import com.j2020.model.*;
 import com.j2020.model.deutsche.DeutscheAccount;
 import com.j2020.model.deutsche.DeutschePayment;
@@ -26,13 +27,13 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
-// FIXME move strings to @Value
 public class DeutscheServicesTest {
     private DeutscheTokenService tokenService;
     private AccountRequestRetrievalService accountRetrieval;
@@ -46,32 +47,27 @@ public class DeutscheServicesTest {
         mapper = new DeutscheMapperService();
         tokenService = Mockito.mock(DeutscheTokenService.class);
         accountRetrieval = Mockito.mock(AccountRequestRetrievalService.class);
-        accountService = new DeutscheAccountService(tokenService, accountRetrieval, new DeutscheMapperService());
+        accountService = new DeutscheAccountService(tokenService, accountRetrieval, mapper);
         transactionRetrieval = Mockito.mock(TransactionRequestRetrievalService.class);
         transactionService = new DeutscheTransactionService(tokenService, transactionRetrieval, mapper);
 
-        setField(accountService, "accountUrl", "https://simulator-api.db.com/gw/dbapi/v1/cashAccounts");
-        setField(transactionService, "transactionUrl", "https://simulator-api.db.com/gw/dbapi/v1/transactions");
+        setField(accountService, "accountUrl", Constants.DEUTSCHE_ACCOUNT_URL);
+        setField(transactionService, "transactionUrl", Constants.DEUTSCHE_TRANSACTION_URL);
+        setField(transactionService, "paymentUrl", Constants.DEUTSCHE_PAYMENT_URL);
     }
 
     @Test
     public void returnWithNullPayments() throws JsonProcessingException {
-        //
         // WHEN
-        //
         List<PaymentResponse> actual = transactionService.createPayments(null);
 
-        //
         // THEN
-        //
-        assertIterableEquals(new ArrayList<>(), actual);
+        assertEquals(new ArrayList<>(), actual);
     }
 
     @Test
     public void createAndValidatePayments() throws JsonProcessingException {
-        //
         // GIVEN
-        //
         List<GeneralPayment> payments = new ArrayList<>();
         payments.add(TestDataHelper.generateValidGeneralPaymentForDeutsche());
 
@@ -80,53 +76,47 @@ public class DeutscheServicesTest {
 
         JavaType type = new ObjectMapper().getTypeFactory().constructType(DeutschePaymentResponse.class);
 
-        //
         // WHEN
-        //
-        when(transactionRetrieval.pushPayments(anyString(), eq("https://simulator-api.db.com/gw/dbapi/paymentInitiation/payments/v1/instantSepaCreditTransfers"), anyList(), eq(type))).thenReturn(responses);
+        when(transactionRetrieval.pushPayments(anyString(), eq(Constants.DEUTSCHE_PAYMENT_URL), anyList(), eq(type))).thenReturn(responses);
         when(tokenService.getToken()).thenReturn("someToken");
 
         List<PaymentResponse> actual = transactionService.createPayments(payments);
 
-        //
         // THEN
-        //
-        assertIterableEquals(responses, actual);
+        assertEquals(responses, actual);
     }
 
     @Test
     public void getAccountsNormalConditions() throws JsonProcessingException {
-        //
         // GIVEN
-        //
         List<Account> accounts = TestDataHelper.generateDeutscheAccounts();
+        List<GeneralAccount> parsedAccounts = accounts.stream()
+                .map(account -> mapper.toGeneralAccount((DeutscheAccount) account))
+                .collect(Collectors.toList());
         JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, DeutscheAccount.class);
 
         when(accountRetrieval.retrieveAccounts(
                 ArgumentMatchers.anyString(),
-                eq("https://simulator-api.db.com/gw/dbapi/v1/cashAccounts"),
+                eq(Constants.DEUTSCHE_ACCOUNT_URL),
                 eq(type))).thenReturn(accounts);
         when(tokenService.getToken()).thenReturn("someToken");
 
-        //
         // WHEN
-        //
         List<GeneralAccount> actual = accountService.retrieveAccountData();
 
-        //
         // THEN
-        //
-        assertIterableEquals(accounts, actual);
+        assertEquals(parsedAccounts, actual);
     }
 
     @Test
     public void getTransactionsNormalConditions() throws JsonProcessingException {
-        //
         // GIVEN
-        //
-        /*List<Transaction> transactions = TestDataHelper.generateDeutscheTransactions();
+        List<Transaction> transactions = TestDataHelper.generateDeutscheTransactions();
         List<String> dummyIban = new ArrayList<>();
-        dummyIban.add("DE00100500");
+        dummyIban.add(Constants.TEST_DEUTSCHE_DUMMY_SOURCE_IBAN);
+        List<GeneralTransaction> parsedTransactions = transactions.stream()
+                .map(transaction -> mapper.toGeneralTransaction((DeutscheTransaction) transaction))
+                .collect(Collectors.toList());
         JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, DeutscheTransaction.class);
 
         when(transactionRetrieval.retrieveTransactions(
@@ -135,68 +125,48 @@ public class DeutscheServicesTest {
                 eq(type))).thenReturn(transactions);
         when(tokenService.getToken()).thenReturn("someToken");
 
-        //
         // WHEN
-        //
         List<GeneralTransaction> actual = transactionService.retrieveTransactionData(dummyIban);
 
-        //
         // THEN
-        //
-        assertIterableEquals(transactions, actual);*/
+        assertEquals(parsedTransactions, actual);
     }
 
     @Test
     public void stripTrailingNullDecimals() {
-        //
         // GIVEN
-        //
         GeneralPayment general = TestDataHelper.generateValidGeneralPaymentForDeutsche();
         Float specifiedAmount = general.getAmount();
 
-        //
         // WHEN
-        //
         DeutschePayment payment = mapper.toDeutschePayment(general);
 
-        //
         // THEN
-        //
         assertEquals("10.0", Float.toString(specifiedAmount));
         assertEquals("10", payment.getInstructedAmount().getAmount());
     }
 
     @Test
     public void retainActualDecimalPart() {
-        //
         // GIVEN
-        //
         GeneralPayment general = TestDataHelper.generateValidGeneralPaymentForDeutsche();
         Float specifiedAmount = 10.01f;
         general.setAmount(specifiedAmount);
 
-        //
         // WHEN
-        //
         DeutschePayment payment = mapper.toDeutschePayment(general);
 
-        //
         // THEN
-        //
         assertEquals("10.01", Float.toString(specifiedAmount));
         assertEquals("10.01", payment.getInstructedAmount().getAmount());
     }
 
     @Test
     public void mapIncompleteGeneralPayment() {
-        //
         // GIVEN
-        //
         GeneralPayment payment = TestDataHelper.generateInvalidGeneralPayment();
 
-        //
         // THEN
-        //
         assertThrows(MissingPaymentRequestDataException.class, () -> mapper.toDeutschePayment(payment));
     }
 }

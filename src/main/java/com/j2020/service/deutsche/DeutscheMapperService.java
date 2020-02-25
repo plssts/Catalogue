@@ -16,7 +16,7 @@ import java.util.Optional;
 public class DeutscheMapperService {
     private static final Logger logger = LoggerFactory.getLogger(DeutscheMapperService.class);
 
-    public GeneralTransaction toGeneralPayment(DeutscheTransaction transaction) {
+    public GeneralTransaction toGeneralTransaction(DeutscheTransaction transaction) {
         GeneralTransaction result = new GeneralTransaction();
         result.setTransactionId(transaction.getPaymentIdentification());
         result.setOrigin(transaction.getOriginIban());

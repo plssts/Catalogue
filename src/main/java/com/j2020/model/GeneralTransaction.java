@@ -1,20 +1,25 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Objects;
 
 @Entity
 public class GeneralTransaction {
     @Id
-    private String transactionId; // REVO: id; DB: paymentIdentification
-    private String origin; // REVO: legs->accountId DB: originIban
-    private String creditor; // REVO: legs->counterparty->accountId; DB: creditorId / counterpartyIban (whichever is nonnull)
-    private Float amount; // REVO: legs->amount; DB: amount
-    private String type; // REVO: type; DB:
-    private String state; // REVO: state; DB:
-    private String requestId; // REVO: requestId; DB: e2eReference
-    private String reference; // REVO: reference; DB: paymentReference
-    private String createdAt; // REVO: created_at; DB: bookingDate
+    private String transactionId;
+    private String origin;
+    private String creditor;
+    private Float amount;
+    private String type;
+    private String state;
+    private String requestId;
+    private String reference;
+    private String createdAt;
     private Bank bank;
 
     public String getTransactionId() {
@@ -95,5 +100,26 @@ public class GeneralTransaction {
 
     public void setBank(Bank bank) {
         this.bank = bank;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof GeneralTransaction)) {
+            return false;
+        }
+        GeneralTransaction that = (GeneralTransaction) other;
+        return transactionId.equals(that.transactionId) &&
+                origin.equals(that.origin) &&
+                creditor.equals(that.creditor) &&
+                amount.equals(that.amount) &&
+                bank == that.bank;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(transactionId, origin, creditor, amount, createdAt, bank);
     }
 }

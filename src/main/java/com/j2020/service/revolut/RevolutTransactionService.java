@@ -8,7 +8,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.model.*;
-import com.j2020.model.revolut.RevolutAccount;
 import com.j2020.model.revolut.RevolutPayment;
 import com.j2020.model.revolut.RevolutPaymentResponse;
 import com.j2020.model.revolut.RevolutTransaction;

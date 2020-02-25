@@ -7,14 +7,10 @@ package com.j2020.model.revolut;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.j2020.model.Transaction;
 
-import javax.persistence.*;
 import java.util.List;
 
-//@Entity
 public class RevolutTransaction implements Transaction {
-    //@Id
     private String id;
-
     private String type;
 
     @JsonProperty(value = "request_id")
@@ -35,15 +31,11 @@ public class RevolutTransaction implements Transaction {
     private String relatedTransactionId;
 
     private String reference;
-
-    //@ManyToOne(cascade = CascadeType.ALL)
     private RevolutTransactionMerchant merchant;
 
-    //@OneToMany(cascade = CascadeType.ALL)
     @JsonProperty(value = "legs")
     private List<RevolutTransactionLeg> revolutLegs;
 
-    //@ManyToOne(cascade = CascadeType.ALL)
     private RevolutTransactionCard card;
 
     public String getId() {

@@ -11,7 +11,6 @@ import com.j2020.model.Account;
 import com.j2020.model.Bank;
 import com.j2020.model.GeneralAccount;
 import com.j2020.model.revolut.RevolutAccount;
-import com.j2020.model.revolut.RevolutPayment;
 import com.j2020.service.AccountRequestRetrievalService;
 import com.j2020.service.AccountService;
 import org.slf4j.Logger;

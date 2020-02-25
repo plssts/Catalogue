@@ -63,7 +63,7 @@ public class DeutscheTransactionService implements TransactionService {
                                         .queryParam("iban", current)
                                         .toUriString(), type)
                                 .stream()
-                                .map(transaction -> deutscheMapper.toGeneralPayment((DeutscheTransaction) transaction));
+                                .map(transaction -> deutscheMapper.toGeneralTransaction((DeutscheTransaction) transaction));
                     } catch (JsonProcessingException exception) {
                         throw new JsonProcessingExceptionLambdaWrapper(exception.getMessage());
                     }
@@ -91,7 +91,7 @@ public class DeutscheTransactionService implements TransactionService {
     }
 
     @Override
-    public boolean canProcessThisBank(Bank bankingService){
+    public boolean canProcessThisBank(Bank bankingService) {
         return bankingService.equals(Bank.DEUTSCHE);
     }
 }
