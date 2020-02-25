@@ -8,7 +8,6 @@ import com.j2020.model.*;
 import com.j2020.model.deutsche.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.util.Optionals;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

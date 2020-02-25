@@ -1,8 +1,5 @@
 package com.j2020.model;
 
-//import org.graalvm.compiler.lir.CompositeValue;
-import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.*;
 
 @Entity

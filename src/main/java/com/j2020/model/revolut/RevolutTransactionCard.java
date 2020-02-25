@@ -9,9 +9,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
+//@Entity
 public class RevolutTransactionCard {
-    @Id
+    //@Id
     @JsonProperty(value = "card_number")
     private String cardNumber;
 

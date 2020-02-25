@@ -10,9 +10,9 @@ import com.j2020.model.Transaction;
 import javax.persistence.*;
 import java.util.List;
 
-@Entity
+//@Entity
 public class RevolutTransaction implements Transaction {
-    @Id
+    //@Id
     private String id;
 
     private String type;
@@ -36,14 +36,14 @@ public class RevolutTransaction implements Transaction {
 
     private String reference;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    //@ManyToOne(cascade = CascadeType.ALL)
     private RevolutTransactionMerchant merchant;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    //@OneToMany(cascade = CascadeType.ALL)
     @JsonProperty(value = "legs")
     private List<RevolutTransactionLeg> revolutLegs;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    //@ManyToOne(cascade = CascadeType.ALL)
     private RevolutTransactionCard card;
 
     public String getId() {

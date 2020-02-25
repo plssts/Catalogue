@@ -7,9 +7,9 @@ package com.j2020.model.deutsche;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
+//@Entity
 public class DeutscheSepaPaymentAmount {
-    @Id
+    //@Id
     private Long id;
 
     private String amount;

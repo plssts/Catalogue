@@ -7,9 +7,9 @@ package com.j2020.model.deutsche;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
+//@Entity
 public class DeutscheSepaPaymentAccount {
-    @Id
+    //@Id
     private Long id;
 
     private String currencyCode;

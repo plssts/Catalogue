@@ -4,7 +4,6 @@
 
 package com.j2020.controller;
 
-import com.j2020.model.Account;
 import com.j2020.model.GeneralAccount;
 import com.j2020.service.PersistenceManagerService;
 import org.springframework.http.ResponseEntity;

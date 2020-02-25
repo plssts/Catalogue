@@ -61,8 +61,9 @@ public class DeutscheTransactionService implements TransactionService {
                                 .retrieveTransactions(accessToken, UriComponentsBuilder
                                         .fromUriString(transactionUrl)
                                         .queryParam("iban", current)
-                                        .toUriString(), type).stream().map(transaction -> deutscheMapper.toGeneralPayment((DeutscheTransaction) transaction))
-                                /*.stream()*/;
+                                        .toUriString(), type)
+                                .stream()
+                                .map(transaction -> deutscheMapper.toGeneralPayment((DeutscheTransaction) transaction));
                     } catch (JsonProcessingException exception) {
                         throw new JsonProcessingExceptionLambdaWrapper(exception.getMessage());
                     }

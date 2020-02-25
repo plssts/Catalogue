@@ -8,16 +8,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 
-@Entity
+//@Entity
 public class RevolutTransactionLeg {
-    @Id
+    //@Id
     @JsonProperty(value = "leg_id")
     private String legId;
 
     @JsonProperty(value = "account_id")
     private String accountId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    //@ManyToOne(cascade = CascadeType.ALL)
     private RevolutTransactionLegCounterparty counterparty;
 
     private Float amount;

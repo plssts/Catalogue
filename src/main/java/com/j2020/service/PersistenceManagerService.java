@@ -27,47 +27,32 @@ public class PersistenceManagerService {
     private static final Logger logger = LoggerFactory.getLogger(PersistenceManagerService.class);
     private final TransactionProcessingService transactionService;
     private final AccountProcessingService accountService;
-    private final RepositoryFactory repositoryFactory;
 
     @Autowired
-    private AccountRepository accRep;
+    private AccountRepository accountRepository;
 
     @Autowired
-    private TransactionRepository tRep;
+    private TransactionRepository transactionRepository;
 
     public PersistenceManagerService(TransactionProcessingService transactionService,
-                                     RepositoryFactory repositoryFactory,
                                      AccountProcessingService accountService) {
         this.transactionService = transactionService;
-        this.repositoryFactory = repositoryFactory;
         this.accountService = accountService;
     }
 
     public Map<String, List<GeneralAccount>> returnAccounts() {
         logger.info("Getting all accounts from repository");
-        //List<GeneralAccount> revAccounts = repositoryFactory.retrieveAccountRepository(Bank.REVOLUT).findAll();
-        List<GeneralAccount> revAccounts = accRep.findByBank(Bank.REVOLUT);
-        List<GeneralAccount> dbAccounts = accRep.findByBank(Bank.DEUTSCHE);
-        //List<GeneralAccount> dbAccounts = repositoryFactory.retrieveAccountRepository(Bank.DEUTSCHE).findAll();
 
-        logger.info("{} Revolut; {} Deutsche Bank accounts", revAccounts.size(), dbAccounts.size());
         Map<String, List<GeneralAccount>> outcome = new HashMap<>();
-        outcome.put(Bank.REVOLUT.toString(), revAccounts);
-        outcome.put(Bank.DEUTSCHE.toString(), dbAccounts);
-
+        Stream.of(Bank.values()).forEach(bank -> outcome.put(bank.toString(), accountRepository.findByBank(bank)));
         return outcome;
     }
 
-    public Map<String, List<Transaction>> returnTransactions() {
+    public Map<String, List<GeneralTransaction>> returnTransactions() {
         logger.info("Getting all transactions from repository");
-        List revTransactions = tRep.findByBank(Bank.REVOLUT);
-        List dbTransactions = tRep.findByBank(Bank.DEUTSCHE);
 
-        logger.info("{} Revolut; {} Deutsche Bank transactions", revTransactions.size(), dbTransactions.size());
-        Map<String, List<Transaction>> outcome = new HashMap<>();
-        outcome.put(Bank.REVOLUT.toString(), revTransactions);
-        outcome.put(Bank.DEUTSCHE.toString(), dbTransactions);
-
+        Map<String, List<GeneralTransaction>> outcome = new HashMap<>();
+        Stream.of(Bank.values()).forEach(bank -> outcome.put(bank.toString(), transactionRepository.findByBank(bank)));
         return outcome;
     }
 
@@ -75,41 +60,26 @@ public class PersistenceManagerService {
     public Map<String, List<PaymentResponse>> processAndUpdateTransactions(Map<String, List<GeneralPayment>> params) throws JsonProcessingException {
         Map<String, List<PaymentResponse>> response = transactionService.initiatePaymentRequests(params);
 
-        logger.info("Updating following transaction repositories:");
+        logger.info("Updating transaction repositories");
         Map<String, List<GeneralTransaction>> transactions = transactionService.collectTransactionResponse();
-
-        if (params.containsKey(Bank.REVOLUT.toString())) {
-            logger.info("Updating Revolut transaction repository");
-            repositoryFactory.retrieveTransactionRepository(Bank.REVOLUT).saveAll(transactions.get(Bank.REVOLUT.toString()));
-        }
-        if (params.containsKey(Bank.DEUTSCHE.toString())) {
-            logger.info("Updating Deutsche Bank transaction repository");
-            repositoryFactory.retrieveTransactionRepository(Bank.DEUTSCHE).saveAll(transactions.get(Bank.DEUTSCHE.toString()));
-        }
+        params.forEach((bank, generalPayments) -> transactionRepository.saveAll(transactions.get(bank)));
 
         updateAccounts();
 
         return response;
     }
 
-    private void updateAccounts() throws JsonProcessingException {
+    private void updateAccounts() {
         logger.info("Fetching accounts for account repositories");
+
         Map<String, List<GeneralAccount>> accounts = accountService.collectAccountResponse();
-
-        accounts.forEach((s, generalAccounts) -> System.out.println("Under " + s + "\n" + generalAccounts)); // FIXME remove
-
-        logger.info("Updating Revolut account repository");
-        repositoryFactory.retrieveAccountRepository(Bank.REVOLUT).saveAll(accounts.get(Bank.REVOLUT.toString()));
-        logger.info("Updating Deutsche Bank account repository");
-        repositoryFactory.retrieveAccountRepository(Bank.DEUTSCHE).saveAll(accounts.get(Bank.DEUTSCHE.toString()));
+        Stream.of(Bank.values()).forEach(bank -> accountRepository.saveAll(accounts.get(bank.toString())));
     }
 
     @PostConstruct
     private void init() throws JsonProcessingException {
         updateAccounts();
         Map<String, List<GeneralTransaction>> transactions = transactionService.collectTransactionResponse();
-
-        repositoryFactory.retrieveTransactionRepository(Bank.REVOLUT).saveAll(transactions.get(Bank.REVOLUT.toString()));
-        repositoryFactory.retrieveTransactionRepository(Bank.DEUTSCHE).saveAll(transactions.get(Bank.DEUTSCHE.toString()));
+        Stream.of(Bank.values()).forEach(bank -> transactionRepository.saveAll(transactions.get(bank.toString())));
     }
 }

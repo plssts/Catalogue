@@ -7,8 +7,6 @@ package service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.j2020.J2020Application;
 //import com.j2020.repository.DeutscheAccountRepository;
-import com.j2020.repository.DeutscheTransactionRepository;
-import com.j2020.repository.RevolutTransactionRepository;
 import com.j2020.service.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -29,19 +27,19 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = J2020Application.class)
 @TestPropertySource(locations = "classpath:application-test.properties")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class DataAccessTest {
     //@Autowired
     //private DeutscheAccountRepository deutscheAccountRepository;
     //@Autowired
     //private RevolutAccountRepository revolutAccountRepository;
-    @Autowired
-    private DeutscheTransactionRepository deutscheTransactionRepository;
-    @Autowired
-    private RevolutTransactionRepository revolutTransactionRepository;
+    //@Autowired
+    //private DeutscheTransactionRepository deutscheTransactionRepository;
+    //@Autowired
+    //private RevolutTransactionRepository revolutTransactionRepository;
 
     private TransactionProcessingService transactionService;
-    private RepositoryFactory repositoryFactory;
+    //private RepositoryFactory repositoryFactory;
     private AccountProcessingService accountService;
     private PersistenceManagerService persistence;
 

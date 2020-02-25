@@ -10,9 +10,9 @@ import com.j2020.model.Account;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Entity
+//@Entity
 public class RevolutAccount implements Account {
-    @Id
+    //@Id
     @JsonProperty(value = "id")
     private String accountId;
 

@@ -27,8 +27,8 @@ public class TransactionController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, List<Transaction>>> readTransactions() {
-        Map<String, List<Transaction>> outcome = persistence.returnTransactions();
+    public ResponseEntity<Map<String, List<GeneralTransaction>>> readTransactions() {
+        Map<String, List<GeneralTransaction>> outcome = persistence.returnTransactions();
 
         return ok(outcome);
     }

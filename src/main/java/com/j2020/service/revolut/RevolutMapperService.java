@@ -5,7 +5,6 @@
 package com.j2020.service.revolut;
 
 import com.j2020.model.*;
-import com.j2020.model.deutsche.DeutscheTransaction;
 import com.j2020.model.revolut.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +17,6 @@ public class RevolutMapperService {
     private static final Logger logger = LoggerFactory.getLogger(RevolutMapperService.class);
 
     public GeneralTransaction toGeneralTransaction(RevolutTransaction transaction) {
-        //System.out.println("GOT COUNTERPARTY OF: " + transaction.getRevolutLegs().get(0).getCounterparty()); // FIXME remove this
-
         GeneralTransaction result = new GeneralTransaction();
         result.setTransactionId(transaction.getId());
         result.setOrigin(transaction.getRevolutLegs().get(0).getAccountId());

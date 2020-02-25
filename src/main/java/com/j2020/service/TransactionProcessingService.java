@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class TransactionProcessingService {
@@ -23,7 +24,7 @@ public class TransactionProcessingService {
         this.bankingService = bankingService;
     }
 
-    public Map<String, List<PaymentResponse>> initiatePaymentRequests(Map<String, List<GeneralPayment>> params) throws JsonProcessingException {
+    public Map<String, List<PaymentResponse>> initiatePaymentRequests(Map<String, List<GeneralPayment>> params) {
         if (params.isEmpty() || !Arrays.stream(params.keySet().toArray()).allMatch(bank -> EnumUtils.isValidEnum(Bank.class, bank.toString()))) {
             logger.error("Detected requests for bank services that are not supported");
             throw new BankNotSupportedException("Requested payments for services "
@@ -32,42 +33,39 @@ public class TransactionProcessingService {
                     + Arrays.toString(Bank.values()));
         }
 
-        List<PaymentResponse> revolutResponses = new ArrayList<>();
-        List<PaymentResponse> deutscheResponses = new ArrayList<>();
-
-        if (params.containsKey(Bank.REVOLUT.toString())) {
-            logger.info("Processing Revolut transactions");
-            revolutResponses = bankingService.retrieveTransactionService(Bank.REVOLUT)
-                    .createPayments(params.get(Bank.REVOLUT.toString()));
-        }
-        if (params.containsKey(Bank.DEUTSCHE.toString())) {
-            logger.info("Processing Deutsche Bank transactions");
-            deutscheResponses = bankingService.retrieveTransactionService(Bank.DEUTSCHE)
-                    .createPayments(params.get(Bank.DEUTSCHE.toString()));
-        }
-
         Map<String, List<PaymentResponse>> outcome = new HashMap<>();
-        outcome.put(Bank.REVOLUT.toString(), revolutResponses);
-        outcome.put(Bank.DEUTSCHE.toString(), deutscheResponses);
+
+        params.forEach((bank, generalPayments) -> {
+            try {
+                outcome.put(bank, bankingService.retrieveTransactionService(Bank.valueOf(bank)).createPayments(generalPayments));
+            } catch (JsonProcessingException exception) {
+                throw new JsonProcessingExceptionLambdaWrapper(exception.getMessage());
+            }
+        });
 
         return outcome;
     }
 
-    public Map<String, List<GeneralTransaction>> collectTransactionResponse() throws JsonProcessingException {
-        logger.info("Retrieving Revolut transactions");
-        List<GeneralTransaction> transactionsRevo = bankingService.retrieveTransactionService(Bank.REVOLUT)
-                .retrieveTransactionData(null);
-
-        logger.info("Collecting Deutsche Bank accounts and corresponding transactions");
-        List<String> ibans = bankingService.retrieveAccountService(Bank.DEUTSCHE)
-                .retrieveAccountData().stream()
-                .map(GeneralAccount::getAccountId).collect(Collectors.toList());
-        List<GeneralTransaction> transactionsDeut = bankingService.retrieveTransactionService(Bank.DEUTSCHE)
-                .retrieveTransactionData(ibans);
+    public Map<String, List<GeneralTransaction>> collectTransactionResponse() {
+        logger.info("Retrieving all transactions");
 
         Map<String, List<GeneralTransaction>> outcome = new HashMap<>();
-        outcome.put(Bank.REVOLUT.toString(), transactionsRevo);
-        outcome.put(Bank.DEUTSCHE.toString(), transactionsDeut);
+
+        Stream.of(Bank.values()).forEach(bank -> {
+            try {
+                List<GeneralTransaction> transactions;
+                if (bank.equals(Bank.DEUTSCHE)) {
+                    transactions = bankingService.retrieveTransactionService(bank).retrieveTransactionData(
+                            bankingService.retrieveAccountService(bank).retrieveAccountData().stream()
+                                    .map(GeneralAccount::getAccountId).collect(Collectors.toList()));
+                } else {
+                    transactions = bankingService.retrieveTransactionService(bank).retrieveTransactionData(null);
+                }
+                outcome.put(bank.toString(), transactions);
+            } catch (JsonProcessingException exception) {
+                throw new JsonProcessingExceptionLambdaWrapper(exception.getMessage());
+            }
+        });
 
         return outcome;
     }
