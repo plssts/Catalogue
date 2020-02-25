@@ -4,8 +4,8 @@
 
 package com.j2020.service.revolut;
 
-import com.j2020.model.GeneralPayment;
-import com.j2020.model.MissingPaymentRequestDataException;
+import com.j2020.model.*;
+import com.j2020.model.deutsche.DeutscheTransaction;
 import com.j2020.model.revolut.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +16,36 @@ import java.util.Optional;
 @Service
 public class RevolutMapperService {
     private static final Logger logger = LoggerFactory.getLogger(RevolutMapperService.class);
+
+    public GeneralTransaction toGeneralTransaction(RevolutTransaction transaction) {
+        //System.out.println("GOT COUNTERPARTY OF: " + transaction.getRevolutLegs().get(0).getCounterparty()); // FIXME remove this
+
+        GeneralTransaction result = new GeneralTransaction();
+        result.setTransactionId(transaction.getId());
+        result.setOrigin(transaction.getRevolutLegs().get(0).getAccountId());
+        result.setCreditor(transaction.getRevolutLegs().get(0).getCounterparty() != null ? transaction.getRevolutLegs().get(0).getCounterparty().getAccountId() : null);
+        result.setAmount(transaction.getRevolutLegs().get(0).getAmount());
+        result.setType(transaction.getType());
+        result.setState(transaction.getState());
+        result.setRequestId(transaction.getRequestId());
+        result.setReference(transaction.getReference());
+        result.setCreatedAt(transaction.getDateOfCreating());
+        result.setBank(Bank.REVOLUT);
+
+        return result;
+    }
+
+    public GeneralAccount toGeneralAccount(RevolutAccount account) {
+        GeneralAccount result = new GeneralAccount();
+        result.setAccountId(account.getAccountId());
+        result.setBalance(account.getBalance());
+        result.setCurrency(account.getCurrency());
+        result.setDescription(account.getName());
+        result.setType(account.getState());
+        result.setBank(Bank.REVOLUT);
+
+        return result;
+    }
 
     public RevolutPayment toRevolutPayment(GeneralPayment payment) {
         logger.info("Attempting to construct RevolutPayment out of {}", payment);

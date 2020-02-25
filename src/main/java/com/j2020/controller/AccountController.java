@@ -5,6 +5,7 @@
 package com.j2020.controller;
 
 import com.j2020.model.Account;
+import com.j2020.model.GeneralAccount;
 import com.j2020.service.PersistenceManagerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +24,8 @@ public class AccountController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, List<Account>>> readAccounts() {
-        Map<String, List<Account>> outcome = persistence.returnAccounts();
+    public ResponseEntity<Map<String, List<GeneralAccount>>> readAccounts() {
+        Map<String, List<GeneralAccount>> outcome = persistence.returnAccounts();
 
         return ok(outcome);
     }

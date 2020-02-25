@@ -19,7 +19,7 @@ import com.j2020.model.revolut.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class TestDataGenerator {
+public class TestDataHelper {
     public static DeutscheTokenRenewalResponse generateExpiredDeutscheTokenResponse() {
         DeutscheTokenRenewalResponse renewalResponse = new DeutscheTokenRenewalResponse();
         renewalResponse.setAccessToken("expiredAnyway");

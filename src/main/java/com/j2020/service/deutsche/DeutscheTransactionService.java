@@ -45,7 +45,7 @@ public class DeutscheTransactionService implements TransactionService {
     }
 
     @Override
-    public List<Transaction> retrieveTransactionData(List<String> ibans) {
+    public List<GeneralTransaction> retrieveTransactionData(List<String> ibans) {
         if (ibans == null) {
             return new ArrayList<>();
         }
@@ -53,6 +53,7 @@ public class DeutscheTransactionService implements TransactionService {
         String accessToken = tokenRenewal.getToken();
         JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, DeutscheTransaction.class);
 
+        logger.info("Constructing and validating Deutsche Bank transactions");
         return ibans.stream()
                 .flatMap(current -> {
                     try {
@@ -60,8 +61,8 @@ public class DeutscheTransactionService implements TransactionService {
                                 .retrieveTransactions(accessToken, UriComponentsBuilder
                                         .fromUriString(transactionUrl)
                                         .queryParam("iban", current)
-                                        .toUriString(), type)
-                                .stream();
+                                        .toUriString(), type).stream().map(transaction -> deutscheMapper.toGeneralPayment((DeutscheTransaction) transaction))
+                                /*.stream()*/;
                     } catch (JsonProcessingException exception) {
                         throw new JsonProcessingExceptionLambdaWrapper(exception.getMessage());
                     }
@@ -86,5 +87,10 @@ public class DeutscheTransactionService implements TransactionService {
                 paymentUrl,
                 parsedPayments,
                 new ObjectMapper().getTypeFactory().constructType(DeutschePaymentResponse.class));
+    }
+
+    @Override
+    public boolean canProcessThisBank(Bank bankingService){
+        return bankingService.equals(Bank.DEUTSCHE);
     }
 }

@@ -53,19 +53,19 @@ public class TransactionProcessingService {
         return outcome;
     }
 
-    public Map<String, List<Transaction>> collectTransactionResponse() throws JsonProcessingException {
+    public Map<String, List<GeneralTransaction>> collectTransactionResponse() throws JsonProcessingException {
         logger.info("Retrieving Revolut transactions");
-        List<Transaction> transactionsRevo = bankingService.retrieveTransactionService(Bank.REVOLUT)
+        List<GeneralTransaction> transactionsRevo = bankingService.retrieveTransactionService(Bank.REVOLUT)
                 .retrieveTransactionData(null);
 
         logger.info("Collecting Deutsche Bank accounts and corresponding transactions");
         List<String> ibans = bankingService.retrieveAccountService(Bank.DEUTSCHE)
                 .retrieveAccountData().stream()
-                .map(Account::getAccountId).collect(Collectors.toList());
-        List<Transaction> transactionsDeut = bankingService.retrieveTransactionService(Bank.DEUTSCHE)
+                .map(GeneralAccount::getAccountId).collect(Collectors.toList());
+        List<GeneralTransaction> transactionsDeut = bankingService.retrieveTransactionService(Bank.DEUTSCHE)
                 .retrieveTransactionData(ibans);
 
-        Map<String, List<Transaction>> outcome = new HashMap<>();
+        Map<String, List<GeneralTransaction>> outcome = new HashMap<>();
         outcome.put(Bank.REVOLUT.toString(), transactionsRevo);
         outcome.put(Bank.DEUTSCHE.toString(), transactionsDeut);
 

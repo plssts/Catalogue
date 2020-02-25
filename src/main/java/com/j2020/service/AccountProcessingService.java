@@ -7,6 +7,7 @@ package com.j2020.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.j2020.model.Account;
 import com.j2020.model.Bank;
+import com.j2020.model.GeneralAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,12 +25,12 @@ public class AccountProcessingService {
         this.bankingService = bankingService;
     }
 
-    public Map<String, List<Account>> collectAccountResponse() throws JsonProcessingException {
+    public Map<String, List<GeneralAccount>> collectAccountResponse() throws JsonProcessingException {
         logger.info("Retrieving account entries");
-        List<Account> accountsRevo = bankingService.retrieveAccountService(Bank.REVOLUT).retrieveAccountData();
-        List<Account> accountsDeut = bankingService.retrieveAccountService(Bank.DEUTSCHE).retrieveAccountData();
+        List<GeneralAccount> accountsRevo = bankingService.retrieveAccountService(Bank.REVOLUT).retrieveAccountData();
+        List<GeneralAccount> accountsDeut = bankingService.retrieveAccountService(Bank.DEUTSCHE).retrieveAccountData();
 
-        Map<String, List<Account>> outcome = new HashMap<>();
+        Map<String, List<GeneralAccount>> outcome = new HashMap<>();
         outcome.put(Bank.REVOLUT.toString(), accountsRevo);
         outcome.put(Bank.DEUTSCHE.toString(), accountsDeut);
 

@@ -7,12 +7,12 @@ package com.j2020.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.j2020.model.Account;
 import com.j2020.model.Bank;
+import com.j2020.model.GeneralAccount;
 
 import java.util.List;
 
 public interface AccountService {
-    List<Account> retrieveAccountData() throws JsonProcessingException;
+    List<GeneralAccount> retrieveAccountData() throws JsonProcessingException;
 
-    // FIXME add this to check if this bank is supported
-    //boolean canProcess(Bank id);
+    boolean canProcessThisBank(Bank bankingService);
 }

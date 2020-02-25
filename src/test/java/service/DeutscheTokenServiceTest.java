@@ -11,7 +11,7 @@ import com.j2020.model.TokenFetchException;
 import com.j2020.model.deutsche.DeutscheTokenRenewalResponse;
 import com.j2020.service.TokenRequestRetrievalService;
 import com.j2020.service.deutsche.DeutscheTokenService;
-import helper.TestDataGenerator;
+import helper.TestDataHelper;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -53,7 +53,7 @@ public class DeutscheTokenServiceTest {
         // GIVEN
         //
         JavaType type = new ObjectMapper().getTypeFactory().constructType(DeutscheTokenRenewalResponse.class);
-        DeutscheTokenRenewalResponse renewalResponse = TestDataGenerator.generateExpiredDeutscheTokenResponse();
+        DeutscheTokenRenewalResponse renewalResponse = TestDataHelper.generateExpiredDeutscheTokenResponse();
 
         //
         // WHEN

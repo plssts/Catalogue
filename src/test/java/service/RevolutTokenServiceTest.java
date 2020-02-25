@@ -11,7 +11,7 @@ import com.j2020.model.TokenFetchException;
 import com.j2020.model.revolut.RevolutTokenRenewalResponse;
 import com.j2020.service.TokenRequestRetrievalService;
 import com.j2020.service.revolut.RevolutTokenService;
-import helper.TestDataGenerator;
+import helper.TestDataHelper;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -50,7 +50,7 @@ public class RevolutTokenServiceTest {
         // GIVEN
         //
         JavaType type = new ObjectMapper().getTypeFactory().constructType(RevolutTokenRenewalResponse.class);
-        RevolutTokenRenewalResponse renewalResponse = TestDataGenerator.generateExpiredRevolutTokenResponse();
+        RevolutTokenRenewalResponse renewalResponse = TestDataHelper.generateExpiredRevolutTokenResponse();
 
         //
         // WHEN
