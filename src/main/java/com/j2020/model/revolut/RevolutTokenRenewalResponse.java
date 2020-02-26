@@ -7,6 +7,8 @@ package com.j2020.model.revolut;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.j2020.model.TokenRenewalResponse;
 
+import java.util.Objects;
+
 public class RevolutTokenRenewalResponse implements TokenRenewalResponse {
     @JsonProperty(value = "access_token")
     private String accessToken;
@@ -40,5 +42,23 @@ public class RevolutTokenRenewalResponse implements TokenRenewalResponse {
 
     public void setSecondsUntilExpiring(int secondsUntilExpiring) {
         this.secondsUntilExpiring = secondsUntilExpiring;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof RevolutTokenRenewalResponse)) {
+            return false;
+        }
+        RevolutTokenRenewalResponse that = (RevolutTokenRenewalResponse) other;
+        return secondsUntilExpiring == that.secondsUntilExpiring &&
+                accessToken.equals(that.accessToken);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(accessToken, secondsUntilExpiring);
     }
 }

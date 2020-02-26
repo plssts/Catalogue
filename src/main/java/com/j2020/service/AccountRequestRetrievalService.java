@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.model.Account;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -20,12 +20,18 @@ import java.util.List;
 
 @Service
 public class AccountRequestRetrievalService {
+    @Qualifier("restTemplate")
+    private RestTemplate restTemplate;
+
+    public AccountRequestRetrievalService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
     public List<Account> retrieveAccounts(String token, String url, JavaType reference) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
 
-        RestTemplate template = new RestTemplateBuilder().build();
-        ResponseEntity<String> response = template.exchange(url, HttpMethod.GET, new HttpEntity(headers), String.class);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity(headers), String.class);
 
         String content = response.getBody();
         StringBuilder builder = new StringBuilder(content);

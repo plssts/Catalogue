@@ -47,7 +47,10 @@ public class DeutscheTokenServiceTest {
         DeutscheTokenRenewalResponse renewalResponse = TestDataHelper.generateExpiredDeutscheTokenResponse();
 
         // WHEN
-        when(retrievalService.retrieveToken(notNull(), eq(Constants.DEUTSCHE_TOKEN_RENEWAL_URL), eq(type))).thenReturn(renewalResponse);
+        when(retrievalService.retrieveToken(
+                notNull(),
+                eq(Constants.DEUTSCHE_TOKEN_RENEWAL_URL),
+                eq(type))).thenReturn(renewalResponse);
         tokenService.refreshToken();
         String actual = tokenService.getToken();
 
@@ -61,7 +64,10 @@ public class DeutscheTokenServiceTest {
         JavaType type = new ObjectMapper().getTypeFactory().constructType(DeutscheTokenRenewalResponse.class);
 
         // WHEN
-        when(retrievalService.retrieveToken(notNull(), eq(Constants.DEUTSCHE_TOKEN_RENEWAL_URL), eq(type))).thenThrow(HttpClientErrorException.class);
+        when(retrievalService.retrieveToken(
+                notNull(),
+                eq(Constants.DEUTSCHE_TOKEN_RENEWAL_URL),
+                eq(type))).thenThrow(HttpClientErrorException.class);
 
         // THEN
         assertThrows(TokenFetchException.class, () -> tokenService.refreshToken());

@@ -13,8 +13,6 @@ import com.j2020.model.deutsche.DeutschePaymentResponse;
 import com.j2020.model.deutsche.DeutscheTokenRenewalResponse;
 import com.j2020.model.deutsche.DeutscheTransaction;
 import com.j2020.model.revolut.*;
-import com.j2020.service.PersistenceManagerService;
-import org.apache.tomcat.util.bcel.Const;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

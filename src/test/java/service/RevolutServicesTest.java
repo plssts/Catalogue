@@ -49,13 +49,31 @@ public class RevolutServicesTest {
         mapper = new RevolutMapperService();
         tokenService = Mockito.mock(RevolutTokenService.class);
         accountRetrieval = Mockito.mock(AccountRequestRetrievalService.class);
-        accountService = new RevolutAccountService(tokenService, accountRetrieval, new RevolutMapperService());
+        accountService = new RevolutAccountService(tokenService, accountRetrieval, mapper);
         transactionRetrieval = Mockito.mock(TransactionRequestRetrievalService.class);
         transactionService = new RevolutTransactionService(tokenService, transactionRetrieval, mapper);
 
         setField(accountService, "accountUrl", Constants.REVOLUT_ACCOUNT_URL);
         setField(transactionService, "transactionUrl", Constants.REVOLUT_TRANSACTION_URL);
         setField(transactionService, "paymentUrl", Constants.REVOLUT_PAYMENT_URL);
+    }
+
+    @Test
+    public void acknowledgeCorrectBankForProcessingAccounts() {
+        // WHEN
+        boolean actual = accountService.canProcessThisBank(Bank.REVOLUT);
+
+        // THEN
+        assertTrue(actual);
+    }
+
+    @Test
+    public void acknowledgeCorrectBankForProcessingTransactions() {
+        // WHEN
+        boolean actual = transactionService.canProcessThisBank(Bank.REVOLUT);
+
+        // THEN
+        assertTrue(actual);
     }
 
     @Test
@@ -79,7 +97,11 @@ public class RevolutServicesTest {
         JavaType type = new ObjectMapper().getTypeFactory().constructType(RevolutPaymentResponse.class);
 
         // WHEN
-        when(transactionRetrieval.pushPayments(anyString(), eq(Constants.REVOLUT_PAYMENT_URL), anyList(), eq(type))).thenReturn(responses);
+        when(transactionRetrieval.pushPayments(
+                anyString(),
+                eq(Constants.REVOLUT_PAYMENT_URL),
+                anyList(),
+                eq(type))).thenReturn(responses);
         when(tokenService.getToken()).thenReturn("someToken");
 
         List<PaymentResponse> actual = transactionService.createPayments(payments);
@@ -97,7 +119,10 @@ public class RevolutServicesTest {
                 .collect(Collectors.toList());
         JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, RevolutAccount.class);
 
-        when(accountRetrieval.retrieveAccounts(anyString(), eq(Constants.REVOLUT_ACCOUNT_URL), eq(type))).thenReturn(accounts);
+        when(accountRetrieval.retrieveAccounts(
+                anyString(),
+                eq(Constants.REVOLUT_ACCOUNT_URL),
+                eq(type))).thenReturn(accounts);
         when(tokenService.getToken()).thenReturn("someToken");
 
         // WHEN

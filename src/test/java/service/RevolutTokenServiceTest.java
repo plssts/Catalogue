@@ -47,7 +47,10 @@ public class RevolutTokenServiceTest {
         RevolutTokenRenewalResponse renewalResponse = TestDataHelper.generateExpiredRevolutTokenResponse();
 
         // WHEN
-        when(retrievalService.retrieveToken(notNull(), eq(Constants.REVOLUT_TOKEN_RENEWAL_URL), eq(type))).thenReturn(renewalResponse);
+        when(retrievalService.retrieveToken(
+                notNull(),
+                eq(Constants.REVOLUT_TOKEN_RENEWAL_URL),
+                eq(type))).thenReturn(renewalResponse);
         tokenService.refreshToken();
         String actual = tokenService.getToken();
 
@@ -61,7 +64,10 @@ public class RevolutTokenServiceTest {
         JavaType type = new ObjectMapper().getTypeFactory().constructType(RevolutTokenRenewalResponse.class);
 
         // WHEN
-        when(retrievalService.retrieveToken(notNull(), eq(Constants.REVOLUT_TOKEN_RENEWAL_URL), eq(type))).thenThrow(HttpClientErrorException.class);
+        when(retrievalService.retrieveToken(
+                notNull(),
+                eq(Constants.REVOLUT_TOKEN_RENEWAL_URL),
+                eq(type))).thenThrow(HttpClientErrorException.class);
 
         // THEN
         assertThrows(TokenFetchException.class, () -> tokenService.refreshToken());

@@ -6,6 +6,8 @@ package com.j2020.model.deutsche;
 
 import com.j2020.model.Transaction;
 
+import java.util.Objects;
+
 public class DeutscheTransaction implements Transaction {
     private String originIban;
     private Float amount;
@@ -142,5 +144,43 @@ public class DeutscheTransaction implements Transaction {
 
     public void setPaymentIdentification(String paymentIdentification) {
         this.paymentIdentification = paymentIdentification;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof DeutscheTransaction)) {
+            return false;
+        }
+        DeutscheTransaction that = (DeutscheTransaction) other;
+        return paymentIdentification.equals(that.paymentIdentification);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(originIban, paymentIdentification);
+    }
+
+    @Override
+    public String toString() {
+        return "DeutscheTransaction{" +
+                "originIban='" + originIban + '\'' +
+                ", amount=" + amount +
+                ", counterPartyName='" + counterPartyName + '\'' +
+                ", counterPartyIban='" + counterPartyIban + '\'' +
+                ", paymentReference='" + paymentReference + '\'' +
+                ", bookingDate='" + bookingDate + '\'' +
+                ", currencyCode='" + currencyCode + '\'' +
+                ", transactionCode='" + transactionCode + '\'' +
+                ", externalBankTransactionDomainCode='" + externalBankTransactionDomainCode + '\'' +
+                ", externalBankTransactionFamilyCode='" + externalBankTransactionFamilyCode + '\'' +
+                ", externalBankTransactionSubFamilyCode='" + externalBankTransactionSubFamilyCode + '\'' +
+                ", mandateReference='" + mandateReference + '\'' +
+                ", creditorId='" + creditorId + '\'' +
+                ", e2eReference='" + e2eReference + '\'' +
+                ", paymentIdentification='" + paymentIdentification + '\'' +
+                '}';
     }
 }

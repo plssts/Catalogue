@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.j2020.model.Transaction;
 
 import java.util.List;
+import java.util.Objects;
 
 public class RevolutTransaction implements Transaction {
     private String id;
@@ -132,6 +133,23 @@ public class RevolutTransaction implements Transaction {
 
     public void setRelatedTransactionId(String relatedTransactionId) {
         this.relatedTransactionId = relatedTransactionId;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof RevolutTransaction)) {
+            return false;
+        }
+        RevolutTransaction that = (RevolutTransaction) other;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, state);
     }
 
     @Override

@@ -117,8 +117,10 @@ public class DataAccessTest {
         payments.put(Bank.DEUTSCHE.toString(), generalPayments);
 
         Map<String, List<GeneralAccount>> accounts = new HashMap<>();
-        accounts.put(Bank.REVOLUT.toString(), TestDataHelper.generateRevolutAccounts().stream().map(account -> revolutMapper.toGeneralAccount((RevolutAccount) account)).collect(Collectors.toList()));
-        accounts.put(Bank.DEUTSCHE.toString(), TestDataHelper.generateDeutscheAccounts().stream().map(account -> deutscheMapper.toGeneralAccount((DeutscheAccount) account)).collect(Collectors.toList()));
+        accounts.put(Bank.REVOLUT.toString(), TestDataHelper.generateRevolutAccounts().stream()
+                .map(account -> revolutMapper.toGeneralAccount((RevolutAccount) account)).collect(Collectors.toList()));
+        accounts.put(Bank.DEUTSCHE.toString(), TestDataHelper.generateDeutscheAccounts().stream()
+                .map(account -> deutscheMapper.toGeneralAccount((DeutscheAccount) account)).collect(Collectors.toList()));
 
         when(transactionService.initiatePaymentRequests(ArgumentMatchers.anyMap())).thenReturn(new HashMap<>());
         when(transactionService.collectTransactionResponse()).thenReturn(addedTransactions);

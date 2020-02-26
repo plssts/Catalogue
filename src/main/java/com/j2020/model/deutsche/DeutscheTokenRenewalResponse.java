@@ -7,6 +7,8 @@ package com.j2020.model.deutsche;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.j2020.model.TokenRenewalResponse;
 
+import java.util.Objects;
+
 public class DeutscheTokenRenewalResponse implements TokenRenewalResponse {
     @JsonProperty(value = "access_token")
     private String accessToken;
@@ -74,5 +76,23 @@ public class DeutscheTokenRenewalResponse implements TokenRenewalResponse {
 
     public void setIdentityToken(String identityToken) {
         this.identityToken = identityToken;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof DeutscheTokenRenewalResponse)) {
+            return false;
+        }
+        DeutscheTokenRenewalResponse that = (DeutscheTokenRenewalResponse) other;
+        return secondsUntilExpiring == that.secondsUntilExpiring &&
+                accessToken.equals(that.accessToken);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(accessToken, secondsUntilExpiring);
     }
 }

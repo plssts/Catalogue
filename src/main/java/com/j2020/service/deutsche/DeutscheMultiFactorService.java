@@ -11,11 +11,11 @@ import com.j2020.model.deutsche.DeutscheSepaPaymentRequest;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -31,11 +31,20 @@ public class DeutscheMultiFactorService {
     @Value("${deutscheTransaction.oneTimePassUrl}")
     private String oneTimePassUrl;
 
-    private final GoogleAuthenticator auth = new GoogleAuthenticator();
+    private GoogleAuthenticator authenticator;
+
+    @Qualifier("mfaRestTemplate")
+    private RestTemplate restTemplate;
+
     private static final Logger logger = LoggerFactory.getLogger(DeutscheMultiFactorService.class);
 
+    public DeutscheMultiFactorService(GoogleAuthenticator authenticator, RestTemplate restTemplate) {
+        this.authenticator = authenticator;
+        this.restTemplate = restTemplate;
+    }
+
     public String getOneTimePass() {
-        StringBuilder otpValue = new StringBuilder(String.valueOf(auth.getTotpPassword(twoFactorSecret)));
+        StringBuilder otpValue = new StringBuilder(String.valueOf(authenticator.getTotpPassword(twoFactorSecret)));
         while (otpValue.length() < 6) {
             otpValue.insert(0, "0");
         }
@@ -45,7 +54,6 @@ public class DeutscheMultiFactorService {
     public Map<String, String> prepareAuthorisation(String token, String targetIban, String currency, String amount) {
         logger.info("Negotiating OTP for target account {}", targetIban);
 
-        RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + token);

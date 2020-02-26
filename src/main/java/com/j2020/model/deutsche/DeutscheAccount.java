@@ -9,6 +9,7 @@ import com.j2020.model.Account;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Objects;
 
 @Entity
 public class DeutscheAccount implements Account {
@@ -69,5 +70,25 @@ public class DeutscheAccount implements Account {
 
     public void setProductDescription(String productDescription) {
         this.productDescription = productDescription;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof DeutscheAccount)) {
+            return false;
+        }
+        DeutscheAccount that = (DeutscheAccount) other;
+        return accountId.equals(that.accountId) &&
+                currencyCode.equals(that.currencyCode) &&
+                currentBalance.equals(that.currentBalance) &&
+                productDescription.equals(that.productDescription);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(accountId, currencyCode, currentBalance, productDescription);
     }
 }

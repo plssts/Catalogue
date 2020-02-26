@@ -31,6 +31,8 @@ public class Constants {
     public static final String DEUTSCHE_PAYMENT_URL = "https://simulator-api.db.com/gw/dbapi/paymentInitiation/payments/v1/instantSepaCreditTransfers";
     public static final String DEUTSCHE_ACCOUNT_URL = "https://simulator-api.db.com/gw/dbapi/v1/cashAccounts";
     public static final String DEUTSCHE_TRANSACTION_URL = "https://simulator-api.db.com/gw/dbapi/v1/transactions";
+    public static final String DEUTSCHE_TWO_FACTOR_SECRET = "PRE6QIOR5XL77XOV";
+    public static final String DEUTSCHE_ONE_TIME_PASS_URL = "https://simulator-api.db.com/gw/dbapi/others/onetimepasswords/v2/single";
 
     public static final String TEST_CURRENCY_CODE = "EUR";
     public static final String TEST_ACCESS_TOKEN = "expiredAnyway";

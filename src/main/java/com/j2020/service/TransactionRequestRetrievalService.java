@@ -12,8 +12,8 @@ import com.j2020.model.deutsche.DeutschePayment;
 import com.j2020.service.deutsche.DeutscheMultiFactorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -24,21 +24,26 @@ import java.util.*;
 public class TransactionRequestRetrievalService {
     private final DeutscheMultiFactorService deutscheMultiFactor;
     private static final Logger logger = LoggerFactory.getLogger(TransactionRequestRetrievalService.class);
+
+    @Qualifier("restTemplate")
+    private RestTemplate restTemplate;
+
     private Random random = new Random();
 
     @Value("${revolutTransaction.maxReqIdLength}")
     private int maxReqIdLength;
 
-    public TransactionRequestRetrievalService(DeutscheMultiFactorService deutscheMultiFactor) {
+    public TransactionRequestRetrievalService(DeutscheMultiFactorService deutscheMultiFactor,
+                                              RestTemplate restTemplate) {
         this.deutscheMultiFactor = deutscheMultiFactor;
+        this.restTemplate = restTemplate;
     }
 
     public List<Transaction> retrieveTransactions(String token, String url, JavaType reference) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
 
-        RestTemplate template = new RestTemplateBuilder().build();
-        ResponseEntity<String> response = template.exchange(url, HttpMethod.GET, new HttpEntity(headers), String.class);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity(headers), String.class);
 
         String content = response.getBody();
         StringBuilder builder = new StringBuilder(content);
@@ -54,7 +59,6 @@ public class TransactionRequestRetrievalService {
         headers.set("Authorization", "Bearer " + token);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        RestTemplate template = new RestTemplateBuilder().build();
         ResponseEntity<String> response;
         List<PaymentResponse> responses = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
@@ -73,7 +77,7 @@ public class TransactionRequestRetrievalService {
 
             logger.info("Processing {}", payment);
 
-            response = template.exchange(url, HttpMethod.POST, new HttpEntity<>(payment, headers), String.class);
+            response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(payment, headers), String.class);
             responses.add(mapper.readValue(response.getBody(), reference));
         }
 
