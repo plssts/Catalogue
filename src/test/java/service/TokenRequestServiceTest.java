@@ -36,7 +36,7 @@ public class TokenRequestServiceTest {
     }
 
     @Test
-    public void wow() throws JsonProcessingException {
+    public void tokenRetrievalUnderNormalConditions() throws JsonProcessingException {
         // GIVEN
         JavaType type = new ObjectMapper().getTypeFactory().constructType(RevolutTokenRenewalResponse.class);
         TokenRenewalResponse expected = TestDataHelper.generateExpiredRevolutTokenResponse();
