@@ -120,8 +120,10 @@ public class DeutscheTransactionService implements TransactionService {
         TransactionStatusCheck status = new TransactionStatusCheck();
         status.setPaymentId(responses.get(0).getPaymentId());
         status.setTransactionStatus(responses.get(0).getStatus());
-        //status.setBatch(payments.get(0).getBatchOfPayments());
         status.setBopid(payments.get(0).getBopid());
+        status.setBank(Bank.DEUTSCHE);
+        status.setSourceAccount(payments.get(0).getSourceAccount());
+        status.setDestinationAccount(payments.get(0).getDestinationAccount());
 
         //Optional<BatchOfPayments> batch = batchRepository.findById(payments.get(0).getBatchId());
 
@@ -150,8 +152,10 @@ public class DeutscheTransactionService implements TransactionService {
         TransactionStatusCheck status = new TransactionStatusCheck();
         status.setPaymentId("fail");
         status.setTransactionStatus("fail");
-        //status.setBatch(payments.get(0).getBatchOfPayments());
         status.setBopid(payment.getBopid());
+        status.setBank(Bank.DEUTSCHE);
+        status.setSourceAccount(payment.getSourceAccount());
+        status.setDestinationAccount(payment.getDestinationAccount());
 
         transactions.save(status);
         System.out.println("Count: " + transactions.findAllByBopid(payment.getBopid()).size());
