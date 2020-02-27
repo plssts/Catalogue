@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -41,8 +42,8 @@ public class DeutscheTransactionService implements TransactionService {
     @Autowired
     private TransactionsForBatchRepository transactions;
 
-    @Autowired
-    private PaymentBatchRepository batchRepository;
+    //@Autowired
+    //private PaymentBatchRepository batchRepository;
 
     @Value("${deutscheTransaction.ibanAvailableUrlPrepend}")
     private String ibanOnUrlPrepend;
@@ -109,10 +110,10 @@ public class DeutscheTransactionService implements TransactionService {
                     paymentUrl,
                     parsedPayments,
                     new ObjectMapper().getTypeFactory().constructType(DeutschePaymentResponse.class));
-        } catch (HttpServerErrorException exception) {
+        } catch (HttpClientErrorException | HttpServerErrorException exception) {
             logger.error("HTTP SERVER ERROR OCCURRED");
             saveFailedStatus(payments.get(0));
-            updateBatchCounters(payments.get(0).getBopid());
+            //updateBatchCounters(payments.get(0).getBopid());
             return new ArrayList<>();
         }
 
@@ -138,7 +139,7 @@ public class DeutscheTransactionService implements TransactionService {
         logger.info("Saving the new payment identification and status");
         //batchRepository.save(batchObject);
         transactions.save(status);
-        updateBatchCounters(payments.get(0).getBopid()); // FIXME move this to consumer, less duplication
+        //updateBatchCounters(payments.get(0).getBopid()); // FIXME move this to consumer, less duplication
         System.out.println("Count: " + transactions.findAllByBopid(payments.get(0).getBopid()).size());
 
         return new ArrayList<>();
@@ -156,7 +157,7 @@ public class DeutscheTransactionService implements TransactionService {
         System.out.println("Count: " + transactions.findAllByBopid(payment.getBopid()).size());
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.SERIALIZABLE)
+    /*@Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.SERIALIZABLE)
     private void updateBatchCounters(Long batchId) {
         Optional<BatchOfPayments> batch = batchRepository.findById(batchId);
         if (batch.isPresent()) {
@@ -167,7 +168,7 @@ public class DeutscheTransactionService implements TransactionService {
 
             batchRepository.save(batchObject);
         }
-    }
+    }*/
 
     @Override
     public boolean canProcessThisBank(Bank bankingService) {

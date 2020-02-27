@@ -6,6 +6,7 @@ import com.j2020.model.BatchOfPayments;
 import com.j2020.model.GeneralPayment;
 import com.j2020.model.PaymentResponse;
 import com.j2020.repository.PaymentBatchRepository;
+import com.j2020.repository.TransactionsForBatchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,11 @@ public class JmsTransactionConsumer {
     private final Logger logger = LoggerFactory.getLogger(JmsTransactionConsumer.class);
     private BankingServiceFactory serviceFactory;
 
-    //@Autowired
-    //private PaymentBatchRepository batchRepository;
+    @Autowired
+    private PaymentBatchRepository batchRepository;
+
+    @Autowired
+    private TransactionsForBatchRepository transactions;
 
     public JmsTransactionConsumer(BankingServiceFactory serviceFactory/*,
                                   PaymentBatchRepository batchRepository*/) {
@@ -42,7 +46,7 @@ public class JmsTransactionConsumer {
             System.out.println("[CONS] payment has batchid as: " + payment.getBopid());
             List<PaymentResponse> responses = serviceFactory.retrieveTransactionService(payment.getBank()).createPayments(toProcess);
 
-            //updateBatchCounters(payment.getBopid());
+            updateBatchCounters(payment.getBopid());
 
             //System.out.println("Anyone on the consumer? " + batchRepository.findById(payment.getBatchId())); // FIXME remove this
 
@@ -71,16 +75,17 @@ public class JmsTransactionConsumer {
         }
     }
 
-    /*@Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.SERIALIZABLE)
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.SERIALIZABLE)
     private void updateBatchCounters(Long batchId) {
         Optional<BatchOfPayments> batch = batchRepository.findById(batchId);
         if (batch.isPresent()) {
             BatchOfPayments batchObject = batch.get();
-            batchObject.setCountOfProcessedPayments(batchObject.getCountOfProcessedPayments() + 1);
+            int size = transactions.findAllByBopid(batchObject.getId()).size();
+            batchObject.setCountOfProcessedPayments(size);
 
-            logger.info("Plus one to processed payments");
+            logger.info("Updated processed payments counter");
 
             batchRepository.save(batchObject);
         }
-    }*/
+    }
 }
