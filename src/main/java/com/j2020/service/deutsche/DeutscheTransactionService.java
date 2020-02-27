@@ -99,7 +99,7 @@ public class DeutscheTransactionService implements TransactionService {
         status.setPaymentId(responses.get(0).getPaymentId());
         status.setTransactionStatus(responses.get(0).getStatus());
         status.setBatch(payments.get(0).getBatchOfPayments());
-        //status.setBopid(payments.get(0).getBopid());
+        status.setBopid(payments.get(0).getBopid());
 
         //Optional<BatchOfPayments> batch = batchRepository.findById(payments.get(0).getBatchId());
 

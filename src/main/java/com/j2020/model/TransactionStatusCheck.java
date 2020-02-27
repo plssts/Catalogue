@@ -15,8 +15,18 @@ public class TransactionStatusCheck {
     private String transactionStatus;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "bop_Id", nullable = false)
+    @JoinColumn(name = "bop_id", nullable = false)
     private BatchOfPayments batch;
+
+    private Long bopid;
+
+    public Long getBopid() {
+        return bopid;
+    }
+
+    public void setBopid(Long bopid) {
+        this.bopid = bopid;
+    }
 
     public BatchOfPayments getBatch() {
         return batch;
