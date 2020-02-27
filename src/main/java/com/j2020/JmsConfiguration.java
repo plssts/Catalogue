@@ -39,8 +39,8 @@ public class JmsConfiguration {
     public Executor concurrentExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix(Constants.JMS_ASYNC_EXECUTOR + ":");
-        executor.setCorePoolSize(10);
-        executor.setMaxPoolSize(100);
+        executor.setCorePoolSize(1);
+        executor.setMaxPoolSize(1);
         executor.initialize();
 
         return executor;

@@ -33,9 +33,9 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String, List<PaymentResponse>>> createPayments(@RequestBody Map<String, List<GeneralPayment>> params) {
+    public ResponseEntity<BatchOfPaymentsMessage> createPayments(@RequestBody Map<String, List<GeneralPayment>> params) {
         logger.info("Creating payments for {}", params.keySet());
-        Map<String, List<PaymentResponse>> outcome = persistence.processAndUpdateTransactions(params);
+        BatchOfPaymentsMessage outcome = persistence.processAndUpdateTransactions(params);
 
         return ok(outcome);
     }

@@ -17,7 +17,8 @@ public class RevolutPaymentResponse implements PaymentResponse {
     @JsonProperty(value = "completed_at")
     private String completedAt;
 
-    public String getId() {
+    @Override
+    public String getPaymentId() {
         return id;
     }
 
@@ -25,7 +26,8 @@ public class RevolutPaymentResponse implements PaymentResponse {
         this.id = id;
     }
 
-    public String getState() {
+    @Override
+    public String getStatus() {
         return state;
     }
 

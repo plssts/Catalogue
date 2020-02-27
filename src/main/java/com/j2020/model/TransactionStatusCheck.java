@@ -1,16 +1,20 @@
-/**
- * @author Paulius Staisiunas
- */
+package com.j2020.model;
 
-package com.j2020.model.deutsche;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import com.j2020.model.PaymentResponse;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-public class DeutschePaymentResponse implements PaymentResponse {
+@Entity
+public class TransactionStatusCheck {
+    @Id
+    @JsonAlias(value = "id")
     private String paymentId;
+
+    @JsonAlias(value = "state")
     private String transactionStatus;
 
-    @Override
     public String getPaymentId() {
         return paymentId;
     }
@@ -19,8 +23,7 @@ public class DeutschePaymentResponse implements PaymentResponse {
         this.paymentId = paymentId;
     }
 
-    @Override
-    public String getStatus() {
+    public String getTransactionStatus() {
         return transactionStatus;
     }
 
