@@ -5,8 +5,8 @@
 package com.j2020;
 
 public class Constants {
-    public static final String JMS_TRANSACTION_QUEUE = "MAIN_TRANSACTION_QUEUE";
-    public static final String JMS_ASYNC_EXECUTOR = "ASYNC_EXECUTOR";
+    public static final String JMS_TRANSACTION_QUEUE = "MainTransactionQueue";
+    public static final String JMS_ASYNC_EXECUTOR = "AsyncEx";
 
     public static final String DEUTSCHE_SEPA_PAYMENT_REQUEST_METHOD = "PHOTOTAN";
     public static final String DEUTSCHE_SEPA_PAYMENT_REQUEST_TYPE = "INSTANT_SEPA_CREDIT_TRANSFERS";

@@ -18,13 +18,16 @@ import java.util.stream.Stream;
 @Service
 public class TransactionProcessingService {
     private final BankingServiceFactory bankingService;
+    private JmsTransactionProducer transactionProducer;
     private static final Logger logger = LoggerFactory.getLogger(TransactionProcessingService.class);
 
-    public TransactionProcessingService(BankingServiceFactory bankingService) {
+    public TransactionProcessingService(BankingServiceFactory bankingService,
+                                        JmsTransactionProducer transactionProducer) {
         this.bankingService = bankingService;
+        this.transactionProducer = transactionProducer;
     }
 
-    public Map<String, List<PaymentResponse>> initiatePaymentRequests(Map<String, List<GeneralPayment>> params) {
+    public BatchOfPaymentsMessage initiatePaymentRequests(Map<String, List<GeneralPayment>> params) {
         if (params.isEmpty() || !Arrays.stream(params.keySet().toArray()).allMatch(bank -> EnumUtils.isValidEnum(Bank.class, bank.toString()))) {
             logger.error("Detected requests for bank services that are not supported");
             throw new BankNotSupportedException("Requested payments for services "
@@ -33,9 +36,15 @@ public class TransactionProcessingService {
                     + Arrays.toString(Bank.values()));
         }
 
-        Map<String, List<PaymentResponse>> outcome = new HashMap<>();
+        //Map<String, List<PaymentResponse>> outcome = new HashMap<>();
 
-        params.forEach((bank, generalPayments) -> {
+        List<GeneralPayment> merged = new ArrayList<>();
+        params.forEach((bank, generalPayments) -> merged.addAll(generalPayments));
+
+        BatchOfPaymentsMessage response = transactionProducer.sendPayments(merged);
+        return response;
+
+        /*params.forEach((bank, generalPayments) -> {
             try {
                 outcome.put(bank, bankingService.retrieveTransactionService(Bank.valueOf(bank)).createPayments(generalPayments));
             } catch (JsonProcessingException exception) {
@@ -43,7 +52,7 @@ public class TransactionProcessingService {
             }
         });
 
-        return outcome;
+        return outcome;*/
     }
 
     public Map<String, List<GeneralTransaction>> collectTransactionResponse() {

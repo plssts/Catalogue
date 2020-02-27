@@ -12,6 +12,24 @@ public class GeneralPayment {
     private String currency;
     private Float amount;
     private Map<String, String> additionalInfo;
+    private Long batchId;
+    private Bank bank;
+
+    public Bank getBank() {
+        return bank;
+    }
+
+    public void setBank(Bank bank) {
+        this.bank = bank;
+    }
+
+    public Long getBatchId() {
+        return batchId;
+    }
+
+    public void setBatchId(Long batchId) {
+        this.batchId = batchId;
+    }
 
     public String getSourceAccount() {
         return sourceAccount;
@@ -61,6 +79,8 @@ public class GeneralPayment {
                 ", currency='" + currency + '\'' +
                 ", amount=" + amount +
                 ", additionalInfo=" + additionalInfo +
+                ", batchId=" + batchId +
+                ", bank=" + bank +
                 '}';
     }
 }
