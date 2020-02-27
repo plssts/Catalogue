@@ -89,7 +89,7 @@ public class DeutscheTransactionService implements TransactionService {
         logger.info("Constructing and validating Deutsche Bank payments");
         payments.forEach(payment -> parsedPayments.add(deutscheMapper.toDeutschePayment(payment)));
 
-        List <PaymentResponse> responses = transactionRetrieval.pushPayments(
+        List<PaymentResponse> responses = transactionRetrieval.pushPayments(
                 tokenRenewal.getToken(),
                 paymentUrl,
                 parsedPayments,

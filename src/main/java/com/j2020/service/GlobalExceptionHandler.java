@@ -14,11 +14,18 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 
+import javax.jms.JMSException;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler({JsonProcessingException.class, HttpClientErrorException.class, JsonProcessingExceptionLambdaWrapper.class})
+    @ExceptionHandler({
+            JsonProcessingException.class,
+            HttpClientErrorException.class,
+            JsonProcessingExceptionLambdaWrapper.class,
+            JMSException.class})
+
     public ResponseEntity<String> handleExceptions(Exception exception) {
         logger.error("Exception raised during operation");
 
@@ -31,6 +38,8 @@ public class GlobalExceptionHandler {
         } else if (exception instanceof HttpClientErrorException) {
             HttpStatus status = HttpStatus.BAD_REQUEST;
             return new ResponseEntity<>("Communication error. " + exception.getMessage(), status);
+        } else if (exception instanceof JMSException) {
+            
         }
 
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;

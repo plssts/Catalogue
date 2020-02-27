@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface TransactionsForBatchRepository extends JpaRepository<TransactionStatusCheck, Long> {
     List<TransactionStatusCheck> findAllByBatch(BatchOfPayments batch);
+
     List<TransactionStatusCheck> findAllByBopid(Long bopid);
 }
