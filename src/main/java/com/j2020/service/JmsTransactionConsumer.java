@@ -6,6 +6,7 @@ import com.j2020.model.*;
 import com.j2020.repository.PaymentBatchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -19,15 +20,16 @@ import java.util.Optional;
 public class JmsTransactionConsumer {
     private final Logger logger = LoggerFactory.getLogger(JmsTransactionConsumer.class);
     private BankingServiceFactory serviceFactory;
-    private PaymentBatchRepository batchRepository;
+    //@Autowired
+    //private PaymentBatchRepository batchRepository;
 
-    public JmsTransactionConsumer(BankingServiceFactory serviceFactory,
-                                  PaymentBatchRepository batchRepository) {
+    public JmsTransactionConsumer(BankingServiceFactory serviceFactory/*,
+                                  PaymentBatchRepository batchRepository*/) {
         this.serviceFactory = serviceFactory;
-        this.batchRepository = batchRepository;
+        //this.batchRepository = batchRepository;
     }
 
-    @Async(Constants.JMS_ASYNC_EXECUTOR)
+    //@Async(Constants.JMS_ASYNC_EXECUTOR)
     @JmsListener(destination = Constants.JMS_TRANSACTION_QUEUE)
     public void onMessage(GeneralPayment payment) {
         List<GeneralPayment> toProcess = new ArrayList<>();
@@ -35,9 +37,10 @@ public class JmsTransactionConsumer {
         try {
             List<PaymentResponse> responses = serviceFactory.retrieveTransactionService(payment.getBank()).createPayments(toProcess);
 
-            System.out.println("Anyone on the consumer? " + batchRepository.findById(payment.getBatchId())); // FIXME remove this
+            System.out.println("[CONS] payment has batchid as: " + payment.getBatchOfPayments().getId());
+            //System.out.println("Anyone on the consumer? " + batchRepository.findById(payment.getBatchId())); // FIXME remove this
 
-            Optional<BatchOfPayments> batch = batchRepository.findById(payment.getBatchId());
+            /*Optional<BatchOfPayments> batch = batchRepository.findById(payment.getBatchId());
 
             TransactionStatusCheck status = new TransactionStatusCheck();
             status.setPaymentId(responses.get(0).getPaymentId());
@@ -53,7 +56,9 @@ public class JmsTransactionConsumer {
             collection.add(status);
             batchObject.setPayments(collection);
 
-            batchRepository.save(batchObject);
+            logger.info("Saving the new payment identification and status");
+
+            batchRepository.save(batchObject);*/
 
         } catch (JsonProcessingException exception) {
             logger.error("Could not process {} because {}", payment, exception.getMessage());

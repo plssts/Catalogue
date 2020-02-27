@@ -5,14 +5,14 @@ import org.hibernate.annotations.CollectionType;
 import javax.persistence.*;
 import java.util.List;
 
-@Entity
+@Entity(name = "bop")
 public class BatchOfPayments {
     @Id
     @GeneratedValue
     private Long id;
 
-    @OneToMany
-    private List<TransactionStatusCheck> payments;
+    /*@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<TransactionStatusCheck> payments;*/
 
     public Long getId() {
         return id;
@@ -22,11 +22,11 @@ public class BatchOfPayments {
         this.id = id;
     }
 
-    public List<TransactionStatusCheck> getPayments() {
+    /*public List<TransactionStatusCheck> getPayments() {
         return payments;
     }
 
     public void setPayments(List<TransactionStatusCheck> payments) {
         this.payments = payments;
-    }
+    }*/
 }
