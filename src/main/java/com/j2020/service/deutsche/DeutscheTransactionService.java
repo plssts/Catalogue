@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
@@ -89,16 +90,25 @@ public class DeutscheTransactionService implements TransactionService {
         logger.info("Constructing and validating Deutsche Bank payments");
         payments.forEach(payment -> parsedPayments.add(deutscheMapper.toDeutschePayment(payment)));
 
-        List<PaymentResponse> responses = transactionRetrieval.pushPayments(
-                tokenRenewal.getToken(),
-                paymentUrl,
-                parsedPayments,
-                new ObjectMapper().getTypeFactory().constructType(DeutschePaymentResponse.class));
+        List<PaymentResponse> responses = new ArrayList<>();
+        boolean hasFailed = false;
+
+        try {
+            responses = transactionRetrieval.pushPayments(
+                    tokenRenewal.getToken(),
+                    paymentUrl,
+                    parsedPayments,
+                    new ObjectMapper().getTypeFactory().constructType(DeutschePaymentResponse.class));
+        } catch (HttpServerErrorException exception) {
+            logger.error("HTTP SERVER ERROR OCCURRED");
+            saveFailedStatus(payments.get(0));
+            return new ArrayList<>();
+        }
 
         TransactionStatusCheck status = new TransactionStatusCheck();
         status.setPaymentId(responses.get(0).getPaymentId());
         status.setTransactionStatus(responses.get(0).getStatus());
-        status.setBatch(payments.get(0).getBatchOfPayments());
+        //status.setBatch(payments.get(0).getBatchOfPayments());
         status.setBopid(payments.get(0).getBopid());
 
         //Optional<BatchOfPayments> batch = batchRepository.findById(payments.get(0).getBatchId());
@@ -118,9 +128,21 @@ public class DeutscheTransactionService implements TransactionService {
         //batchRepository.save(batchObject);
         transactions.save(status);
 
-        transactions.findAll().forEach(System.out::println);
+        System.out.println("Count: " + transactions.findAllByBopid(payments.get(0).getBopid()).size());
 
         return new ArrayList<>();
+    }
+
+    private void saveFailedStatus(GeneralPayment payment) {
+        logger.info("Saving the new payment FAIL");
+        TransactionStatusCheck status = new TransactionStatusCheck();
+        status.setPaymentId("fail");
+        status.setTransactionStatus("fail");
+        //status.setBatch(payments.get(0).getBatchOfPayments());
+        status.setBopid(payment.getBopid());
+
+        transactions.save(status);
+        System.out.println("Count: " + transactions.findAllByBopid(payment.getBopid()).size());
     }
 
     @Override

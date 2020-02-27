@@ -96,7 +96,7 @@ public class GeneralPayment {
                 ", currency='" + currency + '\'' +
                 ", amount=" + amount +
                 ", additionalInfo=" + additionalInfo +
-                ", batchId=" + batch.getId() +
+                ", batchId=" + bopid +
                 ", bank=" + bank +
                 '}';
     }

@@ -35,9 +35,10 @@ public class JmsTransactionConsumer {
         List<GeneralPayment> toProcess = new ArrayList<>();
         toProcess.add(payment);
         try {
+            System.out.println("[CONS] payment has batchid as: " + payment.getBopid());
             List<PaymentResponse> responses = serviceFactory.retrieveTransactionService(payment.getBank()).createPayments(toProcess);
 
-            System.out.println("[CONS] payment has batchid as: " + payment.getBatchOfPayments().getId());
+
             //System.out.println("Anyone on the consumer? " + batchRepository.findById(payment.getBatchId())); // FIXME remove this
 
             /*Optional<BatchOfPayments> batch = batchRepository.findById(payment.getBatchId());

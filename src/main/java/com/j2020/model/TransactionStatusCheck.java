@@ -14,9 +14,9 @@ public class TransactionStatusCheck {
     @JsonAlias(value = "state")
     private String transactionStatus;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "bop_id", nullable = false)
-    private BatchOfPayments batch;
+    //@ManyToOne(cascade = CascadeType.ALL)
+    //@JoinColumn(name = "bop_id", nullable = false)
+    //private BatchOfPayments batch;
 
     private Long bopid;
 
@@ -28,13 +28,13 @@ public class TransactionStatusCheck {
         this.bopid = bopid;
     }
 
-    public BatchOfPayments getBatch() {
+    /*public BatchOfPayments getBatch() {
         return batch;
     }
 
     public void setBatch(BatchOfPayments batch) {
         this.batch = batch;
-    }
+    }*/
 
     public String getPaymentId() {
         return paymentId;

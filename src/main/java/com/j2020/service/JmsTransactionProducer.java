@@ -31,16 +31,16 @@ public class JmsTransactionProducer {
         BatchOfPayments newBatch = new BatchOfPayments();
         BatchOfPayments current = batchRepository.save(newBatch);
 
-        batchRepository.findAll().forEach(System.out::println);
+        //batchRepository.findAll().forEach(System.out::println);
 
-        System.out.println("Anybody out there? " + batchRepository.findById(current.getId())); // FIXME remove this
+        //System.out.println("Anybody out there? " + batchRepository.findById(current.getId())); // FIXME remove this
 
         logger.info("Sending to queue {} payments with BOP id {}", payments.size(), current.getId());
 
         payments.forEach(payment -> {
-            payment.setBatchOfPayments(current);
+            //payment.setBatchOfPayments(current);
             payment.setBopid(current.getId());
-            System.out.println("[PROD] payment has batchid as: " + payment.getBatchOfPayments().getId());
+            System.out.println("[PROD] payment has batchid as: " + payment.getBopid());
             jmsTemplate.convertAndSend(Constants.JMS_TRANSACTION_QUEUE, payment);
         });
 
