@@ -12,8 +12,25 @@ public class GeneralPayment {
     private String currency;
     private Float amount;
     private Map<String, String> additionalInfo;
-    private Long batchId;
+    private BatchOfPayments batch;
+    private Long bopid;
     private Bank bank;
+
+    public BatchOfPayments getBatch() {
+        return batch;
+    }
+
+    public void setBatch(BatchOfPayments batch) {
+        this.batch = batch;
+    }
+
+    public Long getBopid() {
+        return bopid;
+    }
+
+    public void setBopid(Long bopid) {
+        this.bopid = bopid;
+    }
 
     public Bank getBank() {
         return bank;
@@ -23,12 +40,12 @@ public class GeneralPayment {
         this.bank = bank;
     }
 
-    public Long getBatchId() {
-        return batchId;
+    public BatchOfPayments getBatchOfPayments() {
+        return batch;
     }
 
-    public void setBatchId(Long batchId) {
-        this.batchId = batchId;
+    public void setBatchOfPayments(BatchOfPayments batch) {
+        this.batch = batch;
     }
 
     public String getSourceAccount() {
@@ -79,7 +96,7 @@ public class GeneralPayment {
                 ", currency='" + currency + '\'' +
                 ", amount=" + amount +
                 ", additionalInfo=" + additionalInfo +
-                ", batchId=" + batchId +
+                ", batchId=" + batch.getId() +
                 ", bank=" + bank +
                 '}';
     }

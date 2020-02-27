@@ -3,8 +3,7 @@ package com.j2020.model;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class TransactionStatusCheck {
@@ -14,6 +13,18 @@ public class TransactionStatusCheck {
 
     @JsonAlias(value = "state")
     private String transactionStatus;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "bop_Id", nullable = false)
+    private BatchOfPayments batch;
+
+    public BatchOfPayments getBatch() {
+        return batch;
+    }
+
+    public void setBatch(BatchOfPayments batch) {
+        this.batch = batch;
+    }
 
     public String getPaymentId() {
         return paymentId;

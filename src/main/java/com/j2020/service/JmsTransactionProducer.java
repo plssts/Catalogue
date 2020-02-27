@@ -4,35 +4,43 @@ import com.j2020.Constants;
 import com.j2020.model.BatchOfPayments;
 import com.j2020.model.BatchOfPaymentsMessage;
 import com.j2020.model.GeneralPayment;
+import com.j2020.model.TransactionStatusCheck;
 import com.j2020.repository.PaymentBatchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class JmsTransactionProducer {
     private static final Logger logger = LoggerFactory.getLogger(JmsTransactionProducer.class);
+    @Autowired
     private PaymentBatchRepository batchRepository;
     private JmsTemplate jmsTemplate;
 
-    public JmsTransactionProducer(JmsTemplate jmsTemplate, PaymentBatchRepository batchRepository) {
+    public JmsTransactionProducer(JmsTemplate jmsTemplate/*, PaymentBatchRepository batchRepository*/) {
         this.jmsTemplate = jmsTemplate;
-        this.batchRepository = batchRepository;
+        //this.batchRepository = batchRepository;
     }
 
     public BatchOfPaymentsMessage sendPayments(List<GeneralPayment> payments) {
         BatchOfPayments newBatch = new BatchOfPayments();
-        Long newId = batchRepository.save(newBatch).getId();
+        BatchOfPayments current = batchRepository.save(newBatch);
 
-        System.out.println("Anybody out there? " + batchRepository.findById(newId)); // FIXME remove this
+        batchRepository.findAll().forEach(System.out::println);
 
-        logger.info("Sending to queue {} payments with BOP id {}", payments.size(), newId);
+        System.out.println("Anybody out there? " + batchRepository.findById(current.getId())); // FIXME remove this
+
+        logger.info("Sending to queue {} payments with BOP id {}", payments.size(), current.getId());
 
         payments.forEach(payment -> {
-            payment.setBatchId(newId);
+            payment.setBatchOfPayments(current);
+            payment.setBopid(current.getId());
+            System.out.println("[PROD] payment has batchid as: " + payment.getBatchOfPayments().getId());
             jmsTemplate.convertAndSend(Constants.JMS_TRANSACTION_QUEUE, payment);
         });
 
@@ -40,7 +48,7 @@ public class JmsTransactionProducer {
 
         BatchOfPaymentsMessage response = new BatchOfPaymentsMessage();
         response.setText("Payments are being processed. Check their status with the following batch id.");
-        response.setBatchId(newId);
+        response.setBatchId(current.getId());
 
         return response;
     }
