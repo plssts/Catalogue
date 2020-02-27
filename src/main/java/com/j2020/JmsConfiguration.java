@@ -35,12 +35,12 @@ public class JmsConfiguration {
         return converter;
     }
 
-    @Bean(name = Constants.JMS_ASYNC_EXECUTOR)
+    //@Bean(name = Constants.JMS_ASYNC_EXECUTOR)
     public Executor concurrentExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix(Constants.JMS_ASYNC_EXECUTOR + ":");
-        executor.setCorePoolSize(1);
-        executor.setMaxPoolSize(1);
+        executor.setCorePoolSize(50);
+        executor.setMaxPoolSize(100);
         executor.initialize();
 
         return executor;

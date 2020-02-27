@@ -112,10 +112,10 @@ public class DeutscheTransactionService implements TransactionService {
                     parsedPayments,
                     new ObjectMapper().getTypeFactory().constructType(DeutschePaymentResponse.class));
         } catch (HttpClientErrorException | HttpServerErrorException exception) {
-            logger.error("HTTP SERVER ERROR OCCURRED");
-            saveFailedStatus(payments.get(0));
-            //updateBatchCounters(payments.get(0).getBopid());
-            return new ArrayList<>();
+                logger.error("HTTP SERVER ERROR OCCURRED");
+                saveFailedStatus(payments.get(0));
+                //updateBatchCounters(payments.get(0).getBopid());
+                return new ArrayList<>();
         }
 
         TransactionStatusCheck status = new TransactionStatusCheck();
@@ -150,7 +150,7 @@ public class DeutscheTransactionService implements TransactionService {
     }
 
     private void saveFailedStatus(GeneralPayment payment) {
-        logger.warn("Saving an entry for a payment that failed");
+        logger.warn("Saving an entry for a Deutsche Bank payment that failed");
 
         TransactionStatusCheck status = new TransactionStatusCheck();
         status.setPaymentId(Constants.DISPLAY_FAILED_PAYMENT_ID);
