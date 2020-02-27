@@ -5,7 +5,10 @@
 package com.j2020.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.j2020.model.*;
+import com.j2020.model.Bank;
+import com.j2020.model.GeneralPayment;
+import com.j2020.model.GeneralTransaction;
+import com.j2020.model.PaymentResponse;
 
 import java.util.List;
 

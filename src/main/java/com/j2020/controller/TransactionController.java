@@ -4,14 +4,17 @@
 
 package com.j2020.controller;
 
-import com.j2020.model.*;
+import com.j2020.model.BatchOfPaymentsMessage;
+import com.j2020.model.GeneralPayment;
+import com.j2020.model.GeneralTransaction;
 import com.j2020.service.PersistenceManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.ResponseEntity.ok;
 

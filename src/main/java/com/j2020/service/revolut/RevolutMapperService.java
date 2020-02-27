@@ -5,7 +5,10 @@
 package com.j2020.service.revolut;
 
 import com.j2020.model.*;
-import com.j2020.model.revolut.*;
+import com.j2020.model.revolut.RevolutAccount;
+import com.j2020.model.revolut.RevolutPayment;
+import com.j2020.model.revolut.RevolutTransaction;
+import com.j2020.model.revolut.RevolutTransactionLegCounterparty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

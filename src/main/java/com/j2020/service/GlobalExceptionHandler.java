@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
             HttpStatus status = HttpStatus.BAD_REQUEST;
             return new ResponseEntity<>("Communication error. " + exception.getMessage(), status);
         } else if (exception instanceof JMSException) {
-            
+
         }
 
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;

@@ -7,7 +7,9 @@ package com.j2020.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.j2020.model.*;
+import com.j2020.model.Payment;
+import com.j2020.model.PaymentResponse;
+import com.j2020.model.Transaction;
 import com.j2020.model.deutsche.DeutschePayment;
 import com.j2020.service.deutsche.DeutscheMultiFactorService;
 import org.slf4j.Logger;
@@ -18,7 +20,10 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 @Service
 public class TransactionRequestRetrievalService {

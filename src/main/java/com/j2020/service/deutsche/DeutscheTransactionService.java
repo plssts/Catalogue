@@ -8,7 +8,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.model.*;
-import com.j2020.model.deutsche.*;
+import com.j2020.model.deutsche.DeutschePayment;
+import com.j2020.model.deutsche.DeutschePaymentResponse;
+import com.j2020.model.deutsche.DeutscheTransaction;
 import com.j2020.repository.PaymentBatchRepository;
 import com.j2020.repository.TransactionsForBatchRepository;
 import com.j2020.service.TransactionRequestRetrievalService;
@@ -18,10 +20,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +40,9 @@ public class DeutscheTransactionService implements TransactionService {
 
     @Autowired
     private TransactionsForBatchRepository transactions;
+
+    @Autowired
+    private PaymentBatchRepository batchRepository;
 
     @Value("${deutscheTransaction.ibanAvailableUrlPrepend}")
     private String ibanOnUrlPrepend;
@@ -102,6 +112,7 @@ public class DeutscheTransactionService implements TransactionService {
         } catch (HttpServerErrorException exception) {
             logger.error("HTTP SERVER ERROR OCCURRED");
             saveFailedStatus(payments.get(0));
+            updateBatchCounters(payments.get(0).getBopid());
             return new ArrayList<>();
         }
 
@@ -127,7 +138,7 @@ public class DeutscheTransactionService implements TransactionService {
         logger.info("Saving the new payment identification and status");
         //batchRepository.save(batchObject);
         transactions.save(status);
-
+        updateBatchCounters(payments.get(0).getBopid()); // FIXME move this to consumer, less duplication
         System.out.println("Count: " + transactions.findAllByBopid(payments.get(0).getBopid()).size());
 
         return new ArrayList<>();
@@ -143,6 +154,19 @@ public class DeutscheTransactionService implements TransactionService {
 
         transactions.save(status);
         System.out.println("Count: " + transactions.findAllByBopid(payment.getBopid()).size());
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.SERIALIZABLE)
+    private void updateBatchCounters(Long batchId) {
+        Optional<BatchOfPayments> batch = batchRepository.findById(batchId);
+        if (batch.isPresent()) {
+            BatchOfPayments batchObject = batch.get();
+            batchObject.setCountOfProcessedPayments(batchObject.getCountOfProcessedPayments() + 1);
+
+            logger.info("Plus one to processed payments");
+
+            batchRepository.save(batchObject);
+        }
     }
 
     @Override

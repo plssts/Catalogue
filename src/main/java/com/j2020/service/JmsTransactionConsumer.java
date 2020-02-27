@@ -2,16 +2,19 @@ package com.j2020.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.j2020.Constants;
-import com.j2020.model.*;
+import com.j2020.model.BatchOfPayments;
+import com.j2020.model.GeneralPayment;
+import com.j2020.model.PaymentResponse;
 import com.j2020.repository.PaymentBatchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +23,7 @@ import java.util.Optional;
 public class JmsTransactionConsumer {
     private final Logger logger = LoggerFactory.getLogger(JmsTransactionConsumer.class);
     private BankingServiceFactory serviceFactory;
+
     //@Autowired
     //private PaymentBatchRepository batchRepository;
 
@@ -38,6 +42,7 @@ public class JmsTransactionConsumer {
             System.out.println("[CONS] payment has batchid as: " + payment.getBopid());
             List<PaymentResponse> responses = serviceFactory.retrieveTransactionService(payment.getBank()).createPayments(toProcess);
 
+            //updateBatchCounters(payment.getBopid());
 
             //System.out.println("Anyone on the consumer? " + batchRepository.findById(payment.getBatchId())); // FIXME remove this
 
@@ -65,4 +70,17 @@ public class JmsTransactionConsumer {
             logger.error("Could not process {} because {}", payment, exception.getMessage());
         }
     }
+
+    /*@Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.SERIALIZABLE)
+    private void updateBatchCounters(Long batchId) {
+        Optional<BatchOfPayments> batch = batchRepository.findById(batchId);
+        if (batch.isPresent()) {
+            BatchOfPayments batchObject = batch.get();
+            batchObject.setCountOfProcessedPayments(batchObject.getCountOfProcessedPayments() + 1);
+
+            logger.info("Plus one to processed payments");
+
+            batchRepository.save(batchObject);
+        }
+    }*/
 }

@@ -16,11 +16,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static org.springframework.http.ResponseEntity.*;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 public class BatchController {
@@ -40,13 +38,17 @@ public class BatchController {
     }
 
     @GetMapping("/{batchId}")
-    public ResponseEntity<List<TransactionStatusCheck>> getBatchInfo(@PathVariable String batchId) {
+    public ResponseEntity<Map<String, Object>> getBatchInfo(@PathVariable String batchId) {
         // FIXME move logic to dedicated service
         Optional<BatchOfPayments> batch = batchRepository.findById(Long.valueOf(batchId));
         if (batch.isPresent()) {
             List<TransactionStatusCheck> statuses = transactions.findAllByBopid(batch.get().getId());
-            return ok(statuses);
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("Total payments", batch.get().getCountOfAllPayments());
+            response.put("Processed payments", batch.get().getCountOfProcessedPayments());
+            response.put("Transactions", statuses);
+            return ok(response);
         }
-        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new HashMap<>(), HttpStatus.NOT_FOUND);
     }
 }

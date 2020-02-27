@@ -4,7 +4,6 @@ import com.j2020.Constants;
 import com.j2020.model.BatchOfPayments;
 import com.j2020.model.BatchOfPaymentsMessage;
 import com.j2020.model.GeneralPayment;
-import com.j2020.model.TransactionStatusCheck;
 import com.j2020.repository.PaymentBatchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +12,6 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class JmsTransactionProducer {
@@ -29,6 +27,8 @@ public class JmsTransactionProducer {
 
     public BatchOfPaymentsMessage sendPayments(List<GeneralPayment> payments) {
         BatchOfPayments newBatch = new BatchOfPayments();
+        newBatch.setCountOfAllPayments(payments.size());
+        newBatch.setCountOfProcessedPayments(0);
         BatchOfPayments current = batchRepository.save(newBatch);
 
         //batchRepository.findAll().forEach(System.out::println);

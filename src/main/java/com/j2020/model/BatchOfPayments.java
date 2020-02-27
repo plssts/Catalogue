@@ -1,15 +1,33 @@
 package com.j2020.model;
 
-import org.hibernate.annotations.CollectionType;
-
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 @Entity(name = "bop")
 public class BatchOfPayments {
     @Id
     @GeneratedValue
     private Long id;
+
+    private Integer countOfAllPayments;
+    private Integer countOfProcessedPayments;
+
+    public Integer getCountOfAllPayments() {
+        return countOfAllPayments;
+    }
+
+    public void setCountOfAllPayments(Integer countOfAllPayments) {
+        this.countOfAllPayments = countOfAllPayments;
+    }
+
+    public Integer getCountOfProcessedPayments() {
+        return countOfProcessedPayments;
+    }
+
+    public void setCountOfProcessedPayments(Integer countOfProcessedPayments) {
+        this.countOfProcessedPayments = countOfProcessedPayments;
+    }
 
     /*@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<TransactionStatusCheck> payments;*/
