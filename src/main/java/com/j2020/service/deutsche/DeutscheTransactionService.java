@@ -7,6 +7,7 @@ package com.j2020.service.deutsche;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.j2020.Constants;
 import com.j2020.model.*;
 import com.j2020.model.deutsche.DeutschePayment;
 import com.j2020.model.deutsche.DeutschePaymentResponse;
@@ -124,6 +125,7 @@ public class DeutscheTransactionService implements TransactionService {
         status.setBank(Bank.DEUTSCHE);
         status.setSourceAccount(payments.get(0).getSourceAccount());
         status.setDestinationAccount(payments.get(0).getDestinationAccount());
+        status.setAmount(payments.get(0).getAmount());
 
         //Optional<BatchOfPayments> batch = batchRepository.findById(payments.get(0).getBatchId());
 
@@ -148,31 +150,20 @@ public class DeutscheTransactionService implements TransactionService {
     }
 
     private void saveFailedStatus(GeneralPayment payment) {
-        logger.info("Saving the new payment FAIL");
+        logger.warn("Saving an entry for a payment that failed");
+
         TransactionStatusCheck status = new TransactionStatusCheck();
-        status.setPaymentId("fail");
-        status.setTransactionStatus("fail");
+        status.setPaymentId(Constants.DISPLAY_FAILED_PAYMENT_ID);
+        status.setTransactionStatus(Constants.DISPLAY_FAILED_PAYMENT_STATUS);
         status.setBopid(payment.getBopid());
         status.setBank(Bank.DEUTSCHE);
         status.setSourceAccount(payment.getSourceAccount());
         status.setDestinationAccount(payment.getDestinationAccount());
+        status.setAmount(payment.getAmount());
 
         transactions.save(status);
-        System.out.println("Count: " + transactions.findAllByBopid(payment.getBopid()).size());
+        //System.out.println("Count: " + transactions.findAllByBopid(payment.getBopid()).size());
     }
-
-    /*@Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.SERIALIZABLE)
-    private void updateBatchCounters(Long batchId) {
-        Optional<BatchOfPayments> batch = batchRepository.findById(batchId);
-        if (batch.isPresent()) {
-            BatchOfPayments batchObject = batch.get();
-            batchObject.setCountOfProcessedPayments(batchObject.getCountOfProcessedPayments() + 1);
-
-            logger.info("Plus one to processed payments");
-
-            batchRepository.save(batchObject);
-        }
-    }*/
 
     @Override
     public boolean canProcessThisBank(Bank bankingService) {

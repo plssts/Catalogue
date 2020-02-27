@@ -19,11 +19,20 @@ public class TransactionStatusCheck {
     //@JoinColumn(name = "bop_id", nullable = false)
     //private BatchOfPayments batch;
     private Bank bank;
+    private Float amount;
     private String sourceAccount;
     private String destinationAccount;
 
     @JsonIgnore
     private Long bopid;
+
+    public Float getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Float amount) {
+        this.amount = amount;
+    }
 
     public Bank getBank() {
         return bank;

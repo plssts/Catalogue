@@ -5,6 +5,9 @@
 package com.j2020;
 
 public class Constants {
+    public static final String DISPLAY_FAILED_PAYMENT_ID = "[Not processed]";
+    public static final String DISPLAY_FAILED_PAYMENT_STATUS = "[FAILED]";
+
     public static final String JMS_TRANSACTION_QUEUE = "MainTransactionQueue";
     public static final String JMS_ASYNC_EXECUTOR = "AsyncEx";
 
