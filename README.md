@@ -1,6 +1,6 @@
 ## J2020 @Visma2020Winter
 
-Currently supports Revolut and Deutsche Bank account listing services only.
+Currently supports Revolut and Deutsche Bank account listing and transaction processing services.
 
 The endpoints are called as:
 
