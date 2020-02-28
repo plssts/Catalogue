@@ -1,3 +1,7 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020;
 
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
@@ -8,15 +12,11 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.jms.ConnectionFactory;
-import java.util.concurrent.Executor;
 
 @Configuration
 @EnableJms
-@EnableAsync
 public class JmsConfiguration {
     @Bean
     public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory,
@@ -34,16 +34,4 @@ public class JmsConfiguration {
 
         return converter;
     }
-
-    //@Bean(name = Constants.JMS_ASYNC_EXECUTOR)
-    public Executor concurrentExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setThreadNamePrefix(Constants.JMS_ASYNC_EXECUTOR + ":");
-        executor.setCorePoolSize(50);
-        executor.setMaxPoolSize(100);
-        executor.initialize();
-
-        return executor;
-    }
-
 }

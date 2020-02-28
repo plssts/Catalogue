@@ -17,7 +17,6 @@ import com.j2020.service.TransactionRequestRetrievalService;
 import com.j2020.service.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -32,8 +31,6 @@ public class RevolutTransactionService implements TransactionService {
     private final RevolutTokenService tokenRenewal;
     private final TransactionRequestRetrievalService transactionRetrieval;
     private final RevolutMapperService revolutMapper;
-
-    @Autowired
     private TransactionsForBatchRepository transactions;
 
     @Value("${revolutTransaction.transactionUrl}")
@@ -44,18 +41,20 @@ public class RevolutTransactionService implements TransactionService {
 
     public RevolutTransactionService(RevolutTokenService tokenRenewal,
                                      TransactionRequestRetrievalService transactionRetrieval,
-                                     RevolutMapperService revolutMapper) {
+                                     RevolutMapperService revolutMapper,
+                                     TransactionsForBatchRepository transactions) {
         this.tokenRenewal = tokenRenewal;
         this.transactionRetrieval = transactionRetrieval;
         this.revolutMapper = revolutMapper;
+        this.transactions = transactions;
     }
 
     @Override
     public List<GeneralTransaction> retrieveTransactionData(List<String> accountIds) throws JsonProcessingException {
-        String OAuthToken = tokenRenewal.getToken();
+        String oauthToken = tokenRenewal.getToken();
         JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, RevolutTransaction.class);
 
-        List<Transaction> response = transactionRetrieval.retrieveTransactions(OAuthToken, transactionUrl, type);
+        List<Transaction> response = transactionRetrieval.retrieveTransactions(oauthToken, transactionUrl, type);
         List<GeneralTransaction> parsedTransactions = new ArrayList<>();
 
         logger.info("Constructing and validating Revolut transactions");
@@ -76,8 +75,7 @@ public class RevolutTransactionService implements TransactionService {
         logger.info("Constructing and validating Revolut payments");
         payments.forEach(payment -> parsedPayments.add(revolutMapper.toRevolutPayment(payment)));
 
-        List<PaymentResponse> responses = new ArrayList<>();
-        boolean hasFailed = false;
+        List<PaymentResponse> responses;
 
         try {
             responses = transactionRetrieval.pushPayments(
@@ -86,26 +84,22 @@ public class RevolutTransactionService implements TransactionService {
                     parsedPayments,
                     new ObjectMapper().getTypeFactory().constructType(RevolutPaymentResponse.class));
         } catch (HttpClientErrorException | HttpServerErrorException exception) {
-            logger.error("HTTP SERVER ERROR OCCURRED");
+            logger.error("An HTTP error caused payment failure");
             saveFailedStatus(payments.get(0));
-            //updateBatchCounters(payments.get(0).getBopid());
             return new ArrayList<>();
         }
 
         TransactionStatusCheck status = new TransactionStatusCheck();
         status.setPaymentId(responses.get(0).getPaymentId());
         status.setTransactionStatus(responses.get(0).getStatus());
-        status.setBopid(payments.get(0).getBopid());
+        status.setBatchId(payments.get(0).getBatchId());
         status.setBank(Bank.REVOLUT);
         status.setSourceAccount(payments.get(0).getSourceAccount());
         status.setDestinationAccount(payments.get(0).getDestinationAccount());
         status.setAmount(payments.get(0).getAmount());
 
         logger.info("Saving the new payment identification and status");
-        //batchRepository.save(batchObject);
         transactions.save(status);
-        //updateBatchCounters(payments.get(0).getBopid()); // FIXME move this to consumer, less duplication
-        System.out.println("Count: " + transactions.findAllByBopid(payments.get(0).getBopid()).size());
 
         return new ArrayList<>();
     }
@@ -116,14 +110,13 @@ public class RevolutTransactionService implements TransactionService {
         TransactionStatusCheck status = new TransactionStatusCheck();
         status.setPaymentId(Constants.DISPLAY_FAILED_PAYMENT_ID);
         status.setTransactionStatus(Constants.DISPLAY_FAILED_PAYMENT_STATUS);
-        status.setBopid(payment.getBopid());
+        status.setBatchId(payment.getBatchId());
         status.setBank(Bank.DEUTSCHE);
         status.setSourceAccount(payment.getSourceAccount());
         status.setDestinationAccount(payment.getDestinationAccount());
         status.setAmount(payment.getAmount());
 
         transactions.save(status);
-        //System.out.println("Count: " + transactions.findAllByBopid(payment.getBopid()).size());
     }
 
     @Override

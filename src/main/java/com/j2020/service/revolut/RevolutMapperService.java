@@ -5,6 +5,7 @@
 package com.j2020.service.revolut;
 
 import com.j2020.model.*;
+import com.j2020.model.exception.MissingPaymentRequestDataException;
 import com.j2020.model.revolut.RevolutAccount;
 import com.j2020.model.revolut.RevolutPayment;
 import com.j2020.model.revolut.RevolutTransaction;

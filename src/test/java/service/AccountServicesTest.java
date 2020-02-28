@@ -11,7 +11,7 @@ import com.j2020.Constants;
 import com.j2020.model.Account;
 import com.j2020.model.Bank;
 import com.j2020.model.GeneralAccount;
-import com.j2020.model.JsonProcessingExceptionLambdaWrapper;
+import com.j2020.model.exception.JsonProcessingExceptionLambdaWrapper;
 import com.j2020.model.deutsche.DeutscheAccount;
 import com.j2020.model.revolut.RevolutAccount;
 import com.j2020.service.AccountProcessingService;

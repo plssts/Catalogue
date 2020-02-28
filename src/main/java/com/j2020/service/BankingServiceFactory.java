@@ -5,7 +5,7 @@
 package com.j2020.service;
 
 import com.j2020.model.Bank;
-import com.j2020.model.BankNotSupportedException;
+import com.j2020.model.exception.BankNotSupportedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -15,6 +15,7 @@ public class RevolutTransactionCard {
 
     @JsonProperty(value = "last_name")
     private String lastName;
+
     private String phone;
 
     public String getCardNumber() {

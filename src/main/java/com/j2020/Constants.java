@@ -9,7 +9,6 @@ public class Constants {
     public static final String DISPLAY_FAILED_PAYMENT_STATUS = "[FAILED]";
 
     public static final String JMS_TRANSACTION_QUEUE = "MainTransactionQueue";
-    public static final String JMS_ASYNC_EXECUTOR = "AsyncEx";
 
     public static final String DEUTSCHE_SEPA_PAYMENT_REQUEST_METHOD = "PHOTOTAN";
     public static final String DEUTSCHE_SEPA_PAYMENT_REQUEST_TYPE = "INSTANT_SEPA_CREDIT_TRANSFERS";

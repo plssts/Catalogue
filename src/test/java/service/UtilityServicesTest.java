@@ -6,7 +6,7 @@ package service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.j2020.model.Bank;
-import com.j2020.model.JsonProcessingExceptionLambdaWrapper;
+import com.j2020.model.exception.JsonProcessingExceptionLambdaWrapper;
 import com.j2020.service.AccountService;
 import com.j2020.service.BankingServiceFactory;
 import com.j2020.service.GlobalExceptionHandler;

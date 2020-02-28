@@ -2,14 +2,14 @@
  * @author Paulius Staisiunas
  */
 
-package com.j2020.model;
+package com.j2020.model.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class BankNotSupportedException extends RuntimeException {
-    public BankNotSupportedException(String message) {
+public class MissingPaymentRequestDataException extends RuntimeException {
+    public MissingPaymentRequestDataException(String message) {
         super(message);
     }
 }

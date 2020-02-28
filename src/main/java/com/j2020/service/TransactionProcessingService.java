@@ -6,6 +6,9 @@ package com.j2020.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.j2020.model.*;
+import com.j2020.model.exception.BankNotSupportedException;
+import com.j2020.model.exception.JsonProcessingExceptionLambdaWrapper;
+import com.j2020.service.jms.JmsTransactionProducer;
 import org.apache.commons.lang3.EnumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,23 +39,10 @@ public class TransactionProcessingService {
                     + Arrays.toString(Bank.values()));
         }
 
-        //Map<String, List<PaymentResponse>> outcome = new HashMap<>();
-
         List<GeneralPayment> merged = new ArrayList<>();
         params.forEach((bank, generalPayments) -> merged.addAll(generalPayments));
 
-        BatchOfPaymentsMessage response = transactionProducer.sendPayments(merged);
-        return response;
-
-        /*params.forEach((bank, generalPayments) -> {
-            try {
-                outcome.put(bank, bankingService.retrieveTransactionService(Bank.valueOf(bank)).createPayments(generalPayments));
-            } catch (JsonProcessingException exception) {
-                throw new JsonProcessingExceptionLambdaWrapper(exception.getMessage());
-            }
-        });
-
-        return outcome;*/
+        return transactionProducer.sendPayments(merged);
     }
 
     public Map<String, List<GeneralTransaction>> collectTransactionResponse() {

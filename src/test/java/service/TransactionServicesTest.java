@@ -13,6 +13,8 @@ import com.j2020.model.deutsche.DeutscheAccount;
 import com.j2020.model.deutsche.DeutschePayment;
 import com.j2020.model.deutsche.DeutschePaymentResponse;
 import com.j2020.model.deutsche.DeutscheTransaction;
+import com.j2020.model.exception.BankNotSupportedException;
+import com.j2020.model.exception.JsonProcessingExceptionLambdaWrapper;
 import com.j2020.model.revolut.RevolutPayment;
 import com.j2020.model.revolut.RevolutTransaction;
 import com.j2020.service.BankingServiceFactory;

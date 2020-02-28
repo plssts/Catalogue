@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.Constants;
 import com.j2020.model.*;
+import com.j2020.model.exception.MissingPaymentRequestDataException;
 import com.j2020.model.revolut.RevolutAccount;
 import com.j2020.model.revolut.RevolutPayment;
 import com.j2020.model.revolut.RevolutPaymentResponse;

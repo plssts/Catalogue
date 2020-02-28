@@ -1,3 +1,7 @@
+/**
+ * @author Paulius Staisiunas
+ */
+
 package com.j2020.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -15,16 +19,13 @@ public class TransactionStatusCheck {
     @JsonAlias(value = "state")
     private String transactionStatus;
 
-    //@ManyToOne(cascade = CascadeType.ALL)
-    //@JoinColumn(name = "bop_id", nullable = false)
-    //private BatchOfPayments batch;
     private Bank bank;
     private Float amount;
     private String sourceAccount;
     private String destinationAccount;
 
     @JsonIgnore
-    private Long bopid;
+    private Long batchId;
 
     public Float getAmount() {
         return amount;
@@ -58,21 +59,13 @@ public class TransactionStatusCheck {
         this.destinationAccount = destinationAccount;
     }
 
-    public Long getBopid() {
-        return bopid;
+    public Long getBatchId() {
+        return batchId;
     }
 
-    public void setBopid(Long bopid) {
-        this.bopid = bopid;
+    public void setBatchId(Long batchId) {
+        this.batchId = batchId;
     }
-
-    /*public BatchOfPayments getBatch() {
-        return batch;
-    }
-
-    public void setBatch(BatchOfPayments batch) {
-        this.batch = batch;
-    }*/
 
     public String getPaymentId() {
         return paymentId;

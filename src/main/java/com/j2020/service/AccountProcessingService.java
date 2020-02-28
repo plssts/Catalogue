@@ -7,7 +7,7 @@ package com.j2020.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.j2020.model.Bank;
 import com.j2020.model.GeneralAccount;
-import com.j2020.model.JsonProcessingExceptionLambdaWrapper;
+import com.j2020.model.exception.JsonProcessingExceptionLambdaWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

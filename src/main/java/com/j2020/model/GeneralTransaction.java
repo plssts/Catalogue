@@ -12,6 +12,7 @@ import java.util.Objects;
 public class GeneralTransaction {
     @Id
     private String transactionId;
+
     private String origin;
     private String creditor;
     private Float amount;

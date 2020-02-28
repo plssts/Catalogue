@@ -7,7 +7,7 @@ package com.j2020;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication//(exclude = ActiveMQAutoConfiguration.class)
+@SpringBootApplication
 public class J2020Application {
     public static void main(String[] args) {
         SpringApplication.run(J2020Application.class, args);

@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.Constants;
-import com.j2020.model.TokenFetchException;
+import com.j2020.model.exception.TokenFetchException;
 import com.j2020.model.revolut.RevolutTokenRenewalResponse;
 import com.j2020.service.TokenRequestRetrievalService;
 import com.j2020.service.revolut.RevolutTokenService;

@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.Constants;
 import com.j2020.model.*;
 import com.j2020.model.deutsche.*;
+import com.j2020.model.exception.JsonProcessingExceptionLambdaWrapper;
+import com.j2020.model.exception.MissingPaymentRequestDataException;
 import com.j2020.service.AccountRequestRetrievalService;
 import com.j2020.service.TransactionRequestRetrievalService;
 import com.j2020.service.deutsche.*;

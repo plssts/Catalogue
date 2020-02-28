@@ -6,6 +6,7 @@ package com.j2020.service.deutsche;
 
 import com.j2020.model.*;
 import com.j2020.model.deutsche.*;
+import com.j2020.model.exception.MissingPaymentRequestDataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

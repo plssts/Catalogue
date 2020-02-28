@@ -1,4 +1,8 @@
-package com.j2020.service;
+/**
+ * @author Paulius Staisiunas
+ */
+
+package com.j2020.service.jms;
 
 import com.j2020.Constants;
 import com.j2020.model.BatchOfPayments;
@@ -7,7 +11,6 @@ import com.j2020.model.GeneralPayment;
 import com.j2020.repository.PaymentBatchRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +19,12 @@ import java.util.List;
 @Service
 public class JmsTransactionProducer {
     private static final Logger logger = LoggerFactory.getLogger(JmsTransactionProducer.class);
-    @Autowired
     private PaymentBatchRepository batchRepository;
     private JmsTemplate jmsTemplate;
 
-    public JmsTransactionProducer(JmsTemplate jmsTemplate/*, PaymentBatchRepository batchRepository*/) {
+    public JmsTransactionProducer(JmsTemplate jmsTemplate, PaymentBatchRepository batchRepository) {
         this.jmsTemplate = jmsTemplate;
-        //this.batchRepository = batchRepository;
+        this.batchRepository = batchRepository;
     }
 
     public BatchOfPaymentsMessage sendPayments(List<GeneralPayment> payments) {
@@ -31,16 +33,11 @@ public class JmsTransactionProducer {
         newBatch.setCountOfProcessedPayments(0);
         BatchOfPayments current = batchRepository.save(newBatch);
 
-        //batchRepository.findAll().forEach(System.out::println);
-
-        //System.out.println("Anybody out there? " + batchRepository.findById(current.getId())); // FIXME remove this
-
         logger.info("Sending to queue {} payments with BOP id {}", payments.size(), current.getId());
 
         payments.forEach(payment -> {
-            //payment.setBatchOfPayments(current);
-            payment.setBopid(current.getId());
-            System.out.println("[PROD] payment has batchid as: " + payment.getBopid());
+            payment.setBatchId(current.getId());
+            logger.info("Producer sending: {}", payment);
             jmsTemplate.convertAndSend(Constants.JMS_TRANSACTION_QUEUE, payment);
         });
 

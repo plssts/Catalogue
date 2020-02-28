@@ -42,10 +42,10 @@ public class RevolutAccountService implements AccountService {
     @Override
     public List<GeneralAccount> retrieveAccountData() throws JsonProcessingException {
         logger.info("Fetching Revolut accounts");
-        String OAuthToken = tokenRenewal.getToken();
+        String oauthToken = tokenRenewal.getToken();
         JavaType type = new ObjectMapper().getTypeFactory().constructCollectionType(List.class, RevolutAccount.class);
 
-        List<Account> response = accountRetrieval.retrieveAccounts(OAuthToken, accountUrl, type);
+        List<Account> response = accountRetrieval.retrieveAccounts(oauthToken, accountUrl, type);
         List<GeneralAccount> parsedAccounts = new ArrayList<>();
 
         logger.info("Constructing and validating Revolut accounts");

@@ -76,11 +76,6 @@ public class PersistenceManagerService {
         Stream.of(Bank.values()).forEach(bank -> accountRepository.saveAll(accounts.get(bank.toString())));
     }
 
-    private GeneralPayment slapOnBankLabel(Bank bankingService, GeneralPayment payment) {
-        payment.setBank(bankingService);
-        return payment;
-    }
-
     @PostConstruct
     private void init() {
         updateAccounts();

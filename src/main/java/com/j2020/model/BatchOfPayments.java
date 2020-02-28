@@ -29,9 +29,6 @@ public class BatchOfPayments {
         this.countOfProcessedPayments = countOfProcessedPayments;
     }
 
-    /*@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<TransactionStatusCheck> payments;*/
-
     public Long getId() {
         return id;
     }
@@ -39,12 +36,4 @@ public class BatchOfPayments {
     public void setId(Long id) {
         this.id = id;
     }
-
-    /*public List<TransactionStatusCheck> getPayments() {
-        return payments;
-    }
-
-    public void setPayments(List<TransactionStatusCheck> payments) {
-        this.payments = payments;
-    }*/
 }
