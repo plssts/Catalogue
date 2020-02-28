@@ -22,6 +22,32 @@ import java.util.*;
 public class TestDataHelper {
     private static final Logger logger = LoggerFactory.getLogger(TestDataHelper.class);
 
+    public static List<TransactionStatusCheck> generateTransactionStatusChecks() {
+        TransactionStatusCheck statusOne = new TransactionStatusCheck();
+        statusOne.setAmount(1.0f);
+        statusOne.setDestinationAccount(Constants.TEST_ANY_ACCOUNT);
+        statusOne.setSourceAccount(Constants.TEST_ANY_ACCOUNT);
+        statusOne.setBank(Bank.REVOLUT);
+        statusOne.setTransactionStatus(Constants.DISPLAY_FAILED_PAYMENT_STATUS);
+        statusOne.setPaymentId(Constants.DISPLAY_FAILED_PAYMENT_ID + "1");
+        statusOne.setBatchId(1L);
+
+        TransactionStatusCheck statusTwo = new TransactionStatusCheck();
+        statusTwo.setAmount(1.0f);
+        statusTwo.setDestinationAccount(Constants.TEST_ANY_ACCOUNT);
+        statusTwo.setSourceAccount(Constants.TEST_ANY_ACCOUNT);
+        statusTwo.setBank(Bank.DEUTSCHE);
+        statusTwo.setTransactionStatus(Constants.DISPLAY_FAILED_PAYMENT_STATUS);
+        statusTwo.setPaymentId(Constants.DISPLAY_FAILED_PAYMENT_ID + "2");
+        statusTwo.setBatchId(1L);
+
+        List<TransactionStatusCheck> output = new ArrayList<>();
+        output.add(statusOne);
+        output.add(statusTwo);
+
+        return output;
+    }
+
     public static DeutscheTokenRenewalResponse generateExpiredDeutscheTokenResponse() {
         DeutscheTokenRenewalResponse renewalResponse = new DeutscheTokenRenewalResponse();
         renewalResponse.setAccessToken(Constants.TEST_ACCESS_TOKEN);

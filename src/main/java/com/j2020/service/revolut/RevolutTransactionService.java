@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,7 +109,7 @@ public class RevolutTransactionService implements TransactionService {
         logger.warn("Saving an entry for a Revolut payment that failed");
 
         TransactionStatusCheck status = new TransactionStatusCheck();
-        status.setPaymentId(Constants.DISPLAY_FAILED_PAYMENT_ID);
+        status.setPaymentId(Constants.DISPLAY_FAILED_PAYMENT_ID + Instant.now().toEpochMilli());
         status.setTransactionStatus(Constants.DISPLAY_FAILED_PAYMENT_STATUS);
         status.setBatchId(payment.getBatchId());
         status.setBank(Bank.DEUTSCHE);

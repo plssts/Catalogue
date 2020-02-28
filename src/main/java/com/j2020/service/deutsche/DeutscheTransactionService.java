@@ -24,6 +24,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -127,7 +128,7 @@ public class DeutscheTransactionService implements TransactionService {
         logger.warn("Saving an entry for a Deutsche Bank payment that failed");
 
         TransactionStatusCheck status = new TransactionStatusCheck();
-        status.setPaymentId(Constants.DISPLAY_FAILED_PAYMENT_ID);
+        status.setPaymentId(Constants.DISPLAY_FAILED_PAYMENT_ID + Instant.now().toEpochMilli());
         status.setTransactionStatus(Constants.DISPLAY_FAILED_PAYMENT_STATUS);
         status.setBatchId(payment.getBatchId());
         status.setBank(Bank.DEUTSCHE);

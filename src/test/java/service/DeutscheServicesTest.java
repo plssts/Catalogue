@@ -8,10 +8,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.Constants;
+import com.j2020.J2020Application;
 import com.j2020.model.*;
 import com.j2020.model.deutsche.*;
 import com.j2020.model.exception.JsonProcessingExceptionLambdaWrapper;
 import com.j2020.model.exception.MissingPaymentRequestDataException;
+import com.j2020.repository.TransactionsForBatchRepository;
 import com.j2020.service.AccountRequestRetrievalService;
 import com.j2020.service.TransactionRequestRetrievalService;
 import com.j2020.service.deutsche.*;
@@ -25,6 +27,11 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -38,10 +45,13 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
-@Ignore
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(GoogleAuthenticator.class)
+@DataJpaTest
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = J2020Application.class)
 public class DeutscheServicesTest {
+    @Autowired
+    private TransactionsForBatchRepository transactions;
+
     private DeutscheTokenService tokenService;
     private AccountRequestRetrievalService accountRetrieval;
     private TransactionRequestRetrievalService transactionRetrieval;
@@ -49,59 +59,29 @@ public class DeutscheServicesTest {
     private DeutscheTransactionService transactionService;
     private DeutscheMapperService mapper;
     private RestTemplate restTemplate;
-    private GoogleAuthenticator googleAuthenticator;
-    private DeutscheMultiFactorService multiFactorService;
+
+    @Before
+    public void populateDatabase() {
+        if (transactions.count() > 0) {
+            return;
+        }
+
+        transactions.saveAll(TestDataHelper.generateTransactionStatusChecks());
+    }
 
     @Before
     public void setUp() {
         mapper = new DeutscheMapperService();
         restTemplate = Mockito.mock(RestTemplate.class);
-        googleAuthenticator = Mockito.mock(GoogleAuthenticator.class);
         tokenService = Mockito.mock(DeutscheTokenService.class);
         accountRetrieval = Mockito.mock(AccountRequestRetrievalService.class);
         accountService = new DeutscheAccountService(tokenService, accountRetrieval, mapper);
         transactionRetrieval = Mockito.mock(TransactionRequestRetrievalService.class);
-        //transactionService = new DeutscheTransactionService(tokenService, transactionRetrieval, mapper);
-        multiFactorService = new DeutscheMultiFactorService(googleAuthenticator, restTemplate);
+        transactionService = new DeutscheTransactionService(tokenService, transactionRetrieval, mapper, transactions);
 
         setField(accountService, "accountUrl", Constants.DEUTSCHE_ACCOUNT_URL);
         setField(transactionService, "transactionUrl", Constants.DEUTSCHE_TRANSACTION_URL);
         setField(transactionService, "paymentUrl", Constants.DEUTSCHE_PAYMENT_URL);
-        setField(multiFactorService, "twoFactorSecret", Constants.DEUTSCHE_TWO_FACTOR_SECRET);
-        setField(multiFactorService, "oneTimePassUrl", Constants.DEUTSCHE_ONE_TIME_PASS_URL);
-    }
-
-    @Test
-    public void multifactorAppendsOtpProperly() {
-        when(googleAuthenticator.getTotpPassword(anyString())).thenReturn(1);
-        String actual = multiFactorService.getOneTimePass();
-        assertEquals("000001", actual);
-    }
-
-    @Test
-    public void prepareAuthorisationProperly() {
-        // GIVEN
-        DeutschePhototanResponse response = new DeutschePhototanResponse();
-        response.setId("testedId");
-        DeutscheOneTimePassword password = new DeutscheOneTimePassword();
-        password.setOneTimePassword("testedValue");
-
-        Map<String, String> expected = new HashMap<>();
-        expected.put("otp", "testedValue");
-        expected.put("idempotency-id", "testedId");
-
-        // WHEN
-        when(restTemplate.postForObject(anyString(), notNull(), eq(DeutschePhototanResponse.class))).thenReturn(response);
-        when(restTemplate.patchForObject(anyString(), notNull(), eq(DeutscheOneTimePassword.class))).thenReturn(password);
-
-        Map<String, String> actual = multiFactorService.prepareAuthorisation(
-                Constants.TEST_ACCESS_TOKEN,
-                Constants.TEST_ANY_ACCOUNT,
-                Constants.TEST_CURRENCY_CODE,
-                "0.0");
-
-        // THEN
-        assertEquals(expected, actual);
     }
 
     @Test
@@ -158,6 +138,31 @@ public class DeutscheServicesTest {
     }
 
     @Test
+    public void failedStatusSaving() throws JsonProcessingException {
+        // GIVEN
+        List<GeneralPayment> payments = new ArrayList<>();
+        payments.add(TestDataHelper.generateValidGeneralPaymentForDeutsche());
+
+        List<PaymentResponse> responses = new ArrayList<>();
+        responses.add(TestDataHelper.generateDeutschePaymentResponse());
+
+        JavaType type = new ObjectMapper().getTypeFactory().constructType(DeutschePaymentResponse.class);
+
+        // WHEN
+        when(transactionRetrieval.pushPayments(
+                anyString(),
+                eq(Constants.DEUTSCHE_PAYMENT_URL),
+                anyList(),
+                eq(type))).thenThrow(HttpServerErrorException.class);
+        when(tokenService.getToken()).thenReturn("someToken");
+
+        transactionService.createPayments(payments);
+
+        // THEN
+        assertEquals(3, transactions.findAll().size());
+    }
+
+    @Test
     public void createAndValidatePayments() throws JsonProcessingException {
         // GIVEN
         List<GeneralPayment> payments = new ArrayList<>();
@@ -179,7 +184,7 @@ public class DeutscheServicesTest {
         List<PaymentResponse> actual = transactionService.createPayments(payments);
 
         // THEN
-        assertEquals(responses, actual);
+        assertEquals(new ArrayList<>(), actual);
     }
 
     @Test

@@ -24,6 +24,7 @@ import com.j2020.service.deutsche.DeutscheAccountService;
 import com.j2020.service.deutsche.DeutscheMapperService;
 import com.j2020.service.deutsche.DeutscheMultiFactorService;
 import com.j2020.service.deutsche.DeutscheTransactionService;
+import com.j2020.service.jms.JmsTransactionProducer;
 import com.j2020.service.revolut.RevolutMapperService;
 import com.j2020.service.revolut.RevolutTransactionService;
 import helper.TestDataHelper;
@@ -48,7 +49,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
-@Ignore
 public class TransactionServicesTest {
     private TransactionProcessingService processingService;
     private BankingServiceFactory serviceFactory;
@@ -58,6 +58,7 @@ public class TransactionServicesTest {
     private DeutscheMultiFactorService multiFactorService;
     private TransactionRequestRetrievalService retrievalService;
     private RestTemplate restTemplate;
+    private JmsTransactionProducer transactionProducer;
 
     @Before
     public void setUp() {
@@ -67,7 +68,8 @@ public class TransactionServicesTest {
         revolutTransactionService = Mockito.mock(RevolutTransactionService.class);
         deutscheTransactionService = Mockito.mock(DeutscheTransactionService.class);
         deutscheAccountService = Mockito.mock(DeutscheAccountService.class);
-        //processingService = new TransactionProcessingService(serviceFactory);
+        transactionProducer = Mockito.mock(JmsTransactionProducer.class);
+        processingService = new TransactionProcessingService(serviceFactory, transactionProducer);
         retrievalService = new TransactionRequestRetrievalService(multiFactorService, restTemplate);
 
         setField(retrievalService, "maxReqIdLength", 40);
@@ -91,39 +93,20 @@ public class TransactionServicesTest {
     }
 
     @Test
-    public void pushingPaymentsSuccessfully() throws JsonProcessingException {
-        DeutschePayment deutschePayment = new DeutscheMapperService().toDeutschePayment(TestDataHelper.generateValidGeneralPaymentForDeutsche());
-        RevolutPayment revolutPayment = new RevolutMapperService().toRevolutPayment(TestDataHelper.generateValidGeneralPaymentForRevolut());
-        List<Payment> feed = new ArrayList<>();
-        feed.add(deutschePayment);
-        feed.add(revolutPayment);
-        ResponseEntity<String> response = new ResponseEntity<>(new ObjectMapper().writeValueAsString(new DeutschePaymentResponse()), HttpStatus.OK);
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.POST), notNull(), eq(String.class))).thenReturn(response);
-
-        List<PaymentResponse> actual = retrievalService.pushPayments(
-                Constants.TEST_ACCESS_TOKEN,
-                Constants.DEUTSCHE_PAYMENT_URL,
-                feed,
-                new ObjectMapper().getTypeFactory().constructType(DeutschePaymentResponse.class));
-
-        assertEquals(2, actual.size());
-    }
-
-    @Test
     public void initiatingWithInvalidParams() {
         // THEN
         assertThrows(BankNotSupportedException.class, () -> processingService.initiatePaymentRequests(new HashMap<>()));
     }
 
     @Test
-    public void processPaymentsNormalConditions() throws JsonProcessingException {
+    public void messagePassesNormalConditions() throws JsonProcessingException {
         // GIVEN
         Map<String, List<GeneralPayment>> params = new HashMap<>();
-        Map<String, List<PaymentResponse>> responses = new HashMap<>();
+        BatchOfPaymentsMessage response = new BatchOfPaymentsMessage();
+        response.setBatchId(1L);
 
         List<PaymentResponse> revolutResponse = new ArrayList<>();
         revolutResponse.add(TestDataHelper.generateRevolutPaymentResponse());
-        responses.put(Bank.REVOLUT.toString(), revolutResponse);
 
         List<GeneralPayment> payment = new ArrayList<>();
         payment.add(TestDataHelper.generateValidGeneralPaymentForRevolut());
@@ -131,31 +114,12 @@ public class TransactionServicesTest {
         params.put(Bank.REVOLUT.toString(), payment);
 
         // WHEN
-        when(serviceFactory.retrieveTransactionService(eq(Bank.REVOLUT))).thenReturn(revolutTransactionService);
-        when(revolutTransactionService.createPayments(eq(payment))).thenReturn(revolutResponse);
+        when(transactionProducer.sendPayments(anyList())).thenReturn(response);
 
-        //Map<String, List<PaymentResponse>> actual = processingService.initiatePaymentRequests(params);
-
-        // THEN
-        //assertEquals(responses, actual);
-    }
-
-    @Test
-    public void throwsWithMappingError() throws JsonProcessingException {
-        // GIVEN
-        Map<String, List<GeneralPayment>> params = new HashMap<>();
-
-        List<GeneralPayment> payment = new ArrayList<>();
-        payment.add(TestDataHelper.generateValidGeneralPaymentForRevolut());
-
-        params.put(Bank.REVOLUT.toString(), payment);
-
-        // WHEN
-        when(serviceFactory.retrieveTransactionService(eq(Bank.REVOLUT))).thenReturn(revolutTransactionService);
-        when(revolutTransactionService.createPayments(eq(payment))).thenThrow(JsonProcessingException.class);
+        BatchOfPaymentsMessage actual = processingService.initiatePaymentRequests(params);
 
         // THEN
-        assertThrows(JsonProcessingExceptionLambdaWrapper.class, () -> processingService.initiatePaymentRequests(params));
+        assertEquals(response.getBatchId(), actual.getBatchId());
     }
 
     @Test

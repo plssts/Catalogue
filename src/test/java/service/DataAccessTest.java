@@ -6,10 +6,7 @@ package service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.j2020.J2020Application;
-import com.j2020.model.Bank;
-import com.j2020.model.GeneralAccount;
-import com.j2020.model.GeneralPayment;
-import com.j2020.model.GeneralTransaction;
+import com.j2020.model.*;
 import com.j2020.model.deutsche.DeutscheAccount;
 import com.j2020.model.deutsche.DeutscheTransaction;
 import com.j2020.model.revolut.RevolutAccount;
@@ -39,13 +36,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = J2020Application.class)
-
-@Ignore
 public class DataAccessTest {
     @Autowired
     private AccountRepository accountRepository;
@@ -124,7 +120,7 @@ public class DataAccessTest {
         accounts.put(Bank.DEUTSCHE.toString(), TestDataHelper.generateDeutscheAccounts().stream()
                 .map(account -> deutscheMapper.toGeneralAccount((DeutscheAccount) account)).collect(Collectors.toList()));
 
-        //when(transactionService.initiatePaymentRequests(ArgumentMatchers.anyMap())).thenReturn(new HashMap<>());
+        when(transactionService.initiatePaymentRequests(anyMap())).thenReturn(new BatchOfPaymentsMessage());
         when(transactionService.collectTransactionResponse()).thenReturn(addedTransactions);
         when(accountService.collectAccountResponse()).thenReturn(accounts);
 

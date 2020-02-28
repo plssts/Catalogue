@@ -8,12 +8,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j2020.Constants;
+import com.j2020.J2020Application;
 import com.j2020.model.*;
+import com.j2020.model.deutsche.DeutscheAccount;
+import com.j2020.model.deutsche.DeutschePaymentResponse;
+import com.j2020.model.deutsche.DeutscheTransaction;
 import com.j2020.model.exception.MissingPaymentRequestDataException;
 import com.j2020.model.revolut.RevolutAccount;
 import com.j2020.model.revolut.RevolutPayment;
 import com.j2020.model.revolut.RevolutPaymentResponse;
 import com.j2020.model.revolut.RevolutTransaction;
+import com.j2020.repository.TransactionsForBatchRepository;
 import com.j2020.service.AccountRequestRetrievalService;
 import com.j2020.service.TransactionRequestRetrievalService;
 import com.j2020.service.revolut.RevolutAccountService;
@@ -24,8 +29,14 @@ import helper.TestDataHelper;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,8 +49,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
-@Ignore
+@DataJpaTest
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = J2020Application.class)
 public class RevolutServicesTest {
+    @Autowired
+    private TransactionsForBatchRepository transactions;
+
     private RevolutTokenService tokenService;
     private AccountRequestRetrievalService accountRetrieval;
     private TransactionRequestRetrievalService transactionRetrieval;
@@ -48,17 +64,27 @@ public class RevolutServicesTest {
     private RevolutMapperService mapper;
 
     @Before
+    public void populateDatabase() {
+        if (transactions.count() > 0) {
+            return;
+        }
+
+        transactions.saveAll(TestDataHelper.generateTransactionStatusChecks());
+    }
+
+    @Before
     public void setUp() {
         mapper = new RevolutMapperService();
         tokenService = Mockito.mock(RevolutTokenService.class);
         accountRetrieval = Mockito.mock(AccountRequestRetrievalService.class);
         accountService = new RevolutAccountService(tokenService, accountRetrieval, mapper);
         transactionRetrieval = Mockito.mock(TransactionRequestRetrievalService.class);
-        //transactionService = new RevolutTransactionService(tokenService, transactionRetrieval, mapper);
+        transactionService = new RevolutTransactionService(tokenService, transactionRetrieval, mapper, transactions);
 
         setField(accountService, "accountUrl", Constants.REVOLUT_ACCOUNT_URL);
         setField(transactionService, "transactionUrl", Constants.REVOLUT_TRANSACTION_URL);
         setField(transactionService, "paymentUrl", Constants.REVOLUT_PAYMENT_URL);
+        setField(transactionRetrieval, "maxReqIdLength", 40);
     }
 
     @Test
@@ -89,6 +115,31 @@ public class RevolutServicesTest {
     }
 
     @Test
+    public void failedStatusSaving() throws JsonProcessingException {
+        // GIVEN
+        List<GeneralPayment> payments = new ArrayList<>();
+        payments.add(TestDataHelper.generateValidGeneralPaymentForRevolut());
+
+        List<PaymentResponse> responses = new ArrayList<>();
+        responses.add(TestDataHelper.generateRevolutPaymentResponse());
+
+        JavaType type = new ObjectMapper().getTypeFactory().constructType(RevolutPaymentResponse.class);
+
+        // WHEN
+        when(transactionRetrieval.pushPayments(
+                anyString(),
+                eq(Constants.REVOLUT_PAYMENT_URL),
+                anyList(),
+                eq(type))).thenThrow(HttpServerErrorException.class);
+        when(tokenService.getToken()).thenReturn("someToken");
+
+        transactionService.createPayments(payments);
+
+        // THEN
+        assertEquals(3, transactions.findAll().size());
+    }
+
+    @Test
     public void createAndValidatePayments() throws JsonProcessingException {
         // GIVEN
         List<GeneralPayment> payments = new ArrayList<>();
@@ -110,7 +161,7 @@ public class RevolutServicesTest {
         List<PaymentResponse> actual = transactionService.createPayments(payments);
 
         // THEN
-        assertEquals(responses, actual);
+        assertEquals(new ArrayList<>(), actual);
     }
 
     @Test
