@@ -8,6 +8,7 @@ import com.j2020.model.BatchOfPayments;
 import com.j2020.model.TransactionStatusCheck;
 import com.j2020.repository.PaymentBatchRepository;
 import com.j2020.repository.TransactionsForBatchRepository;
+import com.j2020.service.BatchRetrievalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -30,17 +31,24 @@ public class BatchController {
     private PaymentBatchRepository batchRepository;
     @Autowired
     private TransactionsForBatchRepository transactions;
+
+    private BatchRetrievalService batchService;
     // FIXME move these to services later ^^^
+
+
+    public BatchController(BatchRetrievalService batchService) {
+        this.batchService = batchService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<String> index() {
         return ok("Refer to { " + readmeLink + " } for instructions");
     }
 
-    @GetMapping("/{batchId}")
+    @GetMapping("/statuses/{batchId}")
     public ResponseEntity<Map<String, Object>> getBatchInfo(@PathVariable String batchId) {
         // FIXME move logic to dedicated service
-        Optional<BatchOfPayments> batch = batchRepository.findById(Long.valueOf(batchId));
+        /*Optional<BatchOfPayments> batch = batchRepository.findById(Long.valueOf(batchId));
         if (batch.isPresent()) {
             List<TransactionStatusCheck> statuses = transactions.findAllByBopid(batch.get().getId());
             Map<String, Object> response = new LinkedHashMap<>();
@@ -49,6 +57,7 @@ public class BatchController {
             response.put("Transactions", statuses);
             return ok(response);
         }
-        return new ResponseEntity<>(new HashMap<>(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new HashMap<>(), HttpStatus.NOT_FOUND);*/
+        return batchService.getBatchData(Long.valueOf(batchId));
     }
 }

@@ -13,7 +13,7 @@ Retrieves all Revolut and Deutsche Bank accounts.
 <details>
     <summary>Example response</summary>
     
-    `{
+    {
          "REVOLUT": [
              {
                  "name": "Main",
@@ -74,7 +74,7 @@ Retrieves all Revolut and Deutsche Bank accounts.
                  "iban": "DE10010000000000005772"
              }
          ]
-     }`
+     }
     
 </details>
 
@@ -87,7 +87,7 @@ Retrieves all Revolut and Deutsche Bank transactions.
 <details>
     <summary>Example response</summary>
     
-    `{
+    {
          "REVOLUT": [
              {
                  "id": "e2553907-7192-444f-95f0-c5709d049ca0",
@@ -4242,86 +4242,163 @@ Retrieves all Revolut and Deutsche Bank transactions.
 
 `POST /transactions`
 
-Initiates payments for any listed services (may only be supported Revolut or Deutsche Bank entries).
+Initiates payments for any listed services (may only be Revolut or Deutsche Bank entries).
 
 <details>
     <summary>Example request body</summary>
     
-    `{
+    {
      	"REVOLUT":[
      		{
      			"sourceAccount": "8a7d6a71-0bbc-4691-b04e-9ac7c54e0b5e",
-                 "destinationAccount": "62670460-561e-4955-ba19-0b4c4df46566",
-                 "currency": "EUR",
-                 "amount": 1.0,
-                 "additionalInfo": {
-                 	"counterparty": "b3314028-6158-4d11-8d4a-ef5e1bc9bc73",
-                 	"reference": "Some reference"
-                 }
+                "destinationAccount": "62670460-561e-4955-ba19-0b4c4df46566",
+                "currency": "EUR",
+                "amount": 1.0,
+                "additionalInfo": {
+                	"counterparty": "b3314028-6158-4d11-8d4a-ef5e1bc9bc73",
+                	"reference": "Some reference"
+                }
      		},
      		{
      			"sourceAccount": "8a7d6a71-0bbc-4691-b04e-9ac7c54e0b5e",
-                 "destinationAccount": "62670460-561e-4955-ba19-0b4c4df46566",
-                 "currency": "EUR",
-                 "amount": 54.11,
-                 "additionalInfo": {
-                 	"counterparty": "b3314028-6158-4d11-8d4a-ef5e1bc9bc73",
-                 	"reference": "Some reference"
-                 }
+                "destinationAccount": "62670460-561e-4955-ba19-0b4c4df46566",
+                "currency": "EUR",
+                "amount": 1.1,
+                "additionalInfo": {
+                	"counterparty": "b3314028-6158-4d11-8d4a-ef5e1bc9bc73",
+                	"reference": "Some reference"
+                }
      		}
      	],
      	"DEUTSCHE":[
      		{
-                 "sourceAccount": "DE10010000000000005772",
-                 "destinationAccount": "DE10010000000000005771",
-                 "currency": "EUR",
-                 "amount": 1.0,
-                 "additionalInfo": {
-                 	"creditorName": "Some creditor"
-                 }
-             },
-             {
-                 "sourceAccount": "DE10010000000000005772",
-                 "destinationAccount": "DE10010000000000005771",
-                 "currency": "EUR",
-                 "amount": 1.7,
-                 "additionalInfo": {
-                 	"creditorName": "Some creditor"
-                 }
-             }
+                "sourceAccount": "DE10010000000000005772",
+                "destinationAccount": "DE10010000000000005771",
+                "currency": "EUR",
+                "amount": 1.0,
+                "additionalInfo": {
+                	"creditorName": "Some creditor"
+                }
+            },
+            {
+                "sourceAccount": "DE10010000000000005772",
+                "destinationAccount": "DE10010000000000005771",
+                "currency": "EUR",
+                "amount": 1.1,
+                "additionalInfo": {
+                	"creditorName": "Some creditor"
+                }
+            }
      	]
-     }`
+     }
+    
+</details>
+
+This returns a generated batch identification number which can be used later to check back on submitted payments under one specific batch.
+
+<details>
+    <summary>Example response [200 OK]</summary>
+
+    {
+        "text": "Payments are being processed. Check their status with the following batch id.",
+        "batchId": 3
+    }
+
+</details>
+
+`GET /statuses/{batchId}`
+
+Used to inspect the current status of submitted payments. Responses may include:
+
+<details>
+    <summary>Batch not yet processed [200 OK]</summary>
+    
+    {
+        "Total payments": 4,
+        "Processed payments": 0,
+        "Transactions": []
+    }
     
 </details>
 
 <details>
-    <summary>Example response</summary>
+    <summary>Batch being processed, but not yet complete [200 OK]</summary>
     
-    `{
-         "REVOLUT": [
-             {
-                 "id": "2820c2c3-e975-4e87-b6dc-f3104226cbf4",
-                 "state": "pending",
-                 "created_at": "2020-02-18T14:37:00.103051Z",
-                 "completed_at": null
-             },
-             {
-                 "id": "d1b96e70-4f06-4c14-b339-d955142c7db4",
-                 "state": "pending",
-                 "created_at": "2020-02-18T14:37:00.260861Z",
-                 "completed_at": null
-             }
-         ],
-         "DEUTSCHE": [
-             {
-                 "paymentId": "RTE0b320536-66d4-4381-a1a3-5f5ea351e1ab",
-                 "transactionStatus": "PDNG"
-             },
-             {
-                 "paymentId": "RTE2418c9cd-fbf8-4d17-baf1-44bcb07708bf",
-                 "transactionStatus": "PDNG"
-             }
-         ]
-     }`
+    {
+        "Total payments": 4,
+        "Processed payments": 2,
+        "Transactions": [
+            {
+                "paymentId": "3146576e-8655-47d6-814c-0cdd6d25b4db",
+                "transactionStatus": "pending",
+                "bank": "REVOLUT",
+                "amount": 1.0,
+                "sourceAccount": "8a7d6a71-0bbc-4691-b04e-9ac7c54e0b5e",
+                "destinationAccount": "62670460-561e-4955-ba19-0b4c4df46566"
+            },
+            {
+                "paymentId": "42617a82-eb61-4b89-a2c3-5c658d9765cd",
+                "transactionStatus": "pending",
+                "bank": "REVOLUT",
+                "amount": 1.1,
+                "sourceAccount": "8a7d6a71-0bbc-4691-b04e-9ac7c54e0b5e",
+                "destinationAccount": "62670460-561e-4955-ba19-0b4c4df46566"
+            }
+        ]
+    }
     
 </details>
+
+<details>
+    <summary>All payments processed under the specified batch [200 OK]</summary>
+    
+    {
+        "Total payments": 4,
+        "Processed payments": 4,
+        "Transactions": [
+            {
+                "paymentId": "3146576e-8655-47d6-814c-0cdd6d25b4db",
+                "transactionStatus": "pending",
+                "bank": "REVOLUT",
+                "amount": 1.0,
+                "sourceAccount": "8a7d6a71-0bbc-4691-b04e-9ac7c54e0b5e",
+                "destinationAccount": "62670460-561e-4955-ba19-0b4c4df46566"
+            },
+            {
+                "paymentId": "42617a82-eb61-4b89-a2c3-5c658d9765cd",
+                "transactionStatus": "pending",
+                "bank": "REVOLUT",
+                "amount": 1.1,
+                "sourceAccount": "8a7d6a71-0bbc-4691-b04e-9ac7c54e0b5e",
+                "destinationAccount": "62670460-561e-4955-ba19-0b4c4df46566"
+            },
+            {
+                "paymentId": "RTE8039c5d1-12ec-4238-9c20-7f9b859f8250",
+                "transactionStatus": "PDNG",
+                "bank": "DEUTSCHE",
+                "amount": 1.0,
+                "sourceAccount": "DE10010000000000005772",
+                "destinationAccount": "DE10010000000000005771"
+            },
+            {
+                "paymentId": "RTEdb3f61bb-668f-4dd8-a8f9-ae25d3f83ecf",
+                "transactionStatus": "PDNG",
+                "bank": "DEUTSCHE",
+                "amount": 1.1,
+                "sourceAccount": "DE10010000000000005772",
+                "destinationAccount": "DE10010000000000005771"
+            }
+        ]
+    }
+    
+</details>
+
+Additionally, requesting for wrong batch - for instance, performing a 
+ 
+ `GET /statuses/invalidValue`
+ 
+request - returns the following message [404 Not Found]
+
+`{
+     "The bach doesn't exist.": "Verify the id is correct"
+ }`
