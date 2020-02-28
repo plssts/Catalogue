@@ -10,5 +10,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface TransactionsForBatchRepository extends JpaRepository<TransactionStatusCheck, Long> {
-    List<TransactionStatusCheck> findAllByBopid(Long bopid);
+    List<TransactionStatusCheck> findAllByBatchId(Long batchId);
 }

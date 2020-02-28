@@ -31,7 +31,7 @@ public class BatchRetrievalService {
         Optional<BatchOfPayments> batch = batchRepository.findById(batchId);
 
         if (batch.isPresent()) {
-            List<TransactionStatusCheck> statuses = transactions.findAllByBopid(batch.get().getId());
+            List<TransactionStatusCheck> statuses = transactions.findAllByBatchId(batch.get().getId());
             outcome.put("Total payments", batch.get().getCountOfAllPayments());
             outcome.put("Processed payments", batch.get().getCountOfProcessedPayments());
             outcome.put("Transactions", statuses);

@@ -58,7 +58,7 @@ public class JmsTransactionConsumer {
         Optional<BatchOfPayments> batch = batchRepository.findById(batchId);
         if (batch.isPresent()) {
             BatchOfPayments batchObject = batch.get();
-            int size = transactions.findAllByBopid(batchObject.getId()).size();
+            int size = transactions.findAllByBatchId(batchObject.getId()).size();
             batchObject.setCountOfProcessedPayments(size);
 
             logger.info("Updated processed payments counter");
