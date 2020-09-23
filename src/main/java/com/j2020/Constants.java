@@ -29,14 +29,14 @@ public class Constants {
     public static final String REVOLUT_ACCOUNT_URL = "https://sandbox-b2b.revolut.com/api/1.0/accounts";
     public static final String REVOLUT_TRANSACTION_URL = "https://sandbox-b2b.revolut.com/api/1.0/transactions";
 
-    public static final String DEUTSCHE_OAUTHTOKEN = "eyJhbGciOiJub25lIn0.eyJleHAiOjE1ODg2ODI1MTAsImp0aSI6IjE0ZDdkOWVmLTBlNDMtNGRkYy04ZDJkLWI3MzhhMjIzZmNmNSJ9.";
-    public static final String DEUTSCHE_CLIENT_SECRET = "AIBSztT5LGU-C4v-vL9mYpugeVusegbNENrVndGgqBLGj37KUIzs0wz1JJvd9oVx8DGmjMrclN1nVuNDT_Q-FlM";
-    public static final String DEUTSCHE_CLIENT_ID = "dfd86ac9-8f2a-415a-8805-a90694e049ba";
+    public static final String DEUTSCHE_OAUTHTOKEN = "";
+    public static final String DEUTSCHE_CLIENT_SECRET = "";
+    public static final String DEUTSCHE_CLIENT_ID = "";
     public static final String DEUTSCHE_TOKEN_RENEWAL_URL = "https://simulator-api.db.com/gw/oidc/token";
     public static final String DEUTSCHE_PAYMENT_URL = "https://simulator-api.db.com/gw/dbapi/paymentInitiation/payments/v1/instantSepaCreditTransfers";
     public static final String DEUTSCHE_ACCOUNT_URL = "https://simulator-api.db.com/gw/dbapi/v1/cashAccounts";
     public static final String DEUTSCHE_TRANSACTION_URL = "https://simulator-api.db.com/gw/dbapi/v1/transactions";
-    public static final String DEUTSCHE_TWO_FACTOR_SECRET = "PRE6QIOR5XL77XOV";
+    public static final String DEUTSCHE_TWO_FACTOR_SECRET = "";
     public static final String DEUTSCHE_ONE_TIME_PASS_URL = "https://simulator-api.db.com/gw/dbapi/others/onetimepasswords/v2/single";
 
     public static final String TEST_CURRENCY_CODE = "EUR";
