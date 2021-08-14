@@ -83,6 +83,7 @@ public class RevolutTokenService implements TokenService {
         params.add("client_assertion_type", clAssertType);
         params.add("client_assertion", OAuthJWT);
 
-        refreshToken();
+        // TODO Determine if a refresh is needed after init. Also - refactor to InitializerBean?
+        //refreshToken();
     }
 }

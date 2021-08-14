@@ -78,8 +78,9 @@ public class PersistenceManagerService {
 
     @PostConstruct
     private void init() {
-        updateAccounts();
-        Map<String, List<GeneralTransaction>> transactions = transactionService.collectTransactionResponse();
-        Stream.of(Bank.values()).forEach(bank -> transactionRepository.saveAll(transactions.get(bank.toString())));
+        // TODO fix initialization
+        //updateAccounts();
+        //Map<String, List<GeneralTransaction>> transactions = transactionService.collectTransactionResponse();
+        //Stream.of(Bank.values()).forEach(bank -> transactionRepository.saveAll(transactions.get(bank.toString())));
     }
 }

@@ -80,6 +80,7 @@ public class DeutscheTokenService implements TokenService {
         params.add("grant_type", "refresh_token");
         params.add("refresh_token", oAuthToken);
 
-        refreshToken();
+        // TODO Determine if a refresh is needed after init. Also - refactor to InitializerBean?
+        //refreshToken();
     }
 }
